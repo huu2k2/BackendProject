@@ -1,6 +1,6 @@
 import { TableStatus } from "@prisma/client";
 
-export interface CreateTableDto {
+export interface ICreateTable {
   status: TableStatus;
   startTime?: Date;
   endTime?: Date;
@@ -8,7 +8,7 @@ export interface CreateTableDto {
   name: string;
 }
 
-export interface UpdateTableDto {
+export interface IUpdateTable {
   status?: TableStatus;
   startTime?: Date;
   endTime?: Date;

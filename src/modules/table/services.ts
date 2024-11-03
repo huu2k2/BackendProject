@@ -1,11 +1,11 @@
 import { PrismaClient, Table, TableStatus } from '@prisma/client'
-import { CreateTableDto, UpdateTableDto } from './interface'
+import { ICreateTable, IUpdateTable } from './interface'
 import { NextFunction } from 'express'
 
 const prisma = new PrismaClient()
 
 export class TableService {
-  async createTable(dto: CreateTableDto, next: NextFunction): Promise<Boolean | undefined> {
+  async createTable(dto: ICreateTable, next: NextFunction): Promise<Boolean | undefined> {
     try {
       const table = await prisma.table.create({
         data: dto
@@ -54,7 +54,7 @@ export class TableService {
     }
   }
 
-  async updateTable(tableId: string, dto: UpdateTableDto, next: NextFunction): Promise<Boolean | undefined> {
+  async updateTable(tableId: string, dto: IUpdateTable, next: NextFunction): Promise<Boolean | undefined> {
     try {
       const table = await prisma.table.update({
         where: { tableId },
