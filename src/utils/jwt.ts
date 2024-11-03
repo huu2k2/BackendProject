@@ -1,23 +1,24 @@
-import jwt from 'jsonwebtoken';
+import jwt from 'jsonwebtoken'
 
-interface TokenPayload {
-  userId: string;
-  role?: string;
-}
-
-export const generateToken = (payload: TokenPayload): string => {
+export const generateTokenWithExpireTime = (payload: any, time: string): string => {
   return jwt.sign(
     payload,
     process.env.JWT_SECRET!,
-    { expiresIn: '90d' } // Token hết hạn sau 90d
-  );
-};
+    { expiresIn: time } // Token hết hạn sau 90d
+  )
+}
 
-export const verifyToken = (token: string): TokenPayload => {
+export const generateTokenAndRefreshToken = (payload: any): { token: string; refreshToken: string } => {
+  const token = generateTokenWithExpireTime(payload, '1h')
+  const refreshToken = generateTokenWithExpireTime(payload, '7d')
+  return { token, refreshToken }
+}
+
+export const verifyToken = (token: string): any => {
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as TokenPayload;
-    return decoded;
+    const decoded = jwt.verify(token, process.env.JWT_SECRET!)
+    return decoded
   } catch (error) {
-    throw new Error('Invalid token');
+    throw new Error('Invalid token')
   }
-};
+}

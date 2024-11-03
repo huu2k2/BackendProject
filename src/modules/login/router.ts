@@ -4,9 +4,12 @@ import { loginController } from './controller'
 const router = Router()
 
 router
-  .route('/')
-  .post(loginController.createRole.bind(loginController))
-  .get(loginController.getRoles.bind(loginController))
- 
+  .route('/customer/login')
+  .post(loginController.loginCustomer.bind(loginController))
+  .post(loginController.registerCustomer.bind(loginController))
+
+router
+  .route('/staff/login')
+  .post(loginController.loginStaff.bind(loginController))
 
 export default router
