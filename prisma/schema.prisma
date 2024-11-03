@@ -1,0 +1,198 @@
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum TableStatus {
+  AVAILABLE
+  OCCUPIED
+  RESERVED
+  MAINTENANCE
+}
+
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  COMPLETED
+  CANCELED
+}
+
+enum NotificationStatus {
+  UNREAD
+  READ
+}
+
+enum TableDetailStatus {
+  ACTIVE
+  INACTIVE
+}
+
+model Profile {
+  profileId    String    @id @default(dbgenerated("(UUID())")) @map("profile_id")
+  fullName     String    @map("full_name")
+  address      String
+  phoneNumber  String    @map("phone_number") @db.VarChar(20)
+  cccd         String    @db.VarChar(20)
+  account      Account?  @relation(fields: [accountId], references: [accountId])
+  accountId    String?   @unique @map("account_id")
+  createdAt    DateTime  @default(now()) @map("created_at")
+
+  @@map("profiles")
+}
+
+model Account {
+  accountId     String          @id @default(dbgenerated("(UUID())")) @map("account_id")
+  username      String          @unique
+  password      String
+  role          Role?           @relation(fields: [roleId], references: [roleId])
+  roleId        String?         @map("role_id")
+  isActive      Boolean         @default(true) @map("is_active")
+  profile       Profile?
+  notifications Notification[]
+  createdAt     DateTime        @default(now()) @map("created_at")
+
+  @@map("accounts")
+}
+
+model Role {
+  roleId      String      @id @default(dbgenerated("(UUID())")) @map("role_id")
+  name        String
+  accounts    Account[]
+  createdAt   DateTime    @default(now()) @map("created_at")
+
+  @@map("roles")
+}
+
+model Customer {
+  customerId   String    @id @default(dbgenerated("(UUID())")) @map("customer_id")
+  name         String
+  phoneNumber  String    @map("phone_number") @db.VarChar(20)
+  orders       Order[]
+  createdAt    DateTime  @default(now()) @map("created_at")
+
+  @@map("customers")
+}
+
+model Notification {
+  notificationId  String              @id @default(dbgenerated("(UUID())")) @map("notification_id")
+  content         String
+  status          NotificationStatus
+  account         Account?            @relation(fields: [accountId], references: [accountId])
+  accountId       String?             @map("account_id")
+  createdAt       DateTime            @default(now()) @map("created_at")
+  updatedAt       DateTime            @updatedAt @map("updated_at")
+
+  @@map("notifications")
+}
+
+model Order {
+  orderId       String        @id @default(dbgenerated("(UUID())")) @map("order_id")
+  createdAt     DateTime      @default(now()) @map("created_at")
+  updatedAt     DateTime      @updatedAt @map("updated_at")
+  customer      Customer?     @relation(fields: [customerId], references: [customerId])
+  customerId    String?       @map("customer_id")
+  totalAmount   Float         @map("total_amount")
+  status        OrderStatus
+  orderMerges   OrderMerge[]
+  orderDetails  OrderDetail[]
+  payments      Payment[]
+  tableDetails  TableDetail[]
+
+  @@map("orders")
+}
+
+model OrderDetail {
+  orderDetailId  String    @id @default(dbgenerated("(UUID())")) @map("order_detail_id")
+  order          Order     @relation(fields: [orderId], references: [orderId])
+  orderId        String    @map("order_id")
+  product        Product   @relation(fields: [productId], references: [productId])
+  productId      String    @map("product_id")
+  quantity       Int
+  total          Float
+  createdAt      DateTime  @default(now()) @map("created_at")
+
+  @@map("order_details")
+}
+
+model Product {
+  productId     String        @id @default(dbgenerated("(UUID())")) @map("product_id")
+  name          String
+  description   String
+  image         String
+  price         Float
+  category      Category?     @relation(fields: [categoryId], references: [categoryId])
+  categoryId    String?       @map("category_id")
+  isActive      Boolean       @default(true) @map("is_active")
+  orderDetails  OrderDetail[]
+
+  @@map("products")
+}
+
+model Category {
+  categoryId    String     @id @default(dbgenerated("(UUID())")) @map("category_id")
+  name          String
+  products      Product[]
+
+  @@map("categories")
+}
+
+model Table {
+  tableId       String        @id @default(dbgenerated("(UUID())")) @map("table_id")
+  status        TableStatus
+  startTime     DateTime?     @map("start_time")
+  endTime       DateTime?     @map("end_time")
+  area          Area         @relation(fields: [areaId], references: [areaId])
+  areaId        String       @map("area_id")
+  name          String
+  tableDetails  TableDetail[]
+
+  @@map("tables")
+}
+
+model Area {
+  areaId        String    @id @default(dbgenerated("(UUID())")) @map("area_id")
+  code          String
+  name          String
+  tables        Table[]
+
+  @@map("areas")
+}
+
+model TableDetail {
+  tableDetailId  String            @id @default(dbgenerated("(UUID())")) @map("table_detail_id")
+  table          Table             @relation(fields: [tableId], references: [tableId])
+  tableId        String            @map("table_id")
+  order          Order             @relation(fields: [orderId], references: [orderId])
+  orderId        String            @map("order_id")
+  status         TableDetailStatus
+  startTime      DateTime          @map("start_time")
+  endTime        DateTime          @map("end_time")
+  createdAt      DateTime          @default(now()) @map("created_at")
+  updatedAt      DateTime          @updatedAt @map("updated_at")
+
+  @@map("table_details")
+}
+
+model OrderMerge {
+  orderMergeId  String    @id @default(dbgenerated("(UUID())")) @map("order_merge_id")
+  createdAt     DateTime  @default(now()) @map("created_at")
+  order         Order     @relation(fields: [orderId], references: [orderId])
+  orderId       String    @map("order_id")
+
+  @@map("order_merges")
+}
+
+model Payment {
+  paymentId     String    @id @default(dbgenerated("(UUID())")) @map("payment_id")
+  order         Order     @relation(fields: [orderId], references: [orderId])
+  orderId       String    @map("order_id")
+  amount        Float
+  method        String
+  createdAt     DateTime  @default(now()) @map("created_at")
+
+  @@map("payments")
+}
