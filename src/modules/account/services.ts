@@ -4,39 +4,59 @@ import bcrypt from 'bcrypt';
 import { NextFunction } from 'express';
 import {prisma} from '../../prismaClient';
 export class AccountService {
-  async createAccount(data: ICreateAccount,next:NextFunction): Promise<string | undefined > {
+  async createAccount(data: ICreateAccount, next: NextFunction): Promise<string | undefined> {
     try {
       return await prisma.$transaction(async (tx) => {
-        if (!data.password) {
-          throw new Error('Password is required');
-        }
-        if (!data.username) {
-          throw new Error('Username is required');
-        }
-        
-        const hashedPassword = await bcrypt.hash(data.password, 10);
-        if (!hashedPassword) {
-          throw new Error('Failed to hash password');
-        }
-
-        const account = await tx.account.create({
-          data: {
-            username: data.username,
-            password: hashedPassword,
-            roleId: data.roleId,
-          },
+          // Validate input
+          if (!data.password || !data.username) {
+            throw new Error('Username and password are required');
+          }
+  
+          // Check if username exists
+          const existingAccount = await tx.account.findUnique({
+            where: { username: data.username }
+          });
+  
+          if (existingAccount) {
+            throw new Error('Username already exists');
+          }
+  
+          // Hash password
+          const hashedPassword = await bcrypt.hash(data.password, 10);
+          if (!hashedPassword) {
+            throw new Error('Failed to hash password');
+          }
+  
+          // Create account and profile in transaction
+          const account = await tx.account.create({
+            data: {
+              username: data.username,
+              password: hashedPassword,
+              roleId: data.roleId,
+              profile: {
+                create: {
+                  fullName: data.profile.fullName,
+                  address: data.profile.address,
+                  phoneNumber: data.profile.phoneNumber,
+                  cccd: data.profile.cccd
+                }
+              }
+            },
+            include: {
+              profile: true
+            }
+          });
+  
+          if (!account || !account.profile) {
+            throw new Error('Failed to create account or profile');
+          }
+  
+          return "Account and profile created successfully";
         });
-
-        if (!account) {
-          throw new Error('Failed to create account');
-        }
- 
-        return "Account created successfully";
-      });
-    } catch (error) {
-      next(error);
+      } catch (error) {
+        next(error);
+      }
     }
-  }
 
   async getAccounts(next:NextFunction): Promise<Partial<Account>[] | undefined> {
     try {

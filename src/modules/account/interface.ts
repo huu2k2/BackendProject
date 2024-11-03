@@ -1,7 +1,13 @@
 export interface ICreateAccount {
   username: string;
   password: string;
-  roleId?: string;
+  roleId: string;
+  profile: {
+    fullName: string;
+    address: string;
+    phoneNumber: string;
+    cccd: string;
+  }
 }
 
 export interface IUpdateAccount {
