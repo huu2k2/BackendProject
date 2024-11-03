@@ -123,6 +123,7 @@ model Product {
   name          String
   description   String
   image         String
+  imagePublicId String       @map("image_public_id")
   price         Float
   category      Category?     @relation(fields: [categoryId], references: [categoryId])
   categoryId    String?       @map("category_id")

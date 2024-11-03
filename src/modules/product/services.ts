@@ -1,11 +1,14 @@
 import { PrismaClient } from '@prisma/client'
 import { CreateProductDto, UpdateProductDto, ProductQuery } from './dto'
 import { prisma } from '../.././prismaClient'
+import { createImage } from '../../config/cloudinaryConfig'
 
 export class ProductService {
   async createProduct(dto: CreateProductDto) {
+    const { image, ...rest } = dto
+    const { url, publicId } = await createImage(image)
     return await prisma.product.create({
-      data: dto,
+      data: { ...rest, image: url, imagePublicId: publicId },
       include: {
         category: true
       }
