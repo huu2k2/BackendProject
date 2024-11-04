@@ -3,7 +3,8 @@ export interface ICreateAccount {
   password: string;
   roleId: string;
   profile: {
-    fullName: string;
+    firstName: string;
+    lastName: string;
     address: string;
     phoneNumber: string;
     cccd: string;

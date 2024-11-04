@@ -35,7 +35,8 @@ export class AccountService {
               roleId: data.roleId,
               profile: {
                 create: {
-                  fullName: data.profile.fullName,
+                  firstName: data.profile.firstName,
+                  lastName: data.profile.lastName,
                   address: data.profile.address,
                   phoneNumber: data.profile.phoneNumber,
                   cccd: data.profile.cccd
