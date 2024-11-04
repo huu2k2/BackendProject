@@ -4,7 +4,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "npx nodemon src/index.ts",
-    "build": "rimraf ./dist && tsc && tsc-alias",
+    "build": "mkdir -p public && echo 'Vercel Build Step' > public/build.txt",
     "start": "node dist/index.js",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
