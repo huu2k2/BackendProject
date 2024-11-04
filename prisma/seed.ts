@@ -1,4 +1,4 @@
-import { PrismaClient, TableStatus, OrderStatus, NotificationStatus, TableDetailStatus } from '@prisma/client';
+import { PrismaClient, TableStatus, OrderStatus, NotificationStatus, OrderDetailStatus } from '@prisma/client';
 import { faker } from '@faker-js/faker';
 import * as bcrypt from 'bcrypt';
 
@@ -44,9 +44,10 @@ async function main() {
         roleId: roleIds[Math.floor(Math.random() * roleIds.length)],
         profile: {
           create: {
-            fullName: faker.person.fullName(),
+            firstName: faker.person.firstName(),
+            lastName: faker.person.lastName(),
             address: faker.location.streetAddress(),
-            phoneNumber:  `+84${faker.string.numeric(9)}`,  
+            phoneNumber: `+84${faker.string.numeric(9)}`,
             cccd: faker.number.int({ min: 100000000000, max: 999999999999 }).toString(),
           }
         }
@@ -59,7 +60,7 @@ async function main() {
     Array(30).fill(null).map(() =>
       prisma.category.create({
         data: {
-          name: faker.commerce.department()
+          name: faker.food.fruit()
         }
       })
     )
@@ -85,7 +86,7 @@ async function main() {
       prisma.area.create({
         data: {
           name: `Area ${index + 1}`,
-          code: `A${(index + 1).toString().padStart(2, '0')}`
+          total: faker.number.int({ min: 5, max: 20 })
         }
       })
     )
@@ -100,7 +101,8 @@ async function main() {
           status: faker.helpers.arrayElement(Object.values(TableStatus)),
           areaId: areas[Math.floor(Math.random() * areas.length)].areaId,
           startTime: faker.date.past(),
-          endTime: faker.date.future()
+          endTime: faker.date.future(),
+          qrCode: faker.string.uuid()
         }
       })
     )
@@ -112,7 +114,7 @@ async function main() {
       prisma.customer.create({
         data: {
           name: faker.person.fullName(),
-          phoneNumber: `+84${faker.string.numeric(9)}` // Vietnamese format, same as profiles
+          phoneNumber: `+84${faker.string.numeric(9)}`
         }
       })
     )
@@ -130,20 +132,19 @@ async function main() {
         orderDetails: {
           create: Array(3).fill(null).map(() => {
             const product = products[Math.floor(Math.random() * products.length)];
-            const quantity = faker.number.int({ min: 1, max: 5 });
             return {
               productId: product.productId,
-              quantity: quantity,
-              total: product.price * quantity
+              quantity: faker.number.int({ min: 1, max: 5 }),
+              status: faker.helpers.arrayElement(Object.values(OrderDetailStatus))
             };
           })
         },
         tableDetails: {
           create: {
             tableId: tables[Math.floor(Math.random() * tables.length)].tableId,
-            status: faker.helpers.arrayElement(Object.values(TableDetailStatus)),
             startTime: faker.date.past(),
-            endTime: faker.date.future()
+            endTime: faker.date.future(),
+            note: faker.lorem.sentence()
           }
         },
         payments: {
@@ -170,7 +171,8 @@ async function main() {
         data: {
           content: faker.lorem.sentence(),
           status: faker.helpers.arrayElement(Object.values(NotificationStatus)),
-          accountId: accounts[Math.floor(Math.random() * accounts.length)].accountId
+          accountId: accounts[Math.floor(Math.random() * accounts.length)].accountId,
+          customerId: customers[Math.floor(Math.random() * customers.length)].customerId
         }
       })
     )

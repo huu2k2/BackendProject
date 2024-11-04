@@ -10,15 +10,18 @@ generator client {
 enum TableStatus {
   AVAILABLE
   OCCUPIED
-  RESERVED
-  MAINTENANCE
 }
 
-enum OrderStatus {
+enum OrderDetailStatus {
   PENDING
   CONFIRMED
   COMPLETED
   CANCELED
+}
+
+enum OrderStatus {
+  SUCCESS
+  FAILED
 }
 
 enum NotificationStatus {
@@ -26,14 +29,12 @@ enum NotificationStatus {
   READ
 }
 
-enum TableDetailStatus {
-  ACTIVE
-  INACTIVE
-}
+
 
 model Profile {
   profileId    String    @id @default(dbgenerated("(UUID())")) @map("profile_id")
-  fullName     String    @map("full_name")
+  firstName    String    @map("first_name")
+  lastName     String    @map("last_name")
   address      String
   phoneNumber  String    @map("phone_number") @db.VarChar(20)
   cccd         String    @db.VarChar(20)
@@ -72,6 +73,7 @@ model Customer {
   name         String
   phoneNumber  String    @map("phone_number") @db.VarChar(20)
   orders       Order[]
+  notifications Notification[]
   createdAt    DateTime  @default(now()) @map("created_at")
 
   @@map("customers")
@@ -83,6 +85,8 @@ model Notification {
   status          NotificationStatus
   account         Account?            @relation(fields: [accountId], references: [accountId])
   accountId       String?             @map("account_id")
+  customer        Customer?           @relation(fields: [customerId], references: [customerId])
+  customerId      String?             @map("customer_id")
   createdAt       DateTime            @default(now()) @map("created_at")
   updatedAt       DateTime            @updatedAt @map("updated_at")
 
@@ -91,8 +95,6 @@ model Notification {
 
 model Order {
   orderId       String        @id @default(dbgenerated("(UUID())")) @map("order_id")
-  createdAt     DateTime      @default(now()) @map("created_at")
-  updatedAt     DateTime      @updatedAt @map("updated_at")
   customer      Customer?     @relation(fields: [customerId], references: [customerId])
   customerId    String?       @map("customer_id")
   totalAmount   Float         @map("total_amount")
@@ -101,6 +103,8 @@ model Order {
   orderDetails  OrderDetail[]
   payments      Payment[]
   tableDetails  TableDetail[]
+  createdAt     DateTime      @default(now()) @map("created_at")
+  updatedAt     DateTime      @updatedAt @map("updated_at")
 
   @@map("orders")
 }
@@ -112,8 +116,9 @@ model OrderDetail {
   product        Product   @relation(fields: [productId], references: [productId])
   productId      String    @map("product_id")
   quantity       Int
-  total          Float
+  status         OrderDetailStatus
   createdAt      DateTime  @default(now()) @map("created_at")
+  updatedAt      DateTime  @updatedAt @map("updated_at")
 
   @@map("order_details")
 }
@@ -149,6 +154,7 @@ model Table {
   area          Area         @relation(fields: [areaId], references: [areaId])
   areaId        String       @map("area_id")
   name          String
+  qrCode        String?       @map("qr_code")
   tableDetails  TableDetail[]
 
   @@map("tables")
@@ -156,7 +162,7 @@ model Table {
 
 model Area {
   areaId        String    @id @default(dbgenerated("(UUID())")) @map("area_id")
-  code          String
+  total         Int
   name          String
   tables        Table[]
 
@@ -169,7 +175,7 @@ model TableDetail {
   tableId        String            @map("table_id")
   order          Order             @relation(fields: [orderId], references: [orderId])
   orderId        String            @map("order_id")
-  status         TableDetailStatus
+  note           String?           
   startTime      DateTime          @map("start_time")
   endTime        DateTime          @map("end_time")
   createdAt      DateTime          @default(now()) @map("created_at")

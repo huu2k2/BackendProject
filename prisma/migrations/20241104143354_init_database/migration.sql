@@ -1,7 +1,8 @@
 -- CreateTable
 CREATE TABLE `profiles` (
     `profile_id` VARCHAR(191) NOT NULL DEFAULT (UUID()),
-    `full_name` VARCHAR(191) NOT NULL,
+    `first_name` VARCHAR(191) NOT NULL,
+    `last_name` VARCHAR(191) NOT NULL,
     `address` VARCHAR(191) NOT NULL,
     `phone_number` VARCHAR(20) NOT NULL,
     `cccd` VARCHAR(20) NOT NULL,
@@ -50,6 +51,7 @@ CREATE TABLE `notifications` (
     `content` VARCHAR(191) NOT NULL,
     `status` ENUM('UNREAD', 'READ') NOT NULL,
     `account_id` VARCHAR(191) NULL,
+    `customer_id` VARCHAR(191) NULL,
     `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updated_at` DATETIME(3) NOT NULL,
 
@@ -59,11 +61,11 @@ CREATE TABLE `notifications` (
 -- CreateTable
 CREATE TABLE `orders` (
     `order_id` VARCHAR(191) NOT NULL DEFAULT (UUID()),
-    `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
-    `updated_at` DATETIME(3) NOT NULL,
     `customer_id` VARCHAR(191) NULL,
     `total_amount` DOUBLE NOT NULL,
-    `status` ENUM('PENDING', 'CONFIRMED', 'COMPLETED', 'CANCELED') NOT NULL,
+    `status` ENUM('SUCCESS', 'FAILED') NOT NULL,
+    `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `updated_at` DATETIME(3) NOT NULL,
 
     PRIMARY KEY (`order_id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -74,8 +76,9 @@ CREATE TABLE `order_details` (
     `order_id` VARCHAR(191) NOT NULL,
     `product_id` VARCHAR(191) NOT NULL,
     `quantity` INTEGER NOT NULL,
-    `total` DOUBLE NOT NULL,
+    `status` ENUM('PENDING', 'CONFIRMED', 'COMPLETED', 'CANCELED') NOT NULL,
     `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `updated_at` DATETIME(3) NOT NULL,
 
     PRIMARY KEY (`order_detail_id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -105,11 +108,12 @@ CREATE TABLE `categories` (
 -- CreateTable
 CREATE TABLE `tables` (
     `table_id` VARCHAR(191) NOT NULL DEFAULT (UUID()),
-    `status` ENUM('AVAILABLE', 'OCCUPIED', 'RESERVED', 'MAINTENANCE') NOT NULL,
+    `status` ENUM('AVAILABLE', 'OCCUPIED') NOT NULL,
     `start_time` DATETIME(3) NULL,
     `end_time` DATETIME(3) NULL,
     `area_id` VARCHAR(191) NOT NULL,
     `name` VARCHAR(191) NOT NULL,
+    `qr_code` VARCHAR(191) NULL,
 
     PRIMARY KEY (`table_id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -117,7 +121,7 @@ CREATE TABLE `tables` (
 -- CreateTable
 CREATE TABLE `areas` (
     `area_id` VARCHAR(191) NOT NULL DEFAULT (UUID()),
-    `code` VARCHAR(191) NOT NULL,
+    `total` INTEGER NOT NULL,
     `name` VARCHAR(191) NOT NULL,
 
     PRIMARY KEY (`area_id`)
@@ -128,7 +132,7 @@ CREATE TABLE `table_details` (
     `table_detail_id` VARCHAR(191) NOT NULL DEFAULT (UUID()),
     `table_id` VARCHAR(191) NOT NULL,
     `order_id` VARCHAR(191) NOT NULL,
-    `status` ENUM('ACTIVE', 'INACTIVE') NOT NULL,
+    `note` VARCHAR(191) NULL,
     `start_time` DATETIME(3) NOT NULL,
     `end_time` DATETIME(3) NOT NULL,
     `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
@@ -165,6 +169,9 @@ ALTER TABLE `accounts` ADD CONSTRAINT `accounts_role_id_fkey` FOREIGN KEY (`role
 
 -- AddForeignKey
 ALTER TABLE `notifications` ADD CONSTRAINT `notifications_account_id_fkey` FOREIGN KEY (`account_id`) REFERENCES `accounts`(`account_id`) ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `notifications` ADD CONSTRAINT `notifications_customer_id_fkey` FOREIGN KEY (`customer_id`) REFERENCES `customers`(`customer_id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `orders` ADD CONSTRAINT `orders_customer_id_fkey` FOREIGN KEY (`customer_id`) REFERENCES `customers`(`customer_id`) ON DELETE SET NULL ON UPDATE CASCADE;
