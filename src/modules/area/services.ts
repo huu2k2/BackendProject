@@ -9,17 +9,16 @@ export class AreaService {
       return await prisma.$transaction(async (tx) => {
         // Check if code already exists
         const existingArea = await tx.area.findFirst({
-          where: { code: data.code }
+          where: { name: data.name }
         });
         
         if (existingArea) {
-          throw new Error('Area code already exists');
+          throw new Error('Area name already exists');
         }
-
         return tx.area.create({
           data: {
-            code: data.code,
-            name: data.name
+            name: data.name,
+            total: 0
           }
         });
       });
@@ -60,16 +59,16 @@ export class AreaService {
   async updateArea(areaId: string, data: IUpdateArea, next: NextFunction): Promise<Partial<Area> | undefined> {
     try {
       return await prisma.$transaction(async (tx) => {
-        if (data.code) {
+          if (data.name) {
           const existingArea = await tx.area.findFirst({
             where: {
-              code: data.code,
+              name: data.name,
               NOT: { areaId }
             }
           });
           
           if (existingArea) {
-            throw new Error('Area code already exists');
+            throw new Error('Area name already exists');
           }
         }
 
