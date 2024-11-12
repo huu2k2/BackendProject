@@ -1,14 +1,15 @@
-import { CreateCategoryDto, UpdateCategoryDto } from './dto';
-import {prisma} from '../../prismaClient'
+import { CreateCategoryDto, UpdateCategoryDto } from './dto'
+import { prisma } from '../../prismaClient'
 
 export class CategoryService {
   async createCategory(dto: CreateCategoryDto) {
+    console.log('dto', dto)
     return await prisma.category.create({
       data: dto,
       include: {
-        products: true
+        products: false
       }
-    });
+    })
   }
 
   async getCategories() {
@@ -18,7 +19,7 @@ export class CategoryService {
           where: { isActive: true }
         }
       }
-    });
+    })
   }
 
   async getCategoryById(categoryId: string) {
@@ -29,7 +30,7 @@ export class CategoryService {
           where: { isActive: true }
         }
       }
-    });
+    })
   }
 
   async updateCategory(categoryId: string, dto: UpdateCategoryDto) {
@@ -39,12 +40,12 @@ export class CategoryService {
       include: {
         products: true
       }
-    });
+    })
   }
 
   async deleteCategory(categoryId: string) {
     return await prisma.category.delete({
       where: { categoryId }
-    });
+    })
   }
 }
