@@ -10,7 +10,7 @@ const controller = new TableController();
 router
   .route('/')
   .post(controller.createTable)
-  .get(controller.getTables);
+  // .get(controller.getTables);
 
 router
   .route('/:tableId')
