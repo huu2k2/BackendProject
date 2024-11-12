@@ -10,9 +10,9 @@ const router = express.Router()
 
 router.use(express.json())
 router.use('/api/accounts', accountRouter)
-router.use('/api/category', categoryRouter)
 router.use('/api/profiles', profileRouter)
 router.use('/api/roles', roleRouter)
 router.use('/api/tables', tableRouter)
 router.use('/api/products', productRouter)
+router.use('/api/categories', categoryRouter)
 export default router

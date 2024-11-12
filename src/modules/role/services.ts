@@ -24,11 +24,7 @@ export class RoleService {
 
   async getRoles(next: NextFunction): Promise<Role[] | undefined> {
     try {
-      const roles = await prisma.role.findMany({
-        include: {
-          accounts: true
-        }
-      })
+      const roles = await prisma.role.findMany()
       if (!roles) {
         throw new Error('Roles not found')
       }

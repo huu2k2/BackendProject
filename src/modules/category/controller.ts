@@ -1,62 +1,35 @@
-import { Request, Response, NextFunction } from 'express';
-import { CategoryService } from './services';
+import { Request, Response, NextFunction } from 'express'
+import { Service } from './services'
 
-export class CategoryController {
-  private categoryService: CategoryService;
+const service = new Service()
 
-  constructor() {
-    this.categoryService = new CategoryService();
+export class Controller {
+  async create(req: Request, res: Response, next: NextFunction): Promise<any> {
+    const table = await service.create(req.body, next)
+    return res.status(201).json(table)
   }
 
-  async createCategory(req: Request, res: Response, next: NextFunction): Promise<any> {
-    try {
-      console.log("body", req.body)
-      const category = await this.categoryService.createCategory(req.body);
-      res.status(201).json(category);
-    } catch (error) {
-      next(error);
-    }
+  async getAll(req: Request, res: Response, next: NextFunction): Promise<any> {
+    const tables = await service.getAll(next)
+    return res.json(tables)
   }
 
-  async getCategories(req: Request, res: Response, next: NextFunction): Promise<any> {
-    try {
-      const categories = await this.categoryService.getCategories();
-      res.json(categories);
-    } catch (error) {
-      next(error);
+  async getById(req: Request, res: Response, next: NextFunction): Promise<any> {
+    console.log(req.params.categoryId)
+    const table = await service.getById(req.params.categoryId, next)
+    if (!table) {
+      return res.status(404).json({ message: 'Table not found' })
     }
+    return res.json(table)
   }
 
-  async getCategoryById(req: Request, res: Response, next: NextFunction): Promise<any> {
-    try {
-      const category = await this.categoryService.getCategoryById(req.params.categoryId);
-      if (!category) {
-        return res.status(404).json({ message: 'Category not found' });
-      }
-      res.json(category);
-    } catch (error) {
-      next(error);
-    }
+  async update(req: Request, res: Response, next: NextFunction): Promise<any> {
+    const table = await service.update(req.params.categoryId, req.body, next)
+    return res.json(table)
   }
 
-  async updateCategory(req: Request, res: Response, next: NextFunction): Promise<any> {
-    try {
-      const category = await this.categoryService.updateCategory(
-        req.params.categoryId,
-        req.body
-      );
-      res.json(category);
-    } catch (error) {
-      next(error);
-    }
-  }
-
-  async deleteCategory(req: Request, res: Response, next: NextFunction): Promise<any> {
-    try {
-      await this.categoryService.deleteCategory(req.params.categoryId);
-      res.status(204).send();
-    } catch (error) {
-      next(error);
-    }
+  async delete(req: Request, res: Response, next: NextFunction): Promise<any> {
+    const table = await service.delete(req.params.categoryId, next)
+    return res.status(204).send()
   }
 }

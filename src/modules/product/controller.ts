@@ -20,7 +20,8 @@ export class ProductController {
   async getProducts(req: Request, res: Response, next: NextFunction): Promise<any> {
     try {
       const products = await this.productService.getProducts(req.query)
-      res.json(products)
+      console.log(products)
+      return res.json(products)
     } catch (error) {
       next(error)
     }

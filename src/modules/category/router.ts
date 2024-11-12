@@ -1,15 +1,21 @@
-import { Router } from 'express'
-import { CategoryController } from './controller'
+import { Router } from 'express';
+import { Controller } from './controller';
+ 
 
-const router = Router()
-const controller = new CategoryController()
+const router = Router();
+const controller = new Controller();
+ 
 
-router.route('/').post(controller.createCategory).get(controller.getCategories)
+// Routes với middleware
+router
+  .route('/')
+  .post(controller.create)
+  .get(controller.getAll);
 
 router
   .route('/:categoryId')
-  .get(controller.getCategoryById)
-  .put(controller.updateCategory)
-  .delete(controller.deleteCategory)
+  .get(controller.getById)
+  .put(controller.update)
+  .delete(controller.delete);
 
-export default router
+export default router;

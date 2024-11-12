@@ -1,51 +1,80 @@
-import { CreateCategoryDto, UpdateCategoryDto } from './dto'
-import { prisma } from '../../prismaClient'
+import { PrismaClient, Table, TableStatus } from '@prisma/client'
 
-export class CategoryService {
-  async createCategory(dto: CreateCategoryDto) {
-    console.log('dto', dto)
-    return await prisma.category.create({
-      data: dto,
-      include: {
-        products: false
-      }
-    })
-  }
+import { NextFunction } from 'express'
+import { ICreateCategory } from './interface'
 
-  async getCategories() {
-    return await prisma.category.findMany({
-      include: {
-        products: {
-          where: { isActive: true }
+const prisma = new PrismaClient()
+
+export class Service {
+  async create(dto: ICreateCategory, next: NextFunction): Promise<Boolean | undefined> {
+    try {
+      const category = await prisma.category.create({
+        data: {
+          name:dto.name
         }
+      })
+      if (!category) {
+        throw new Error('Failed to create category')
       }
-    })
+      return true
+    } catch (error) {
+      next(error)
+    }
   }
 
-  async getCategoryById(categoryId: string) {
-    return await prisma.category.findUnique({
-      where: { categoryId },
-      include: {
-        products: {
-          where: { isActive: true }
-        }
+  async getAll(next: NextFunction): Promise<any> {
+    try {
+      const category = await prisma.category.findMany()
+      if (!category) {
+        throw new Error('Failed to get category')
       }
-    })
+      return category
+    } catch (error) {
+      next(error)
+    }
   }
 
-  async updateCategory(categoryId: string, dto: UpdateCategoryDto) {
-    return await prisma.category.update({
-      where: { categoryId },
-      data: dto,
-      include: {
-        products: true
+  async getById(id: string, next: NextFunction): Promise<any> {
+    try {
+console.log(id)
+      const category = await prisma.category.findUnique({
+        where: { categoryId: id }
+      })
+      if (!category) {
+        throw new Error('Failed to get category')
       }
-    })
+      return category
+    } catch (error) {
+      next(error)
+    }
   }
 
-  async deleteCategory(categoryId: string) {
-    return await prisma.category.delete({
-      where: { categoryId }
-    })
+  async update(id: string, dto: any, next: NextFunction): Promise<Boolean | undefined> {
+    try {
+      const category = await prisma.category.update({
+        where: { categoryId: id },
+        data: dto
+      })
+      if (!category) {
+        throw new Error('Failed to update category')
+      }
+      return true
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  async delete(id: string, next: NextFunction): Promise<Boolean | undefined> {
+    try {
+      const category = await prisma.category.delete({
+        where: { categoryId:id }
+      })
+      if (!category) {
+        throw new Error('Failed to delete table')
+      }
+      return true
+    } catch (error) {
+      next(error)
+    }
   }
 }
