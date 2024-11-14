@@ -2,18 +2,18 @@ import { Area } from '@prisma/client'
 import { prisma } from '../../prismaClient'
 import { ICreateArea, IUpdateArea } from './interface'
 import { NextFunction } from 'express'
+import { ApiError } from '../../middleware/error.middleware'
 
 export class AreaService {
   async createArea(data: ICreateArea, next: NextFunction): Promise<Partial<Area> | undefined> {
     try {
       return await prisma.$transaction(async (tx) => {
-        // Check if code already exists
         const existingArea = await tx.area.findFirst({
           where: { name: data.name }
         })
 
         if (existingArea) {
-          throw new Error('Area name already exists')
+          throw new ApiError(400, 'name exist!')
         }
         return tx.area.create({
           data: {
@@ -23,8 +23,7 @@ export class AreaService {
         })
       })
     } catch (error) {
-      next(error)
-      return undefined
+      throw error
     }
   }
 

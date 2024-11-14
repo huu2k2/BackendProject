@@ -3,11 +3,15 @@ import { areaService } from './services'
 
 export class AreaController {
   async createArea(req: Request, res: Response, next: NextFunction): Promise<any> {
-    const area = await areaService.createArea(req.body, next)
-    return res.status(201).json({
-      message: 'Area created successfully',
-      data: area
-    })
+    try {
+      const area = await areaService.createArea(req.body, next)
+      return res.status(201).json({
+        message: 'Area created successfully',
+        data: area
+      })
+    } catch (error) {
+      next(error)
+    }
   }
 
   async getAreas(req: Request, res: Response, next: NextFunction): Promise<any> {
