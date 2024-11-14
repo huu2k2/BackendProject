@@ -1,29 +1,29 @@
-import { Area } from '@prisma/client';
-import {prisma} from '../../prismaClient';
-import { ICreateArea, IUpdateArea } from './interface';
-import { NextFunction } from 'express';
+import { Area } from '@prisma/client'
+import { prisma } from '../../prismaClient'
+import { ICreateArea, IUpdateArea } from './interface'
+import { NextFunction } from 'express'
+import { ApiError } from '../../middleware/error.middleware'
 
 export class AreaService {
   async createArea(data: ICreateArea, next: NextFunction): Promise<Partial<Area> | undefined> {
     try {
       return await prisma.$transaction(async (tx) => {
-        // Check if code already exists
         const existingArea = await tx.area.findFirst({
           where: { name: data.name }
-        });
-        
+        })
+
         if (existingArea) {
-          throw new Error('Area name already exists');
+          throw new ApiError(400, 'name exist!')
         }
         return tx.area.create({
           data: {
             name: data.name,
             total: 0
           }
-        });
-      });
+        })
+      })
     } catch (error) {
-      next(error)
+      throw error
     }
   }
 
@@ -33,9 +33,10 @@ export class AreaService {
         include: {
           tables: true
         }
-      });
+      })
     } catch (error) {
       next(error)
+      return undefined
     }
   }
 
@@ -46,29 +47,30 @@ export class AreaService {
         include: {
           tables: true
         }
-      });
+      })
       if (!area) {
-        throw new Error('Area not found');
+        throw new Error('Area not found')
       }
-      return area;
+      return area
     } catch (error) {
-        next(error)
+      next(error)
+      return undefined
     }
   }
 
   async updateArea(areaId: string, data: IUpdateArea, next: NextFunction): Promise<Partial<Area> | undefined> {
     try {
       return await prisma.$transaction(async (tx) => {
-          if (data.name) {
+        if (data.name) {
           const existingArea = await tx.area.findFirst({
             where: {
               name: data.name,
               NOT: { areaId }
             }
-          });
-          
+          })
+
           if (existingArea) {
-            throw new Error('Area name already exists');
+            throw new Error('Area name already exists')
           }
         }
 
@@ -78,10 +80,11 @@ export class AreaService {
           include: {
             tables: true
           }
-        });
-      });
+        })
+      })
     } catch (error) {
       next(error)
+      return undefined
     }
   }
 
@@ -94,22 +97,23 @@ export class AreaService {
           include: {
             tables: true
           }
-        });
+        })
 
         if (areaWithTables?.tables.length) {
-          throw new Error('Cannot delete area with existing tables');
+          throw new Error('Cannot delete area with existing tables')
         }
 
         const deletedArea = await tx.area.delete({
           where: { areaId }
-        });
+        })
 
         return deletedArea ? true : false
-      });
+      })
     } catch (error) {
-        next(error)
+      next(error)
+      return undefined
     }
   }
 }
 
-export const areaService = new AreaService();
+export const areaService = new AreaService()
