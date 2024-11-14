@@ -1,32 +1,20 @@
 import { PrismaClient, Table, TableStatus } from '@prisma/client'
 
 import { NextFunction } from 'express'
-import { ICreateCategory } from './interface'
+import { ICategory, ICategoryDto } from './interface'
 
 const prisma = new PrismaClient()
 
 export class Service {
-  async create(dto: ICreateCategory, next: NextFunction): Promise<Boolean | undefined> {
+  async create(dto: ICategoryDto, next: NextFunction): Promise<ICategory | undefined> {
     try {
       const category = await prisma.category.create({
         data: {
-          name:dto.name
+          name: dto.name
         }
       })
       if (!category) {
         throw new Error('Failed to create category')
-      }
-      return true
-    } catch (error) {
-      next(error)
-    }
-  }
-
-  async getAll(next: NextFunction): Promise<any> {
-    try {
-      const category = await prisma.category.findMany()
-      if (!category) {
-        throw new Error('Failed to get category')
       }
       return category
     } catch (error) {
@@ -34,9 +22,21 @@ export class Service {
     }
   }
 
+  async getAll(next: NextFunction): Promise<ICategory[] | undefined> {
+    try {
+      const categories = await prisma.category.findMany()
+      if (!categories) {
+        throw new Error('Failed to get category')
+      }
+      return categories
+    } catch (error) {
+      next(error)
+    }
+  }
+
   async getById(id: string, next: NextFunction): Promise<any> {
     try {
-console.log(id)
+      console.log(id)
       const category = await prisma.category.findUnique({
         where: { categoryId: id }
       })
@@ -49,7 +49,7 @@ console.log(id)
     }
   }
 
-  async update(id: string, dto: any, next: NextFunction): Promise<Boolean | undefined> {
+  async update(id: string, dto: ICategoryDto, next: NextFunction): Promise<ICategory | undefined> {
     try {
       const category = await prisma.category.update({
         where: { categoryId: id },
@@ -58,7 +58,7 @@ console.log(id)
       if (!category) {
         throw new Error('Failed to update category')
       }
-      return true
+      return category
     } catch (error) {
       next(error)
     }
@@ -67,7 +67,7 @@ console.log(id)
   async delete(id: string, next: NextFunction): Promise<Boolean | undefined> {
     try {
       const category = await prisma.category.delete({
-        where: { categoryId:id }
+        where: { categoryId: id }
       })
       if (!category) {
         throw new Error('Failed to delete table')
