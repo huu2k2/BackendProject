@@ -2,6 +2,7 @@ import { PrismaClient, Table, TableStatus } from '@prisma/client'
 
 import { NextFunction } from 'express'
 import { ICreateCategory } from './interface'
+import { ApiError } from '../../middleware/error.middleware'
 
 const prisma = new PrismaClient()
 
@@ -10,11 +11,11 @@ export class Service {
     try {
       const category = await prisma.category.create({
         data: {
-          name:dto.name
+          name: dto.name
         }
       })
       if (!category) {
-        throw new Error('Failed to create category')
+        throw new ApiError(400, 'Failed to create category')
       }
       return true
     } catch (error) {
@@ -25,9 +26,6 @@ export class Service {
   async getAll(next: NextFunction): Promise<any> {
     try {
       const category = await prisma.category.findMany()
-      if (!category) {
-        throw new Error('Failed to get category')
-      }
       return category
     } catch (error) {
       next(error)
@@ -36,12 +34,11 @@ export class Service {
 
   async getById(id: string, next: NextFunction): Promise<any> {
     try {
-console.log(id)
       const category = await prisma.category.findUnique({
         where: { categoryId: id }
       })
       if (!category) {
-        throw new Error('Failed to get category')
+        throw new ApiError(404, 'Not found category')
       }
       return category
     } catch (error) {
@@ -56,7 +53,7 @@ console.log(id)
         data: dto
       })
       if (!category) {
-        throw new Error('Failed to update category')
+        throw new ApiError(400, 'Failed to update category')
       }
       return true
     } catch (error) {
@@ -67,10 +64,10 @@ console.log(id)
   async delete(id: string, next: NextFunction): Promise<Boolean | undefined> {
     try {
       const category = await prisma.category.delete({
-        where: { categoryId:id }
+        where: { categoryId: id }
       })
       if (!category) {
-        throw new Error('Failed to delete table')
+        throw new ApiError(400, 'Failed to delete category')
       }
       return true
     } catch (error) {
