@@ -15,33 +15,49 @@ export class AreaController {
   }
 
   async getAreas(req: Request, res: Response, next: NextFunction): Promise<any> {
-    const areas = await areaService.getAreas(next)
-    return res.status(200).json(areas)
+    try {
+      const areas = await areaService.getAreas(next)
+      return res.status(200).json(areas)
+    } catch (error) {
+      next(error)
+    }
   }
 
   async getAreaById(req: Request, res: Response, next: NextFunction): Promise<any> {
-    const { areaId } = req.params
-    const area = await areaService.getAreaById(areaId, next)
-    return res.status(200).json({
-      data: area
-    })
+    try {
+      const { areaId } = req.params
+      const area = await areaService.getAreaById(areaId, next)
+      return res.status(200).json({
+        data: area
+      })
+    } catch (error) {
+      next(error)
+    }
   }
 
   async updateArea(req: Request, res: Response, next: NextFunction): Promise<any> {
-    const { areaId } = req.params
-    const area = await areaService.updateArea(areaId, req.body, next)
-    return res.status(200).json({
-      message: 'Area updated successfully',
-      data: area
-    })
+    try {
+      const { areaId } = req.params
+      const area = await areaService.updateArea(areaId, req.body, next)
+      return res.status(200).json({
+        message: 'Area updated successfully',
+        data: area
+      })
+    } catch (error) {
+      next(error)
+    }
   }
 
   async deleteArea(req: Request, res: Response, next: NextFunction): Promise<any> {
-    const { areaId } = req.params
-    await areaService.deleteArea(areaId, next)
-    res.status(200).json({
-      message: 'Area deleted successfully'
-    })
+    try {
+      const { areaId } = req.params
+      await areaService.deleteArea(areaId, next)
+      res.status(200).json({
+        message: 'Area deleted successfully'
+      })
+    } catch (error) {
+      next(error)
+    }
   }
 }
 

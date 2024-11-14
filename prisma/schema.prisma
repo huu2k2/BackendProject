@@ -149,12 +149,9 @@ model Category {
 model Table {
   tableId       String        @id @default(dbgenerated("(UUID())")) @map("table_id")
   status        TableStatus
-  startTime     DateTime?     @map("start_time")
-  endTime       DateTime?     @map("end_time")
   area          Area         @relation(fields: [areaId], references: [areaId])
   areaId        String       @map("area_id")
   name          String
-  qrCode        String?       @map("qr_code")
   tableDetails  TableDetail[]
 
   @@map("tables")
