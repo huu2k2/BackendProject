@@ -1,4 +1,4 @@
-export interface IAccount {
+export interface ICreateAccount {
   username: string
   password: string
   role: {
@@ -15,10 +15,18 @@ export interface IAccount {
 }
 
 export interface IUpdateAccount {
-  username?: string
-  password?: string
-  roleId?: string
+  role: {
+    roleId: string
+    name: string
+  }
   isActive?: boolean
+  profile: {
+    firstName: string
+    lastName: string
+    address: string
+    phoneNumber: string
+    cccd: string
+  }
 }
 
 export interface IAccountResponse {

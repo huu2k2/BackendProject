@@ -12,6 +12,5 @@ router
   .route('/:accountId')
   .get(accountController.getAccountById.bind(accountController))
   .put(accountController.updateAccount.bind(accountController))
-  .delete(accountController.deleteAccount.bind(accountController))
 
 export default router

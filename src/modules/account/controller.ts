@@ -24,7 +24,7 @@ export class AccountController {
   getAccounts = async (req: Request, res: Response, next: NextFunction): Promise<any> => {
     try {
       const result = await this.accountService.getAccounts(next)
-      return res.status(201).json({
+      return res.status(200).json({
         message: 'Get all account',
         data: result
       })
@@ -34,21 +34,29 @@ export class AccountController {
   }
 
   getAccountById = async (req: Request, res: Response, next: NextFunction): Promise<any> => {
-    const { id } = req.params
-    const result = await this.accountService.getAccountById(id, next)
-    return ApiResponse.success(res, result)
+    try {
+      const { accountId } = req.params
+      const result = await this.accountService.getAccountById(accountId, next)
+      return res.status(200).json({
+        message: 'Get account',
+        data: result
+      })
+    } catch (error) {
+      next(error)
+    }
   }
 
   updateAccount = async (req: Request, res: Response, next: NextFunction): Promise<any> => {
-    const { id } = req.params
-    const result = await this.accountService.updateAccount(id, req.body, next)
-    return ApiResponse.created(res, result && 'Update account success')
-  }
-
-  deleteAccount = async (req: Request, res: Response, next: NextFunction): Promise<any> => {
-    const { id } = req.params
-    const result = await this.accountService.deleteAccount(id, next)
-    return ApiResponse.created(res, result && 'Delete account success')
+    try {
+      const { accountId } = req.params
+      const result = await this.accountService.updateAccount(accountId, req.body, next)
+      return res.status(200).json({
+        message: 'Update account success',
+        data: result
+      })
+    } catch (error) {
+      next(error)
+    }
   }
 }
 

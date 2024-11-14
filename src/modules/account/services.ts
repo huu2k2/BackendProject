@@ -1,11 +1,11 @@
 import { Account } from '@prisma/client'
-import { IAccount, IAccountResponse, IUpdateAccount } from './interface'
+import { ICreateAccount, IAccountResponse, IUpdateAccount } from './interface'
 import bcrypt from 'bcrypt'
 import { NextFunction } from 'express'
 import { prisma } from '../../prismaClient'
 import { ApiError } from '../../middleware/error.middleware'
 export class AccountService {
-  async createAccount(data: IAccount, next: NextFunction): Promise<IAccountResponse | undefined> {
+  async createAccount(data: ICreateAccount, next: NextFunction): Promise<IAccountResponse | undefined> {
     try {
       return await prisma.$transaction(async (tx) => {
         if (!data.password || !data.username) {
@@ -80,7 +80,7 @@ export class AccountService {
         }
       })
       if (!result) {
-        throw new Error('Account not found')
+        throw new ApiError(404, 'Account not found')
       }
       return result
     } catch (error) {
@@ -88,34 +88,32 @@ export class AccountService {
     }
   }
 
-  async updateAccount(accountId: string, data: IUpdateAccount, next: NextFunction): Promise<Boolean | undefined> {
+  async updateAccount(
+    accountId: string,
+    data: IUpdateAccount,
+    next: NextFunction
+  ): Promise<IAccountResponse | undefined> {
     try {
-      if (data.password) {
-        data.password = await bcrypt.hash(data.password, 10)
-      }
-
       const result = await prisma.account.update({
         where: { accountId },
-        data
+        data: {
+          isActive: data.isActive,
+          roleId: data.role.roleId,
+          profile: {
+            update: {
+              firstName: data.profile.firstName,
+              lastName: data.profile.lastName,
+              address: data.profile.address,
+              cccd: data.profile.cccd,
+              phoneNumber: data.profile.phoneNumber
+            }
+          }
+        }
       })
       if (!result) {
-        throw new Error('Failed to update account')
+        throw new ApiError(400, 'Fail')
       }
-      return true
-    } catch (error) {
-      next(error)
-    }
-  }
-
-  async deleteAccount(accountId: string, next: NextFunction): Promise<Boolean | undefined> {
-    try {
-      const result = await prisma.account.delete({
-        where: { accountId }
-      })
-      if (!result) {
-        throw new Error('Failed to delete account')
-      }
-      return true
+      return result
     } catch (error) {
       next(error)
     }
