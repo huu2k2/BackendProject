@@ -12,9 +12,7 @@ export class AreaController {
 
   async getAreas(req: Request, res: Response, next: NextFunction): Promise<any> {
     const areas = await areaService.getAreas(next)
-    return res.status(200).json({
-      data: areas
-    })
+    return res.status(200).json(areas)
   }
 
   async getAreaById(req: Request, res: Response, next: NextFunction): Promise<any> {

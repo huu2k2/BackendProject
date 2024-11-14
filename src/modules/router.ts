@@ -6,9 +6,11 @@ import roleRouter from './role/router'
 import tableRouter from './table/router'
 import productRouter from './product/router'
 import categoryRouter from './category/router'
+import areaRouter from './area/router'
 const router = express.Router()
 
 router.use(express.json())
+router.use('/api/areas', areaRouter)
 router.use('/api/accounts', accountRouter)
 router.use('/api/profiles', profileRouter)
 router.use('/api/roles', roleRouter)
