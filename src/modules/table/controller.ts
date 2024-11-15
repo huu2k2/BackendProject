@@ -57,7 +57,7 @@ export class TableController {
       const { tableId } = req.params
       const tableDetail = await tableService.createTableDetail(req.params.tableId, next)
       return res.status(200).json({
-        message: 'Get category success',
+        message: 'create detail success',
         data: tableDetail
       })
     } catch (error) {

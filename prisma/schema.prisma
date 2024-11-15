@@ -29,6 +29,11 @@ enum NotificationStatus {
   READ
 }
 
+enum PaymentStatus {
+  WAIT
+  FINISH
+}
+
 
 
 model Profile {
@@ -197,6 +202,7 @@ model Payment {
   orderId       String    @map("order_id")
   amount        Float
   method        String
+  status        PaymentStatus
   createdAt     DateTime  @default(now()) @map("created_at")
 
   @@map("payments")
