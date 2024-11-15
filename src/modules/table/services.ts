@@ -9,29 +9,34 @@ export class TableService {
   async createTable(dto: ICreateTable, next: NextFunction): Promise<ICreateTable | undefined> {
     try {
       const existingTable = await prisma.table.findFirst({
-        where: {
-          name: dto.name
-        }
+        where: { name: dto.name }
       })
+
       if (existingTable) {
         throw new ApiError(400, 'Table name already exists')
       }
 
-      const table = await prisma.table.create({
-        data: {
-          status: 'AVAILABLE',
-          name: dto.name,
-          area: {
-            connect: { areaId: dto.areaId }
+      const result = await prisma.$transaction([
+        prisma.table.create({
+          data: {
+            status: 'AVAILABLE',
+            name: dto.name,
+            area: {
+              connect: { areaId: dto.areaId }
+            }
           }
-        }
-      })
-      if (!table) {
-        throw new ApiError(400, 'Failed to create table')
-      }
-      return table
+        }),
+        prisma.area.update({
+          where: { areaId: dto.areaId },
+          data: {
+            total: { increment: 1 }
+          }
+        })
+      ])
+
+      return result[0]
     } catch (error) {
-      throw error
+      next(error)
     }
   }
 
@@ -121,6 +126,13 @@ export class TableService {
           tableId: id,
           orderId: '123',
           startTime: new Date()
+        }
+      })
+
+      await prisma.table.update({
+        where: { tableId: id },
+        data: {
+          status: 'OCCUPIED'
         }
       })
       return tableDetail
