@@ -62,7 +62,7 @@ CREATE TABLE `notifications` (
 -- CreateTable
 CREATE TABLE `orders` (
     `order_id` VARCHAR(191) NOT NULL DEFAULT (UUID()),
-    `customer_id` VARCHAR(191) NULL,
+    `customer_id` VARCHAR(191) NOT NULL,
     `total_amount` DOUBLE NOT NULL,
     `status` ENUM('SUCCESS', 'FAILED') NOT NULL,
     `order_merge_id` VARCHAR(191) NULL,
@@ -154,6 +154,7 @@ CREATE TABLE `payments` (
     `order_id` VARCHAR(191) NOT NULL,
     `amount` DOUBLE NOT NULL,
     `method` VARCHAR(191) NOT NULL,
+    `status` ENUM('WAIT', 'FINISH') NOT NULL,
     `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
 
     PRIMARY KEY (`payment_id`)
@@ -172,7 +173,7 @@ ALTER TABLE `notifications` ADD CONSTRAINT `notifications_account_id_fkey` FOREI
 ALTER TABLE `notifications` ADD CONSTRAINT `notifications_customer_id_fkey` FOREIGN KEY (`customer_id`) REFERENCES `customers`(`customer_id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `orders` ADD CONSTRAINT `orders_customer_id_fkey` FOREIGN KEY (`customer_id`) REFERENCES `customers`(`customer_id`) ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE `orders` ADD CONSTRAINT `orders_customer_id_fkey` FOREIGN KEY (`customer_id`) REFERENCES `customers`(`customer_id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `orders` ADD CONSTRAINT `orders_order_merge_id_fkey` FOREIGN KEY (`order_merge_id`) REFERENCES `order_merges`(`order_merge_id`) ON DELETE SET NULL ON UPDATE CASCADE;
