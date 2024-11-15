@@ -4,7 +4,6 @@ import { OrderService } from './services'
 const orderService = new OrderService()
 
 export class OrderController {
-  // Order Merge
   async createOrderMerge(req: Request, res: Response, next: NextFunction): Promise<any> {
     try {
       const orderMerge = await orderService.createOrderMerge(req.body, next)
@@ -103,7 +102,10 @@ export class OrderController {
       if (!orderDetail) {
         return res.status(404).json({ message: 'order detail not found' })
       }
-      return res.json(orderDetail)
+      return res.json({
+        message: 'Get successful orderDetails',
+        data: orderDetail
+      })
     } catch (error) {
       next(error)
     }

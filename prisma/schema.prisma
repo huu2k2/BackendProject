@@ -123,6 +123,7 @@ model OrderDetail {
   product        Product   @relation(fields: [productId], references: [productId])
   productId      String    @map("product_id")
   quantity       Int
+  price          Float
   status         OrderDetailStatus
   createdAt      DateTime  @default(now()) @map("created_at")
   updatedAt      DateTime  @updatedAt @map("updated_at")

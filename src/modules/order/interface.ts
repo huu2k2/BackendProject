@@ -1,4 +1,4 @@
-import { OrderDetailStatus, OrderStatus } from '@prisma/client'
+import { OrderDetailStatus, OrderStatus, Product } from '@prisma/client'
 
 export interface IOrderMerge {
   orderMergeId: string
@@ -16,6 +16,7 @@ export interface IOrder {
 }
 
 export interface IOrderDetail {
+  price: number
   orderDetailId: string
   orderId: string
   productId: string
@@ -23,4 +24,5 @@ export interface IOrderDetail {
   status: OrderDetailStatus
   createdAt: Date
   updatedAt: Date
+  product: Product
 }

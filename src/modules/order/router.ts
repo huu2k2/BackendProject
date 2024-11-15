@@ -12,7 +12,7 @@ router.route('/merge').post(controller.createOrderMerge).get(controller.getOrder
 
 router.route('/:orderId').get(controller.getOrderById).put(controller.updateOrder)
 
-router.route('/:orderId/detail').post(controller.getOrderDetailByOrderId)
+router.route('/:orderId/detail').get(controller.getOrderDetailByOrderId)
 
 router
   .route('/detail/:orderDetailId')
