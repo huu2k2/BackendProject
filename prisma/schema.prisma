@@ -81,14 +81,15 @@ model Customer {
 
 model Notification {
   notificationId  String              @id @default(dbgenerated("(UUID())")) @map("notification_id")
+  type            Int
   content         String
   status          NotificationStatus
+  createdAt       DateTime            @default(now()) @map("created_at")
+  updatedAt       DateTime            @updatedAt @map("updated_at")
   account         Account?            @relation(fields: [accountId], references: [accountId])
   accountId       String?             @map("account_id")
   customer        Customer?           @relation(fields: [customerId], references: [customerId])
   customerId      String?             @map("customer_id")
-  createdAt       DateTime            @default(now()) @map("created_at")
-  updatedAt       DateTime            @updatedAt @map("updated_at")
 
   @@map("notifications")
 }
@@ -99,7 +100,8 @@ model Order {
   customerId    String?       @map("customer_id")
   totalAmount   Float         @map("total_amount")
   status        OrderStatus
-  orderMerges   OrderMerge[]
+  orderMerge         OrderMerge?            @relation(fields: [orderMergeId], references: [orderMergeId])
+  orderMergeId       String?             @map("order_merge_id")
   orderDetails  OrderDetail[]
   payments      Payment[]
   tableDetails  TableDetail[]
@@ -148,10 +150,10 @@ model Category {
 
 model Table {
   tableId       String        @id @default(dbgenerated("(UUID())")) @map("table_id")
-  status        TableStatus
+  name          String
   area          Area         @relation(fields: [areaId], references: [areaId])
   areaId        String       @map("area_id")
-  name          String
+  status        TableStatus
   tableDetails  TableDetail[]
 
   @@map("tables")
@@ -159,8 +161,8 @@ model Table {
 
 model Area {
   areaId        String    @id @default(dbgenerated("(UUID())")) @map("area_id")
-  total         Int
   name          String
+  total         Int
   tables        Table[]
 
   @@map("areas")
@@ -168,13 +170,13 @@ model Area {
 
 model TableDetail {
   tableDetailId  String            @id @default(dbgenerated("(UUID())")) @map("table_detail_id")
+  note           String?           
+  startTime      DateTime          @map("start_time")
+  endTime        DateTime          @map("end_time")
   table          Table             @relation(fields: [tableId], references: [tableId])
   tableId        String            @map("table_id")
   order          Order             @relation(fields: [orderId], references: [orderId])
   orderId        String            @map("order_id")
-  note           String?           
-  startTime      DateTime          @map("start_time")
-  endTime        DateTime          @map("end_time")
   createdAt      DateTime          @default(now()) @map("created_at")
   updatedAt      DateTime          @updatedAt @map("updated_at")
 
@@ -184,8 +186,7 @@ model TableDetail {
 model OrderMerge {
   orderMergeId  String    @id @default(dbgenerated("(UUID())")) @map("order_merge_id")
   createdAt     DateTime  @default(now()) @map("created_at")
-  order         Order     @relation(fields: [orderId], references: [orderId])
-  orderId       String    @map("order_id")
+  order         Order[]
 
   @@map("order_merges")
 }
