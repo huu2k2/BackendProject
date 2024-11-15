@@ -96,8 +96,8 @@ model Notification {
 
 model Order {
   orderId       String        @id @default(dbgenerated("(UUID())")) @map("order_id")
-  customer      Customer?     @relation(fields: [customerId], references: [customerId])
-  customerId    String?       @map("customer_id")
+  customer      Customer     @relation(fields: [customerId], references: [customerId])
+  customerId    String       @map("customer_id")
   totalAmount   Float         @map("total_amount")
   status        OrderStatus
   orderMerge         OrderMerge?            @relation(fields: [orderMergeId], references: [orderMergeId])
