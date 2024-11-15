@@ -12,4 +12,7 @@ router
   .put(controller.updateProduct)
   .delete(controller.deleteProduct)
 
+router.route('/category/:categoryId').get(controller.getProductByCategoryById.bind(controller))
+router.route('/rand/products').get(controller.getRandProducts.bind(controller))
+
 export default router

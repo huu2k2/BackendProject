@@ -29,11 +29,11 @@ export class ProductController {
 
   async getProductById(req: Request, res: Response, next: NextFunction): Promise<any> {
     try {
-      const product = await this.productService.getProductById(req.params.productId)
-      if (!product) {
-        return res.status(404).json({ message: 'Product not found' })
-      }
-      res.json(product)
+      const product = await this.productService.getProductById(req.params.productId, next)
+      res.status(200).json({
+        message: 'Get products success',
+        data: product
+      })
     } catch (error) {
       next(error)
     }
@@ -52,6 +52,31 @@ export class ProductController {
     try {
       await this.productService.deleteProduct(req.params.productId)
       res.status(204).send()
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  async getProductByCategoryById(req: Request, res: Response, next: NextFunction): Promise<any> {
+    try {
+      const { categoryId } = req.params
+      const products = await this.productService.getProductByCategoryById(categoryId, next)
+      res.status(200).json({
+        message: 'Get products success',
+        data: products
+      })
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  async getRandProducts(req: Request, res: Response, next: NextFunction): Promise<any> {
+    try {
+      const products = await this.productService.getRandProducts(next);
+      res.status(200).json({
+        message: 'Get products success',
+        data: products
+      })
     } catch (error) {
       next(error)
     }
