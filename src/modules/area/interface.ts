@@ -3,6 +3,7 @@ export interface ICreateArea {
 }
 
 export interface IUpdateArea {
-  code?: string
+  id?: string
   name?: string
+  total?: number
 }

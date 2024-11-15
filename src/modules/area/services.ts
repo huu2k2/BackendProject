@@ -35,8 +35,7 @@ export class AreaService {
         }
       })
     } catch (error) {
-      next(error)
-      return undefined
+      throw error
     }
   }
 
@@ -49,12 +48,11 @@ export class AreaService {
         }
       })
       if (!area) {
-        throw new Error('Area not found')
+        throw new ApiError(400, 'Area not found')
       }
       return area
     } catch (error) {
-      next(error)
-      return undefined
+      throw error
     }
   }
 
@@ -70,7 +68,7 @@ export class AreaService {
           })
 
           if (existingArea) {
-            throw new Error('Area name already exists')
+            throw new ApiError(400, 'Area name already exists')
           }
         }
 
@@ -83,8 +81,7 @@ export class AreaService {
         })
       })
     } catch (error) {
-      next(error)
-      return undefined
+      throw error
     }
   }
 
@@ -100,7 +97,7 @@ export class AreaService {
         })
 
         if (areaWithTables?.tables.length) {
-          throw new Error('Cannot delete area with existing tables')
+          throw new ApiError(400, 'Cannot delete area with existing tables')
         }
 
         const deletedArea = await tx.area.delete({
@@ -110,8 +107,7 @@ export class AreaService {
         return deletedArea ? true : false
       })
     } catch (error) {
-      next(error)
-      return undefined
+      throw error
     }
   }
 }
