@@ -6,8 +6,9 @@ const customerService = new CustomerService()
 export class CustomerController {
   async createCustomer(req: Request, res: Response, next: NextFunction): Promise<any> {
     try {
-      const table = await customerService.createCustomer(req.body, next)
-      return res.status(201).json(table)
+      const customer = await customerService.createCustomer(req.body, next)
+      console.log(req.body)
+      return res.status(201).json(customer)
     } catch (error) {
       next(error)
     }
@@ -15,8 +16,8 @@ export class CustomerController {
 
   async getCustomers(req: Request, res: Response, next: NextFunction): Promise<any> {
     try {
-      const tables = await customerService.getCustomers(next)
-      return res.json(tables)
+      const customers = await customerService.getCustomers(next)
+      return res.json(customers)
     } catch (error) {
       next(error)
     }
@@ -24,11 +25,11 @@ export class CustomerController {
 
   async getCustomerById(req: Request, res: Response, next: NextFunction): Promise<any> {
     try {
-      const table = await customerService.getCustomersById(req.params.tableId, next)
-      if (!table) {
+      const customer = await customerService.getCustomersById(req.params.customerId, next)
+      if (!customer) {
         return res.status(404).json({ message: 'Table not found' })
       }
-      return res.json(table)
+      return res.json(customer)
     } catch (error) {
       next(error)
     }
@@ -36,8 +37,8 @@ export class CustomerController {
 
   async updateCustomer(req: Request, res: Response, next: NextFunction): Promise<any> {
     try {
-      const table = await customerService.updateCustomer(req.params.tableId, req.body, next)
-      return res.json(table)
+      const customer = await customerService.updateCustomer(req.params.customerId, req.body, next)
+      return res.json(customer)
     } catch (error) {
       next(error)
     }
