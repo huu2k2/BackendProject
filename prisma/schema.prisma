@@ -105,8 +105,8 @@ model Order {
   customerId    String       @map("customer_id")
   totalAmount   Float         @map("total_amount")
   status        OrderStatus
-  orderMerge         OrderMerge?            @relation(fields: [orderMergeId], references: [orderMergeId])
-  orderMergeId       String?             @map("order_merge_id")
+  orderMerge    OrderMerge?      @relation(fields: [orderMergeId], references: [orderMergeId])
+  orderMergeId  String?          @map("order_merge_id")
   orderDetails  OrderDetail[]
   payments      Payment[]
   tableDetails  TableDetail[]

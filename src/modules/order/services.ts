@@ -55,14 +55,13 @@ export class OrderService {
   }
 
   // Order
-  async createOrder(dto: IOrder, next: NextFunction): Promise<IOrder | undefined> {
+  async createOrder(customerId: string, next: NextFunction): Promise<IOrder | undefined> {
     try {
       const newOrder = await prisma.order.create({
         data: {
-          customerId: dto.customerId,
-          totalAmount: dto.totalAmount,
-          status: OrderStatus.FAILED,
-          orderMergeId: null
+          customerId: customerId,
+          totalAmount: 0,
+          status: 'FAILED'
         }
       })
       return newOrder

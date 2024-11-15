@@ -2,8 +2,10 @@ import { PrismaClient, Table, TableStatus } from '@prisma/client'
 import { ICreateTable, TableDetail, IUpdateTable } from './interface'
 import { NextFunction } from 'express'
 import { ApiError } from '../../middleware/error.middleware'
+import { OrderService } from '../order/services'
 
 const prisma = new PrismaClient()
+const orderService = new OrderService()
 
 export class TableService {
   async createTable(dto: ICreateTable, next: NextFunction): Promise<ICreateTable | undefined> {
@@ -119,12 +121,12 @@ export class TableService {
 
   async createTableDetail(id: string, next: NextFunction): Promise<TableDetail | undefined> {
     try {
-      // call createOrder
+      let order = await orderService.createOrder('123', next)
 
       const tableDetail = await prisma.tableDetail.create({
         data: {
           tableId: id,
-          orderId: '123',
+          orderId: order!.orderId,
           startTime: new Date()
         }
       })
