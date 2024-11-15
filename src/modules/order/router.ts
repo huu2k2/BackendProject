@@ -4,10 +4,22 @@ import { OrderController } from './controller'
 const router = Router()
 const controller = new OrderController()
 
-router.route('/').post(controller.createTable).get(controller.getTables)
+router.route('/').post(controller.createOrder).get(controller.getOrders)
 
-router.route('/:tableId').get(controller.getTableById).put(controller.updateTable).delete(controller.deleteOrderDetail)
+router.route('/detail').post(controller.createOrderDetail)
 
-router.route('/:tableId/detail').post(controller.createDetail)
+router.route('/merge').post(controller.createOrderMerge).get(controller.getOrderMerges)
+
+router.route('/:orderId').get(controller.getOrderById).put(controller.updateOrder)
+
+router.route('/:orderId/detail').post(controller.getOrderDetailByOrderId)
+
+router
+  .route('/detail/:orderDetailId')
+  .post(controller.getOrderDetailById)
+  .put(controller.updateOrderDetail)
+  .delete(controller.deleteOrderDetail)
+
+router.route('/merge/:orderMergeId').get(controller.getOrderMergeById)
 
 export default router
