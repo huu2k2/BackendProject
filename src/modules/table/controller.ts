@@ -46,7 +46,20 @@ export class TableController {
   async deleteTable(req: Request, res: Response, next: NextFunction): Promise<any> {
     try {
       const table = await tableService.deleteTable(req.params.tableId, next)
-      return res.status(204).send()
+      return res.status(200).send()
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  async createDetail(req: Request, res: Response, next: NextFunction): Promise<any> {
+    try {
+      const { tableId } = req.params
+      const tableDetail = await tableService.createTableDetail(req.params.tableId, next)
+      return res.status(200).json({
+        message: 'Get category success',
+        data: tableDetail
+      })
     } catch (error) {
       next(error)
     }

@@ -1,5 +1,5 @@
 import { PrismaClient, Table, TableStatus } from '@prisma/client'
-import { ICreateTable, IUpdateTable } from './interface'
+import { ICreateTable, TableDetail, IUpdateTable } from './interface'
 import { NextFunction } from 'express'
 import { ApiError } from '../../middleware/error.middleware'
 
@@ -8,14 +8,11 @@ const prisma = new PrismaClient()
 export class TableService {
   async createTable(dto: ICreateTable, next: NextFunction): Promise<ICreateTable | undefined> {
     try {
-      // Kiểm tra xem tên bảng đã tồn tại trong cơ sở dữ liệu chưa
       const existingTable = await prisma.table.findFirst({
         where: {
           name: dto.name
         }
       })
-
-      // Nếu đã tồn tại bảng với tên này, ném lỗi
       if (existingTable) {
         throw new ApiError(400, 'Table name already exists')
       }
@@ -25,8 +22,7 @@ export class TableService {
           status: 'AVAILABLE',
           name: dto.name,
           area: {
-            // Dùng cú pháp `connect` để liên kết với bảng Area
-            connect: { areaId: dto.areaId } // Liên kết bảng `Table` với bảng `Area` qua `areaId`
+            connect: { areaId: dto.areaId }
           }
         }
       })
@@ -113,6 +109,23 @@ export class TableService {
       return true
     } catch (error) {
       throw error
+    }
+  }
+
+  async createTableDetail(id: string, next: NextFunction): Promise<TableDetail | undefined> {
+    try {
+      // call createOrder
+
+      const tableDetail = await prisma.tableDetail.create({
+        data: {
+          tableId: id,
+          orderId: '123',
+          startTime: new Date()
+        }
+      })
+      return tableDetail
+    } catch (error) {
+      next(error)
     }
   }
 }

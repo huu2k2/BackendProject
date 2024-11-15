@@ -174,9 +174,9 @@ model TableDetail {
   orderId        String            @map("order_id")
   note           String?           
   startTime      DateTime          @map("start_time")
-  endTime        DateTime          @map("end_time")
+  endTime        DateTime?         @map("end_time")
   createdAt      DateTime          @default(now()) @map("created_at")
-  updatedAt      DateTime          @updatedAt @map("updated_at")
+  updatedAt      DateTime?         @updatedAt @map("updated_at")
 
   @@map("table_details")
 }
