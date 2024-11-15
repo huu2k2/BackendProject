@@ -109,11 +109,8 @@ CREATE TABLE `categories` (
 CREATE TABLE `tables` (
     `table_id` VARCHAR(191) NOT NULL DEFAULT (UUID()),
     `status` ENUM('AVAILABLE', 'OCCUPIED') NOT NULL,
-    `start_time` DATETIME(3) NULL,
-    `end_time` DATETIME(3) NULL,
     `area_id` VARCHAR(191) NOT NULL,
     `name` VARCHAR(191) NOT NULL,
-    `qr_code` VARCHAR(191) NULL,
 
     PRIMARY KEY (`table_id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;

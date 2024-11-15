@@ -1,41 +1,63 @@
-import { NextFunction, Request, Response } from 'express';
-import { AccountService } from './services';
-import { ApiResponse } from '../../utils/response.util';
+import { NextFunction, Request, Response } from 'express'
+import { AccountService } from './services'
+import { ApiResponse } from '../../utils/response.util'
 
 export class AccountController {
-  private accountService: AccountService;
+  private accountService: AccountService
 
   constructor() {
-    this.accountService = new AccountService();
+    this.accountService = new AccountService()
   }
 
-  createAccount = async (req: Request, res: Response ,next: NextFunction): Promise<any> => {
-       const result = await this.accountService.createAccount(req.body,next);
-       return ApiResponse.created(res,result as string);
-  };
+  createAccount = async (req: Request, res: Response, next: NextFunction): Promise<any> => {
+    try {
+      const result = await this.accountService.createAccount(req.body, next)
+      return res.status(201).json({
+        message: 'Account created successfully',
+        data: result
+      })
+    } catch (error) {
+      next(error)
+    }
+  }
 
-   getAccounts = async (req: Request, res: Response ,next: NextFunction): Promise<any> => {
-      const result = await this.accountService.getAccounts(next);
-      return ApiResponse.success(res,result);
-  };
+  getAccounts = async (req: Request, res: Response, next: NextFunction): Promise<any> => {
+    try {
+      const result = await this.accountService.getAccounts(next)
+      return res.status(200).json({
+        message: 'Get all account',
+        data: result
+      })
+    } catch (error) {
+      next(error)
+    }
+  }
 
-   getAccountById = async (req: Request, res: Response ,next: NextFunction): Promise<any> => {
-      const { id } = req.params;
-      const result = await this.accountService.getAccountById(id,next);  
-      return ApiResponse.success(res,result);
-  };
+  getAccountById = async (req: Request, res: Response, next: NextFunction): Promise<any> => {
+    try {
+      const { accountId } = req.params
+      const result = await this.accountService.getAccountById(accountId, next)
+      return res.status(200).json({
+        message: 'Get account',
+        data: result
+      })
+    } catch (error) {
+      next(error)
+    }
+  }
 
-   updateAccount = async (req: Request, res: Response , next: NextFunction): Promise<any> => {
-      const { id } = req.params;
-      const result = await this.accountService.updateAccount(id, req.body,next);
-      return ApiResponse.created(res,result && 'Update account success');
-  };
-
-   deleteAccount = async (req: Request, res: Response, next: NextFunction): Promise<any> => {
-      const { id } = req.params;
-      const result = await this.accountService.deleteAccount(id ,next);
-      return ApiResponse.created(res,result && 'Delete account success');
-  };
+  updateAccount = async (req: Request, res: Response, next: NextFunction): Promise<any> => {
+    try {
+      const { accountId } = req.params
+      const result = await this.accountService.updateAccount(accountId, req.body, next)
+      return res.status(200).json({
+        message: 'Update account success',
+        data: result
+      })
+    } catch (error) {
+      next(error)
+    }
+  }
 }
 
-export const accountController = new AccountController();
+export const accountController = new AccountController()

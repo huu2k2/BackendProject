@@ -1,9 +1,9 @@
 export interface ICreateArea {
-  code: string;
-  name: string;
+  name: string
 }
 
 export interface IUpdateArea {
-  code?: string;
-  name?: string;
+  id?: string
+  name?: string
+  total?: number
 }
