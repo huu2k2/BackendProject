@@ -1,8 +1,8 @@
-import { PrismaClient, TableStatus, OrderStatus, NotificationStatus, OrderDetailStatus } from '@prisma/client';
-import { faker } from '@faker-js/faker';
-import * as bcrypt from 'bcrypt';
+import { PrismaClient, TableStatus, OrderStatus, NotificationStatus, OrderDetailStatus } from '@prisma/client'
+import { faker } from '@faker-js/faker'
+import * as bcrypt from 'bcrypt'
 
-const prisma = new PrismaClient();
+const prisma = new PrismaClient()
 
 async function main() {
   // Clear existing data
@@ -20,20 +20,15 @@ async function main() {
     prisma.customer.deleteMany(),
     prisma.profile.deleteMany(),
     prisma.account.deleteMany(),
-    prisma.role.deleteMany(),
-  ]);
+    prisma.role.deleteMany()
+  ])
 
   // Create Roles
   const roles = await prisma.role.createMany({
-    data: [
-      { name: 'ADMIN' },
-      { name: 'MANAGER' },
-      { name: 'STAFF' },
-      { name: 'CASHIER' }
-    ]
-  });
+    data: [{ name: 'ADMIN' }, { name: 'MANAGER' }, { name: 'STAFF' }, { name: 'CASHIER' }]
+  })
 
-  const roleIds = await prisma.role.findMany().then(roles => roles.map(r => r.roleId));
+  const roleIds = await prisma.role.findMany().then((roles) => roles.map((r) => r.roleId))
 
   // Create 30 Accounts with Profiles
   for (let i = 0; i < 30; i++) {
@@ -48,23 +43,25 @@ async function main() {
             lastName: faker.person.lastName(),
             address: faker.location.streetAddress(),
             phoneNumber: `+84${faker.string.numeric(9)}`,
-            cccd: faker.number.int({ min: 100000000000, max: 999999999999 }).toString(),
+            cccd: faker.number.int({ min: 100000000000, max: 999999999999 }).toString()
           }
         }
       }
-    });
+    })
   }
 
   // Create 30 Categories
   const categories = await Promise.all(
-    Array(30).fill(null).map(() =>
-      prisma.category.create({
-        data: {
-          name: faker.food.fruit()
-        }
-      })
-    )
-  );
+    Array(30)
+      .fill(null)
+      .map(() =>
+        prisma.category.create({
+          data: {
+            name: faker.food.fruit()
+          }
+        })
+      )
+  )
 
   // Create 30 Products
   for (let i = 0; i < 30; i++) {
@@ -72,57 +69,60 @@ async function main() {
       data: {
         name: faker.commerce.productName(),
         description: faker.commerce.productDescription(),
-        image: "https://res.cloudinary.com/duoqtvvff/image/upload/v1722355413/upload_image/wtlgef0wdfl5j8zkntjd.jpg",
-        imagePublicId: "upload_image/wtlgef0wdfl5j8zkntjd",
+        image: 'https://res.cloudinary.com/duoqtvvff/image/upload/v1722355413/upload_image/wtlgef0wdfl5j8zkntjd.jpg',
+        imagePublicId: 'upload_image/wtlgef0wdfl5j8zkntjd',
         price: parseFloat(faker.commerce.price()),
         categoryId: categories[Math.floor(Math.random() * categories.length)].categoryId
       }
-    });
+    })
   }
 
   // Create 30 Areas
   const areas = await Promise.all(
-    Array(30).fill(null).map((_, index) =>
-      prisma.area.create({
-        data: {
-          name: `Area ${index + 1}`,
-          total: faker.number.int({ min: 5, max: 20 })
-        }
-      })
-    )
-  );
+    Array(30)
+      .fill(null)
+      .map((_, index) =>
+        prisma.area.create({
+          data: {
+            name: `Area ${index + 1}`,
+            total: faker.number.int({ min: 5, max: 20 })
+          }
+        })
+      )
+  )
 
   // Create 30 Tables
   const tables = await Promise.all(
-    Array(30).fill(null).map((_, index) =>
-      prisma.table.create({
-        data: {
-          name: `Table ${index + 1}`,
-          status: faker.helpers.arrayElement(Object.values(TableStatus)),
-          areaId: areas[Math.floor(Math.random() * areas.length)].areaId,
-          startTime: faker.date.past(),
-          endTime: faker.date.future(),
-          qrCode: faker.string.uuid()
-        }
-      })
-    )
-  );
+    Array(30)
+      .fill(null)
+      .map((_, index) =>
+        prisma.table.create({
+          data: {
+            name: `Table ${index + 1}`,
+            status: faker.helpers.arrayElement(Object.values(TableStatus)),
+            areaId: areas[Math.floor(Math.random() * areas.length)].areaId
+          }
+        })
+      )
+  )
 
   // Create 30 Customers
   const customers = await Promise.all(
-    Array(30).fill(null).map(() =>
-      prisma.customer.create({
-        data: {
-          name: faker.person.fullName(),
-          phoneNumber: `+84${faker.string.numeric(9)}`
-        }
-      })
-    )
-  );
+    Array(30)
+      .fill(null)
+      .map(() =>
+        prisma.customer.create({
+          data: {
+            name: faker.person.fullName(),
+            phoneNumber: `+84${faker.string.numeric(9)}`
+          }
+        })
+      )
+  )
 
   // Create 30 Orders with OrderDetails, TableDetails, and Payments
-  const products = await prisma.product.findMany();
-  
+  const products = await prisma.product.findMany()
+
   for (let i = 0; i < 30; i++) {
     const order = await prisma.order.create({
       data: {
@@ -130,14 +130,16 @@ async function main() {
         status: faker.helpers.arrayElement(Object.values(OrderStatus)),
         totalAmount: faker.number.float({ min: 100000, max: 1000000 }),
         orderDetails: {
-          create: Array(3).fill(null).map(() => {
-            const product = products[Math.floor(Math.random() * products.length)];
-            return {
-              productId: product.productId,
-              quantity: faker.number.int({ min: 1, max: 5 }),
-              status: faker.helpers.arrayElement(Object.values(OrderDetailStatus))
-            };
-          })
+          create: Array(3)
+            .fill(null)
+            .map(() => {
+              const product = products[Math.floor(Math.random() * products.length)]
+              return {
+                productId: product.productId,
+                quantity: faker.number.int({ min: 1, max: 5 }),
+                status: faker.helpers.arrayElement(Object.values(OrderDetailStatus))
+              }
+            })
         },
         tableDetails: {
           create: {
@@ -159,31 +161,33 @@ async function main() {
           }
         }
       }
-    });
+    })
   }
 
   // Create 30 Notifications
-  const accounts = await prisma.account.findMany();
-  
+  const accounts = await prisma.account.findMany()
+
   await Promise.all(
-    Array(30).fill(null).map(() =>
-      prisma.notification.create({
-        data: {
-          content: faker.lorem.sentence(),
-          status: faker.helpers.arrayElement(Object.values(NotificationStatus)),
-          accountId: accounts[Math.floor(Math.random() * accounts.length)].accountId,
-          customerId: customers[Math.floor(Math.random() * customers.length)].customerId
-        }
-      })
-    )
-  );
+    Array(30)
+      .fill(null)
+      .map(() =>
+        prisma.notification.create({
+          data: {
+            content: faker.lorem.sentence(),
+            status: faker.helpers.arrayElement(Object.values(NotificationStatus)),
+            accountId: accounts[Math.floor(Math.random() * accounts.length)].accountId,
+            customerId: customers[Math.floor(Math.random() * customers.length)].customerId
+          }
+        })
+      )
+  )
 }
 
 main()
   .catch((e) => {
-    console.error(e);
-    process.exit(1);
+    console.error(e)
+    process.exit(1)
   })
   .finally(async () => {
-    await prisma.$disconnect();
-  });
+    await prisma.$disconnect()
+  })
