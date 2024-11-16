@@ -5,7 +5,7 @@ const router = Router()
 const controller = new ProductController()
 
 router.route('/').post(controller.createProduct).get(controller.getProducts)
-
+ 
 router
   .route('/:productId')
   .get(controller.getProductById.bind(controller))
