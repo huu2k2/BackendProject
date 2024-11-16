@@ -117,6 +117,7 @@ export class OrderService {
         where: { orderId: orderId },
         data: dto
       })
+      console.log(updateOrder)
       if (!updateOrder) {
         throw new ApiError(400, 'Failed to update table')
       }

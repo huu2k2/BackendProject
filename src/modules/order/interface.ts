@@ -22,7 +22,6 @@ export interface IOrderDetail {
   productId: string
   quantity: number
   status: OrderDetailStatus
-  createdAt?: Date
-  updatedAt?: Date
-  product: Product
+  createdAt: Date
+  updatedAt: Date | null
 }

@@ -31,7 +31,25 @@ export class TableController {
       if (!table) {
         return res.status(404).json({ message: 'Table not found' })
       }
-      return res.json(table)
+      return res.json({
+        message: 'get all table',
+        data: table
+      })
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  async getTableDetailToMergeByTableId(req: Request, res: Response, next: NextFunction): Promise<any> {
+    try {
+      const table = await tableService.getTableDetailToMergeByTableId(req.params.tableId, next)
+      if (!table) {
+        return res.status(404).json({ message: 'Table not found' })
+      }
+      return res.json({
+        message: 'get table detail to merge',
+        data: table
+      })
     } catch (error) {
       next(error)
     }
@@ -57,11 +75,10 @@ export class TableController {
 
   async createDetail(req: Request, res: Response, next: NextFunction): Promise<any> {
     try {
-      const { tableId } = req.params
-      const tableDetail = await tableService.createTableDetail(req.params.tableId, next)
+      const result = await tableService.createTableDetail(req.params.tableId, next)
       return res.status(200).json({
         message: 'create detail success',
-        data: tableDetail
+        data: result
       })
     } catch (error) {
       next(error)
@@ -85,7 +102,6 @@ export class TableController {
     try {
       const { id } = req.params
       const order = await tableService.getOrderByTableDetailId(id, next)
-      console.log(order)
       return res.status(200).json({
         message: 'get successful tables',
         data: order

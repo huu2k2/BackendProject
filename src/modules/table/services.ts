@@ -3,6 +3,7 @@ import { ICreateTable, TableDetail, IUpdateTable } from './interface'
 import { NextFunction } from 'express'
 import { ApiError } from '../../middleware/error.middleware'
 import { OrderService } from '../order/services'
+import { IOrder } from '../order/interface'
 
 const prisma = new PrismaClient()
 const orderService = new OrderService()
@@ -119,27 +120,53 @@ export class TableService {
     }
   }
 
-  async createTableDetail(id: string, next: NextFunction): Promise<TableDetail | undefined> {
+  async createTableDetail(
+    tableId: string,
+    next: NextFunction
+  ): Promise<{ order: IOrder; tableDetail: TableDetail } | undefined> {
     try {
+      // Change customer id here
       let order = await orderService.createOrder('17ae36f6-a3ce-11ef-a569-0242ac120002', next)
+
+      if (order == null) {
+        throw new ApiError(400, 'Failed to create order table')
+      }
 
       const tableDetail = await prisma.tableDetail.create({
         data: {
-          tableId: id,
+          tableId: tableId,
           orderId: order!.orderId,
           startTime: new Date()
         }
       })
 
       await prisma.table.update({
-        where: { tableId: id },
+        where: { tableId: tableId },
         data: {
           status: 'OCCUPIED'
         }
       })
-      return tableDetail
+
+      return { order, tableDetail }
     } catch (error) {
-      next(error)
+      throw error
+    }
+  }
+
+  async getTableDetailToMergeByTableId(tableId: string, next: NextFunction): Promise<TableDetail | undefined> {
+    try {
+      const tableDetail = await prisma.tableDetail.findMany({
+        where: {
+          tableId: tableId,
+          endTime: null
+        },
+        include: {
+          order: true
+        }
+      })
+      return tableDetail[0]
+    } catch (error) {
+      throw error
     }
   }
 
@@ -173,7 +200,7 @@ export class TableService {
 
       return ressult
     } catch (error) {
-      next(error)
+      throw error
     }
   }
 
@@ -195,7 +222,7 @@ export class TableService {
       })
       return ressult?.order
     } catch (error) {
-      next(error)
+      throw error
     }
   }
 }

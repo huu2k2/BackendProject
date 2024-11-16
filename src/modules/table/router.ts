@@ -1,31 +1,19 @@
-import { Router } from 'express';
-import { TableController } from './controller';
- 
+import { Router } from 'express'
+import { TableController } from './controller'
 
-const router = Router();
-const controller = new TableController();
- 
-router
-  .route('/')
-  .post(controller.createTable)
-  .get(controller.getTables);
+const router = Router()
+const controller = new TableController()
 
-  router
-  .route('/area/:areaId')
-  .get(controller.getTablesByAreaId);
+router.route('/').post(controller.createTable).get(controller.getTables)
 
-router
-  .route('/:tableId')
-  .get(controller.getTableById)
-  .put(controller.updateTable)
-  .delete(controller.deleteTable);
+router.route('/area/:areaId').get(controller.getTablesByAreaId)
 
-router
-  .route('/:tableId/detail')
-  .post(controller.createDetail)
+router.route('/:tableId').get(controller.getTableById).put(controller.updateTable).delete(controller.deleteTable)
 
-  router
-  .route('/detail/:id/order')
-  .get(controller.getOrderByTableDetailId)
+router.route('/merge/:tableId').get(controller.getTableDetailToMergeByTableId)
 
-export default router;
+router.route('/:tableId/detail').post(controller.createDetail)
+
+router.route('/detail/:id/order').get(controller.getOrderByTableDetailId)
+
+export default router
