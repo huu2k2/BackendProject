@@ -1,6 +1,7 @@
-import { PrismaClient } from '@prisma/client'
+import { PrismaClient, Product } from '@prisma/client'
 import { CreateProductDto, UpdateProductDto, ProductQuery } from './dto'
 import { createImage } from '../../config/cloudinaryConfig'
+import { NextFunction } from 'express'
 
 const prisma = new PrismaClient()
 
@@ -37,7 +38,7 @@ export class ProductService {
     }
     return products
   }
-
+ 
   async getProductById(productId: string) {
     return await prisma.product.findUnique({
       where: { productId },
@@ -45,6 +46,22 @@ export class ProductService {
         category: true
       }
     })
+  }
+
+  async getRandProducts(next: NextFunction): Promise<Product[] | undefined> {
+    try {
+      const products = await prisma.product.findMany({
+        take: 10,
+        orderBy: {
+          productId: 'asc'
+        }
+      })
+      const shuffled = products.sort(() => 0.5 - Math.random())
+      return shuffled.slice(0, 10)
+      return products
+    } catch (error) {
+      next(error)
+    }
   }
 
   async updateProduct(productId: string, dto: UpdateProductDto) {
@@ -62,5 +79,21 @@ export class ProductService {
       where: { productId },
       data: { isActive: false }
     })
+  }
+
+  async getProductByCategoryById(categoryId: string, next: NextFunction): Promise<Product[] | undefined> {
+    try {
+      let products = []
+      if (categoryId == 'all') {
+        products = await prisma.product.findMany()
+      } else {
+        products = await prisma.product.findMany({
+          where: { categoryId: categoryId }
+        })
+      }
+      return products
+    } catch (error) {
+      next(error)
+    }
   }
 }

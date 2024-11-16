@@ -48,12 +48,13 @@ CREATE TABLE `customers` (
 -- CreateTable
 CREATE TABLE `notifications` (
     `notification_id` VARCHAR(191) NOT NULL DEFAULT (UUID()),
+    `type` INTEGER NOT NULL,
     `content` VARCHAR(191) NOT NULL,
     `status` ENUM('UNREAD', 'READ') NOT NULL,
-    `account_id` VARCHAR(191) NULL,
-    `customer_id` VARCHAR(191) NULL,
     `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updated_at` DATETIME(3) NOT NULL,
+    `account_id` VARCHAR(191) NULL,
+    `customer_id` VARCHAR(191) NULL,
 
     PRIMARY KEY (`notification_id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -61,9 +62,10 @@ CREATE TABLE `notifications` (
 -- CreateTable
 CREATE TABLE `orders` (
     `order_id` VARCHAR(191) NOT NULL DEFAULT (UUID()),
-    `customer_id` VARCHAR(191) NULL,
+    `customer_id` VARCHAR(191) NOT NULL,
     `total_amount` DOUBLE NOT NULL,
     `status` ENUM('SUCCESS', 'FAILED') NOT NULL,
+    `order_merge_id` VARCHAR(191) NULL,
     `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updated_at` DATETIME(3) NOT NULL,
 
@@ -76,9 +78,10 @@ CREATE TABLE `order_details` (
     `order_id` VARCHAR(191) NOT NULL,
     `product_id` VARCHAR(191) NOT NULL,
     `quantity` INTEGER NOT NULL,
+    `price` DOUBLE NOT NULL,
     `status` ENUM('PENDING', 'CONFIRMED', 'COMPLETED', 'CANCELED') NOT NULL,
     `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
-    `updated_at` DATETIME(3) NOT NULL,
+    `updated_at` DATETIME(3) NULL,
 
     PRIMARY KEY (`order_detail_id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -108,12 +111,9 @@ CREATE TABLE `categories` (
 -- CreateTable
 CREATE TABLE `tables` (
     `table_id` VARCHAR(191) NOT NULL DEFAULT (UUID()),
-    `status` ENUM('AVAILABLE', 'OCCUPIED') NOT NULL,
-    `start_time` DATETIME(3) NULL,
-    `end_time` DATETIME(3) NULL,
-    `area_id` VARCHAR(191) NOT NULL,
     `name` VARCHAR(191) NOT NULL,
-    `qr_code` VARCHAR(191) NULL,
+    `area_id` VARCHAR(191) NOT NULL,
+    `status` ENUM('AVAILABLE', 'OCCUPIED') NOT NULL,
 
     PRIMARY KEY (`table_id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -121,8 +121,8 @@ CREATE TABLE `tables` (
 -- CreateTable
 CREATE TABLE `areas` (
     `area_id` VARCHAR(191) NOT NULL DEFAULT (UUID()),
-    `total` INTEGER NOT NULL,
     `name` VARCHAR(191) NOT NULL,
+    `total` INTEGER NOT NULL,
 
     PRIMARY KEY (`area_id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -130,13 +130,13 @@ CREATE TABLE `areas` (
 -- CreateTable
 CREATE TABLE `table_details` (
     `table_detail_id` VARCHAR(191) NOT NULL DEFAULT (UUID()),
-    `table_id` VARCHAR(191) NOT NULL,
-    `order_id` VARCHAR(191) NOT NULL,
     `note` VARCHAR(191) NULL,
     `start_time` DATETIME(3) NOT NULL,
-    `end_time` DATETIME(3) NOT NULL,
+    `end_time` DATETIME(3) NULL,
+    `table_id` VARCHAR(191) NOT NULL,
+    `order_id` VARCHAR(191) NOT NULL,
     `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
-    `updated_at` DATETIME(3) NOT NULL,
+    `updated_at` DATETIME(3) NULL,
 
     PRIMARY KEY (`table_detail_id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -145,7 +145,6 @@ CREATE TABLE `table_details` (
 CREATE TABLE `order_merges` (
     `order_merge_id` VARCHAR(191) NOT NULL DEFAULT (UUID()),
     `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
-    `order_id` VARCHAR(191) NOT NULL,
 
     PRIMARY KEY (`order_merge_id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -156,6 +155,7 @@ CREATE TABLE `payments` (
     `order_id` VARCHAR(191) NOT NULL,
     `amount` DOUBLE NOT NULL,
     `method` VARCHAR(191) NOT NULL,
+    `status` ENUM('WAIT', 'FINISH') NOT NULL,
     `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
 
     PRIMARY KEY (`payment_id`)
@@ -174,7 +174,10 @@ ALTER TABLE `notifications` ADD CONSTRAINT `notifications_account_id_fkey` FOREI
 ALTER TABLE `notifications` ADD CONSTRAINT `notifications_customer_id_fkey` FOREIGN KEY (`customer_id`) REFERENCES `customers`(`customer_id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `orders` ADD CONSTRAINT `orders_customer_id_fkey` FOREIGN KEY (`customer_id`) REFERENCES `customers`(`customer_id`) ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE `orders` ADD CONSTRAINT `orders_customer_id_fkey` FOREIGN KEY (`customer_id`) REFERENCES `customers`(`customer_id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `orders` ADD CONSTRAINT `orders_order_merge_id_fkey` FOREIGN KEY (`order_merge_id`) REFERENCES `order_merges`(`order_merge_id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `order_details` ADD CONSTRAINT `order_details_order_id_fkey` FOREIGN KEY (`order_id`) REFERENCES `orders`(`order_id`) ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -193,9 +196,6 @@ ALTER TABLE `table_details` ADD CONSTRAINT `table_details_table_id_fkey` FOREIGN
 
 -- AddForeignKey
 ALTER TABLE `table_details` ADD CONSTRAINT `table_details_order_id_fkey` FOREIGN KEY (`order_id`) REFERENCES `orders`(`order_id`) ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE `order_merges` ADD CONSTRAINT `order_merges_order_id_fkey` FOREIGN KEY (`order_id`) REFERENCES `orders`(`order_id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `payments` ADD CONSTRAINT `payments_order_id_fkey` FOREIGN KEY (`order_id`) REFERENCES `orders`(`order_id`) ON DELETE RESTRICT ON UPDATE CASCADE;

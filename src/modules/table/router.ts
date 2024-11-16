@@ -5,8 +5,6 @@ import { TableController } from './controller';
 const router = Router();
 const controller = new TableController();
  
-
-// Routes với middleware
 router
   .route('/')
   .post(controller.createTable)
@@ -17,5 +15,9 @@ router
   .get(controller.getTableById)
   .put(controller.updateTable)
   .delete(controller.deleteTable);
+
+router
+  .route('/:tableId/detail')
+  .post(controller.createDetail)
 
 export default router;

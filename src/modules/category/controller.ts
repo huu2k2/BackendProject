@@ -5,31 +5,58 @@ const service = new Service()
 
 export class Controller {
   async create(req: Request, res: Response, next: NextFunction): Promise<any> {
-    const table = await service.create(req.body, next)
-    return res.status(201).json(table)
+    const category = await service.create(req.body, next)
+    return res.status(201).json({
+      message: 'Create success',
+      data: category
+    })
   }
 
   async getAll(req: Request, res: Response, next: NextFunction): Promise<any> {
-    const tables = await service.getAll(next)
-    return res.json(tables)
+    try {
+      const category = await service.getAll(next)
+      return res.status(200).json({
+        message: 'Get all category success',
+        data: category
+      })
+    } catch (error) {
+      next(error)
+    }
   }
 
   async getById(req: Request, res: Response, next: NextFunction): Promise<any> {
-    console.log(req.params.categoryId)
-    const table = await service.getById(req.params.categoryId, next)
-    if (!table) {
-      return res.status(404).json({ message: 'Table not found' })
+    try {
+      const category = await service.getById(req.params.categoryId, next)
+      return res.status(200).json({
+        message: 'Get category success',
+        data: category
+      })
+    } catch (error) {
+      next(error)
     }
-    return res.json(table)
   }
 
   async update(req: Request, res: Response, next: NextFunction): Promise<any> {
-    const table = await service.update(req.params.categoryId, req.body, next)
-    return res.json(table)
+    try {
+      const category = await service.update(req.params.categoryId, req.body, next)
+      return res.status(200).json({
+        message: 'Update category success',
+        data: category
+      })
+    } catch (error) {
+      next(error)
+    }
   }
 
   async delete(req: Request, res: Response, next: NextFunction): Promise<any> {
-    const table = await service.delete(req.params.categoryId, next)
-    return res.status(204).send()
+    try {
+      const category = await service.delete(req.params.categoryId, next)
+      return res.status(200).json({
+        message: 'delete category success',
+        data: category
+      })
+    } catch (error) {
+      next(error)
+    }
   }
 }
