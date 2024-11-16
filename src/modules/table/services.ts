@@ -121,7 +121,7 @@ export class TableService {
 
   async createTableDetail(id: string, next: NextFunction): Promise<TableDetail | undefined> {
     try {
-      let order = await orderService.createOrder('123', next)
+      let order = await orderService.createOrder('17ae36f6-a3ce-11ef-a569-0242ac120002', next)
 
       const tableDetail = await prisma.tableDetail.create({
         data: {

@@ -6,7 +6,7 @@ import { ApiError } from '../../middleware/error.middleware'
 const prisma = new PrismaClient()
 
 export class CustomerService {
-  async createCustomer(dto: ICustomer, next: NextFunction): Promise<ICustomer | undefined> {
+  async createCustomer(dto: ICustomer, next: NextFunction): Promise<ICustomer | { message: string; data: ICustomer }> {
     try {
       // Kiểm tra xem tên bảng đã tồn tại trong cơ sở dữ liệu chưa
       const existingCustomer = await prisma.customer.findFirst({
@@ -18,7 +18,10 @@ export class CustomerService {
       // Nếu đã tồn tại bảng với tên này, ném lỗi
       if (existingCustomer) {
         // Chuyển sang đăng nhập
-        throw new ApiError(400, 'Name or phoneNumber already exists')
+        return {
+          message: 'Name or phoneNumber already exists. Please login instead.',
+          data: existingCustomer
+        }
       }
 
       const newCustomer = await prisma.customer.create({
