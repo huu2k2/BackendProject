@@ -15,7 +15,7 @@ export class ProductController {
 
   async getProducts(req: Request, res: Response, next: NextFunction): Promise<any> {
     try {
-      const query:ProductQuery = req.query
+      const query: ProductQuery = req.query
       const products = await productService.getProducts(query)
       return res.json(products)
     } catch (error) {

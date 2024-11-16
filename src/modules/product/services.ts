@@ -7,24 +7,21 @@ const prisma = new PrismaClient()
 export class ProductService {
   async createProduct(dto: CreateProductDto) {
     const { image, ...rest } = dto
+    console.log(dto)
     const { url, publicId } = await createImage(image)
-    return await prisma.product.create({
-      data: { ...rest, image: url, imagePublicId: publicId },
-      include: {
-        category: true
-      }
+    const rs = await prisma.product.create({
+      data: { ...rest, image: url, imagePublicId: publicId }
     })
+    if (!rs) throw new Error('Can not create product')
+    return rs
   }
 
   async getProducts(query: ProductQuery) {
     const where = {
       ...(query.categoryId && { categoryId: query.categoryId }),
-      ...(query.isActive !== undefined && { isActive: query.isActive === "true"  }),
+      ...(query.isActive !== undefined && { isActive: query.isActive === 'true' }),
       ...(query.search && {
-        OR: [
-          { name: { contains: query.search } },
-          { description: { contains: query.search } }
-        ]
+        name: { contains: query.search }
       })
     }
 
@@ -32,11 +29,11 @@ export class ProductService {
       where,
       include: {
         category: true
-      },
+      }
     })
 
     if (products.length === 0) {
-      throw new Error('No products found')
+      return []
     }
     return products
   }
