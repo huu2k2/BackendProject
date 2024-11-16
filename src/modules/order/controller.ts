@@ -7,7 +7,7 @@ export class OrderController {
   async createOrderMerge(req: Request, res: Response, next: NextFunction): Promise<any> {
     try {
       const orderMerge = await orderService.createOrderMerge(req.body, next)
-      return res.status(201).json(orderMerge)
+      return res.status(201).json({ message: 'create successful', data: orderMerge })
     } catch (error) {
       next(error)
     }
@@ -19,7 +19,7 @@ export class OrderController {
       if (!orderMerge) {
         return res.status(404).json({ message: 'OrderMerge not found' })
       }
-      return res.json(orderMerge)
+      return res.json({ message: 'get successful', data: orderMerge })
     } catch (error) {
       next(error)
     }
@@ -28,7 +28,7 @@ export class OrderController {
   async getOrderMerges(req: Request, res: Response, next: NextFunction): Promise<any> {
     try {
       const orderMerges = await orderService.getOrderMerges(next)
-      return res.json(orderMerges)
+      return res.json({ message: 'get successful', data: orderMerges })
     } catch (error) {
       next(error)
     }
@@ -50,7 +50,7 @@ export class OrderController {
       if (!order) {
         return res.status(404).json({ message: 'Order not found' })
       }
-      return res.json(order)
+      return res.json({ message: 'get successful', data: order })
     } catch (error) {
       next(error)
     }
@@ -59,7 +59,7 @@ export class OrderController {
   async getOrders(req: Request, res: Response, next: NextFunction): Promise<any> {
     try {
       const orders = await orderService.getOrders(next)
-      return res.json(orders)
+      return res.json({ message: 'get successful', data: orders })
     } catch (error) {
       next(error)
     }
@@ -68,7 +68,7 @@ export class OrderController {
   async updateOrder(req: Request, res: Response, next: NextFunction): Promise<any> {
     try {
       const order = await orderService.updateOrder(req.params.orderId, req.body, next)
-      return res.json(order)
+      return res.json({ message: 'update successful', data: order })
     } catch (error) {
       next(error)
     }
@@ -78,7 +78,7 @@ export class OrderController {
   async createOrderDetail(req: Request, res: Response, next: NextFunction): Promise<any> {
     try {
       const orderDetail = await orderService.createOrderDetail(req.body, next)
-      return res.status(201).json(orderDetail)
+      return res.status(201).json({ message: 'create successful', data: orderDetail })
     } catch (error) {
       next(error)
     }
@@ -90,7 +90,7 @@ export class OrderController {
       if (!orderDetail) {
         return res.status(404).json({ message: 'order detail not found' })
       }
-      return res.json(orderDetail)
+      return res.json({ message: 'get successful', data: orderDetail })
     } catch (error) {
       next(error)
     }
@@ -114,7 +114,7 @@ export class OrderController {
   async updateOrderDetail(req: Request, res: Response, next: NextFunction): Promise<any> {
     try {
       const orderDetail = await orderService.updateOrderDetail(req.params.orderDetailId, req.body, next)
-      return res.json(orderDetail)
+      return res.json({ message: 'update successful', data: orderDetail })
     } catch (error) {
       next(error)
     }
