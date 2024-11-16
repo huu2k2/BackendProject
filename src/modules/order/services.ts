@@ -127,17 +127,21 @@ export class OrderService {
   }
 
   // Order detail
-  async createOrderDetail(dto: IOrderDetail, next: NextFunction): Promise<IOrderDetail | undefined> {
+  async createOrderDetail(dto: IOrderDetail[], next: NextFunction): Promise<IOrderDetail[] | undefined> {
     try {
-      const newOrderDetail = await prisma.orderDetail.create({
-        data: {
-          orderId: dto.orderId,
-          productId: dto.productId,
-          quantity: dto.quantity,
-          status: OrderDetailStatus.PENDING
+      const newOrderDetail = await prisma.orderDetail.createMany({
+        data: dto
+      })
+      const createdOrderDetails = await prisma.orderDetail.findMany({
+        where: {
+          OR: dto.map((item) => ({
+            orderId: item.orderId,
+            productId: item.productId,
+            status: 'PENDING'
+          }))
         }
       })
-      return newOrderDetail
+      return createdOrderDetails
     } catch (error) {
       next(error)
     }

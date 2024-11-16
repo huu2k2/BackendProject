@@ -78,7 +78,10 @@ export class OrderController {
   async createOrderDetail(req: Request, res: Response, next: NextFunction): Promise<any> {
     try {
       const orderDetail = await orderService.createOrderDetail(req.body, next)
-      return res.status(201).json(orderDetail)
+      return res.status(201).json({
+        message: 'Create successful orderDetails',
+        data: orderDetail
+      })
     } catch (error) {
       next(error)
     }
