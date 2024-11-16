@@ -1,7 +1,8 @@
 import { PrismaClient } from '@prisma/client'
 import { CreateProductDto, UpdateProductDto, ProductQuery } from './dto'
-import { prisma } from '../.././prismaClient'
 import { createImage } from '../../config/cloudinaryConfig'
+
+const prisma = new PrismaClient()
 
 export class ProductService {
   async createProduct(dto: CreateProductDto) {
@@ -18,18 +19,26 @@ export class ProductService {
   async getProducts(query: ProductQuery) {
     const where = {
       ...(query.categoryId && { categoryId: query.categoryId }),
-      ...(query.isActive !== undefined && { isActive: query.isActive }),
+      ...(query.isActive !== undefined && { isActive: query.isActive === "true"  }),
       ...(query.search && {
-        OR: [{ name: { contains: query.search } }, { description: { contains: query.search } }]
+        OR: [
+          { name: { contains: query.search } },
+          { description: { contains: query.search } }
+        ]
       })
     }
 
-    return await prisma.product.findMany({
+    const products = await prisma.product.findMany({
       where,
       include: {
         category: true
-      }
+      },
     })
+
+    if (products.length === 0) {
+      throw new Error('No products found')
+    }
+    return products
   }
 
   async getProductById(productId: string) {
