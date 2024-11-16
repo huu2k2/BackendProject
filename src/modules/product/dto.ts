@@ -18,6 +18,6 @@ export interface UpdateProductDto {
 
 export interface ProductQuery {
   categoryId?: string;
-  isActive?: boolean;
+  isActive?: string;
   search?: string;
 }

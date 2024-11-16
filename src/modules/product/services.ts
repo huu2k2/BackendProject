@@ -1,41 +1,47 @@
 import { PrismaClient, Product } from '@prisma/client'
 import { CreateProductDto, UpdateProductDto, ProductQuery } from './dto'
-import { prisma } from '../.././prismaClient'
 import { createImage } from '../../config/cloudinaryConfig'
 import { NextFunction } from 'express'
+
+const prisma = new PrismaClient()
 
 export class ProductService {
   async createProduct(dto: CreateProductDto) {
     const { image, ...rest } = dto
+    console.log(dto)
     const { url, publicId } = await createImage(image)
-    return await prisma.product.create({
-      data: { ...rest, image: url, imagePublicId: publicId },
-      include: {
-        category: true
-      }
+    const rs = await prisma.product.create({
+      data: { ...rest, image: url, imagePublicId: publicId }
     })
+    if (!rs) throw new Error('Can not create product')
+    return rs
   }
 
   async getProducts(query: ProductQuery) {
     const where = {
       ...(query.categoryId && { categoryId: query.categoryId }),
-      ...(query.isActive !== undefined && { isActive: query.isActive }),
+      ...(query.isActive !== undefined && { isActive: query.isActive === 'true' }),
       ...(query.search && {
-        OR: [{ name: { contains: query.search } }, { description: { contains: query.search } }]
+        name: { contains: query.search }
       })
     }
 
-    return await prisma.product.findMany({
+    const products = await prisma.product.findMany({
       where,
       include: {
         category: true
       }
     })
+
+    if (products.length === 0) {
+      return []
+    }
+    return products
   }
 
-  async getProductById(productId: string, next: NextFunction): Promise<Product | undefined> {
+  async getProductById(productId: string, next: NextFunction): Promise<any> {
     try {
-      let product = await prisma.product.findUnique({
+      const product = await prisma.product.findUnique({
         where: { productId }
       })
       return product
