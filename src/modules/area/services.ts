@@ -29,13 +29,9 @@ export class AreaService {
 
   async getAreas(next: NextFunction): Promise<Partial<Area>[] | undefined> {
     try {
-      return await prisma.area.findMany({
-        include: {
-          tables: true
-        }
-      })
+      return await prisma.area.findMany({})
     } catch (error) {
-      throw error
+      next(error)
     }
   }
 

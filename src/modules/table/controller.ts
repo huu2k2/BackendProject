@@ -16,7 +16,10 @@ export class TableController {
   async getTables(req: Request, res: Response, next: NextFunction): Promise<any> {
     try {
       const tables = await tableService.getTables(next)
-      return res.json(tables)
+      return res.json({
+        message: 'get all tables',
+        data: tables
+      })
     } catch (error) {
       next(error)
     }
@@ -59,6 +62,33 @@ export class TableController {
       return res.status(200).json({
         message: 'create detail success',
         data: tableDetail
+      })
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  async getTablesByAreaId(req: Request, res: Response, next: NextFunction): Promise<any> {
+    try {
+      const { areaId } = req.params
+      const tables = await tableService.getTablesByAreaId(areaId, next)
+      return res.status(200).json({
+        message: 'get successful tables',
+        data: tables
+      })
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  async getOrderByTableDetailId(req: Request, res: Response, next: NextFunction): Promise<any> {
+    try {
+      const { id } = req.params
+      const order = await tableService.getOrderByTableDetailId(id, next)
+      console.log(order)
+      return res.status(200).json({
+        message: 'get successful tables',
+        data: order
       })
     } catch (error) {
       next(error)

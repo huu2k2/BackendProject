@@ -1,4 +1,4 @@
-import { PrismaClient, Table, TableStatus } from '@prisma/client'
+import { Order, PrismaClient, Table, TableStatus } from '@prisma/client'
 import { ICreateTable, TableDetail, IUpdateTable } from './interface'
 import { NextFunction } from 'express'
 import { ApiError } from '../../middleware/error.middleware'
@@ -138,6 +138,62 @@ export class TableService {
         }
       })
       return tableDetail
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  async getTablesByAreaId(id: string, next: NextFunction): Promise<Table[] | undefined> {
+    try {
+      let ressult = []
+      if (id == 'all') {
+        ressult = await prisma.table.findMany({
+          include: {
+            tableDetails: {
+              orderBy: {
+                createdAt: 'desc'
+              },
+              take: 1
+            }
+          }
+        })
+      } else {
+        ressult = await prisma.table.findMany({
+          where: { areaId: id },
+          include: {
+            tableDetails: {
+              orderBy: {
+                createdAt: 'desc'
+              },
+              take: 1
+            }
+          }
+        })
+      }
+
+      return ressult
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  async getOrderByTableDetailId(id: string, next: NextFunction): Promise<TableDetail | undefined> {
+    try {
+      let ressult = await prisma.tableDetail.findFirst({
+        where: { tableDetailId: id },
+        include: {
+          order: {
+            include: {
+              orderDetails: {
+                include: {
+                  product: true
+                }
+              }
+            }
+          }
+        }
+      })
+      return ressult?.order
     } catch (error) {
       next(error)
     }
