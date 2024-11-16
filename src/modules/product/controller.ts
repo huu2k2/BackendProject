@@ -38,7 +38,7 @@ export class ProductController {
   async updateProduct(req: Request, res: Response, next: NextFunction): Promise<any> {
     try {
       const product = await productService.updateProduct(req.params.productId, req.body)
-      res.json(product)
+      return res.json(product)
     } catch (error) {
       next(error)
     }
@@ -47,7 +47,7 @@ export class ProductController {
   async deleteProduct(req: Request, res: Response, next: NextFunction): Promise<any> {
     try {
       await productService.deleteProduct(req.params.productId)
-      res.status(204).send()
+      res. json(true)
     } catch (error) {
       next(error)
     }
