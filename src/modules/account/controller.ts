@@ -25,7 +25,7 @@ export class AccountController {
     try {
       const result = await this.accountService.getAccounts(next)
       return res.status(200).json({
-        message: 'Get all account',
+        message: 'Get all account successfully',
         data: result
       })
     } catch (error) {
@@ -38,7 +38,7 @@ export class AccountController {
       const { accountId } = req.params
       const result = await this.accountService.getAccountById(accountId, next)
       return res.status(200).json({
-        message: 'Get account',
+        message: 'Get account successfully',
         data: result
       })
     } catch (error) {
@@ -51,7 +51,7 @@ export class AccountController {
       const { accountId } = req.params
       const result = await this.accountService.updateAccount(accountId, req.body, next)
       return res.status(200).json({
-        message: 'Update account success',
+        message: 'Update account successfully',
         data: result
       })
     } catch (error) {

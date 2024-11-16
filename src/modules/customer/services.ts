@@ -30,9 +30,11 @@ export class CustomerService {
           phoneNumber: dto.phoneNumber
         }
       })
+
       if (!newCustomer) {
         throw new ApiError(400, 'Failed to create customer account')
       }
+
       return newCustomer
     } catch (error) {
       throw error
