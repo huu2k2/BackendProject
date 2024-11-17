@@ -8,6 +8,7 @@ router.route('/').post(controller.createProduct).get(controller.getProducts)
  
 router
   .route('/:productId')
+  .get(controller.getProductById)
   .put(controller.updateProduct)
   .delete(controller.deleteProduct)
 

@@ -33,11 +33,14 @@ export class ProductService {
       }
     })
 
+
     if (products.length === 0) {
       return []
     }
     return products
   }
+
+
  
   async getProductById(productId: string) {
     return await prisma.product.findUnique({

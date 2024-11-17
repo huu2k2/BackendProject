@@ -18,7 +18,7 @@ export class AreaController {
     try {
       const areas = await areaService.getAreas(next)
       return res.status(200).json({
-        message: 'Area created successfully',
+        message: 'Get successful data',
         data: areas
       })
     } catch (error) {

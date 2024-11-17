@@ -3,13 +3,12 @@ import { loginController } from './controller'
 
 const router = Router()
 
-router
-  .route('/customer/login')
-  .post(loginController.loginCustomer.bind(loginController))
-  .post(loginController.registerCustomer.bind(loginController))
+// login  customer
+router.route('/login').post(loginController.loginCustomer.bind(loginController))
+// register  customer
+router.route('/register').post(loginController.registerCustomer.bind(loginController))
 
-router
-  .route('/staff/login')
-  .post(loginController.loginStaff.bind(loginController))
+// login admin && bep && staff
+router.route('/login/staff').post(loginController.loginStaff.bind(loginController))
 
 export default router

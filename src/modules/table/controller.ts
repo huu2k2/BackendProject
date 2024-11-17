@@ -16,7 +16,10 @@ export class TableController {
   async getTables(req: Request, res: Response, next: NextFunction): Promise<any> {
     try {
       const tables = await tableService.getTables(next)
-      return res.json(tables)
+      return res.json({
+        message: 'get all tables',
+        data: tables
+      })
     } catch (error) {
       next(error)
     }
@@ -28,7 +31,25 @@ export class TableController {
       if (!table) {
         return res.status(404).json({ message: 'Table not found' })
       }
-      return res.json(table)
+      return res.json({
+        message: 'get all table',
+        data: table
+      })
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  async getTableDetailToMergeByTableId(req: Request, res: Response, next: NextFunction): Promise<any> {
+    try {
+      const table = await tableService.getTableDetailToMergeByTableId(req.params.tableId, next)
+      if (!table) {
+        return res.status(404).json({ message: 'Table not found' })
+      }
+      return res.json({
+        message: 'get table detail to merge',
+        data: table
+      })
     } catch (error) {
       next(error)
     }
@@ -54,11 +75,50 @@ export class TableController {
 
   async createDetail(req: Request, res: Response, next: NextFunction): Promise<any> {
     try {
-      const { tableId } = req.params
-      const tableDetail = await tableService.createTableDetail(req.params.tableId, next)
+      const result = await tableService.createTableDetail(req.params.tableId, next)
       return res.status(200).json({
         message: 'create detail success',
-        data: tableDetail
+        data: result
+      })
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  async getTablesByAreaId(req: Request, res: Response, next: NextFunction): Promise<any> {
+    try {
+      const { areaId } = req.params
+      const tables = await tableService.getTablesByAreaId(areaId, next)
+      return res.status(200).json({
+        message: 'get successful tables',
+        data: tables
+      })
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  async getOrderByTableDetailId(req: Request, res: Response, next: NextFunction): Promise<any> {
+    try {
+      const { id } = req.params
+      const order = await tableService.getOrderByTableDetailId(id, next)
+      return res.status(200).json({
+        message: 'get successful tables',
+        data: order
+      })
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  async createMergeTable(req: Request, res: Response, next: NextFunction): Promise<any> {
+    try {
+      const { orderId } = req.params
+      const data:{ a: string[], o: string[]} = req.body
+      const order = await tableService.createMergeTable(orderId, data, next)
+      return res.status(200).json({
+        message: 'merge successful tables',
+        data: order
       })
     } catch (error) {
       next(error)

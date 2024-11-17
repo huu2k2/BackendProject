@@ -1,4 +1,4 @@
-import { TableStatus } from '@prisma/client'
+import { Order, TableStatus } from '@prisma/client'
 
 export interface ICreateTable {
   tableId: string
