@@ -16,4 +16,6 @@ router.route('/:tableId/detail').post(controller.createDetail)
 
 router.route('/detail/:id/order').get(controller.getOrderByTableDetailId)
 
+router.route('/:tableId/merge/:orderId').post(controller.createMergeTable)
+
 export default router
