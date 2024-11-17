@@ -17,7 +17,8 @@ app.use(cors({
 }));
 app.use(bodyParser.json({limit: '50mb'}));
 app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
-// initSocket(server);
+
+initSocket(server);
 
 app.use(router)
 app.use((err: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {
