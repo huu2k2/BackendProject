@@ -33,21 +33,22 @@ export class ProductService {
       }
     })
 
+
     if (products.length === 0) {
       return []
     }
     return products
   }
 
-  async getProductById(productId: string, next: NextFunction): Promise<any> {
-    try {
-      const product = await prisma.product.findUnique({
-        where: { productId }
-      })
-      return product
-    } catch (error) {
-      next(error)
-    }
+
+ 
+  async getProductById(productId: string) {
+    return await prisma.product.findUnique({
+      where: { productId },
+      include: {
+        category: true
+      }
+    })
   }
 
   async getRandProducts(next: NextFunction): Promise<Product[] | undefined> {
