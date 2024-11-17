@@ -10,6 +10,8 @@ import areaRouter from './area/router'
 import orderRouter from './order/router'
 import paymentRouter from './payment/router'
 import customerRouter from './customer/router'
+import login from './login/router'
+
 const router = express.Router()
 
 router.use(express.json())
@@ -23,4 +25,5 @@ router.use('/api/roles', roleRouter)
 router.use('/api/tables', tableRouter)
 router.use('/api/products', productRouter)
 router.use('/api/categories', categoryRouter)
+router.use('/api', login)
 export default router

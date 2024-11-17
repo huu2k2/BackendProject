@@ -5,7 +5,7 @@ import { NextFunction } from 'express'
 import { prisma } from '../../prismaClient'
 import { ApiError } from '../../middleware/error.middleware'
 export class AccountService {
-  async createAccount(data: IAccount, next: NextFunction): Promise<IAccount | undefined> {
+  async createAccount(data: Omit<IAccount, "accountId">, next: NextFunction): Promise<any> {
     try {
       if (!data.password || !data.username) {
         throw new ApiError(400, 'Username and password are required')
@@ -42,7 +42,7 @@ export class AccountService {
         throw new ApiError(400, 'Create profile fail')
       }
 
-      return account
+      return true
     } catch (error) {
       throw error
     }
