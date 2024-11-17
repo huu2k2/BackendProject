@@ -4,7 +4,6 @@ import { Controller } from './controller';
 const router = Router();
 const controller = new Controller();
  
-// Routes với middleware
 router
   .route('/')
   .post(controller.create)
