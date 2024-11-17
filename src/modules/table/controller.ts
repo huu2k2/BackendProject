@@ -110,4 +110,18 @@ export class TableController {
       next(error)
     }
   }
+
+  async createMergeTable(req: Request, res: Response, next: NextFunction): Promise<any> {
+    try {
+      const { orderId } = req.params
+      const data:{ a: string[], o: string[]} = req.body
+      const order = await tableService.createMergeTable(orderId, data, next)
+      return res.status(200).json({
+        message: 'merge successful tables',
+        data: order
+      })
+    } catch (error) {
+      next(error)
+    }
+  }
 }

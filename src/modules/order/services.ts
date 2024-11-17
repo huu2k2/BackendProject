@@ -175,7 +175,7 @@ export class OrderService {
           product: true
         }
       })
-      if (!orderDetails || orderDetails.length === 0) {
+      if (!orderDetails) {
         throw new ApiError(400, 'Failed to get order details')
       }
       return orderDetails

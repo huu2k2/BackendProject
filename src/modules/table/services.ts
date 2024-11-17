@@ -4,6 +4,7 @@ import { NextFunction } from 'express'
 import { ApiError } from '../../middleware/error.middleware'
 import { OrderService } from '../order/services'
 import { IOrder } from '../order/interface'
+import { table } from 'console'
 
 const prisma = new PrismaClient()
 const orderService = new OrderService()
@@ -126,7 +127,7 @@ export class TableService {
   ): Promise<{ order: IOrder; tableDetail: TableDetail } | undefined> {
     try {
       // Change customer id here
-      let order = await orderService.createOrder('17ae36f6-a3ce-11ef-a569-0242ac120002', next)
+      let order = await orderService.createOrder('e5c3d9ca-a4bf-11ef-88c5-0242ac130002', next)
 
       if (order == null) {
         throw new ApiError(400, 'Failed to create order table')
@@ -204,7 +205,7 @@ export class TableService {
     }
   }
 
-  async getOrderByTableDetailId(id: string, next: NextFunction): Promise<TableDetail | undefined> {
+  async getOrderByTableDetailId(id: string, next: NextFunction): Promise<Order | undefined> {
     try {
       let ressult = await prisma.tableDetail.findFirst({
         where: { tableDetailId: id },
@@ -223,6 +224,69 @@ export class TableService {
       return ressult?.order
     } catch (error) {
       throw error
+    }
+  }
+
+  // o[]: list contain tableDetailId
+  // a[]: list contain tableId
+  async createMergeTable(
+    orderId: string,
+    data: { a: string[]; o: string[] },
+    next: NextFunction
+  ): Promise<Order[] | undefined> {
+    try {
+      return await prisma.$transaction(async (tx) => {
+        const orderMerge = await tx.orderMerge.create({
+          data: {
+            createdAt: new Date()
+          }
+        })
+
+        const tableDetails = await tx.tableDetail.findMany({
+          where: {
+            tableDetailId: {
+              in: data.o
+            }
+          }
+        })
+
+        const orderIds = tableDetails.map((detail) => detail.orderId)
+
+        const orders = await tx.order.updateMany({
+          where: {
+            orderId: {
+              in: orderIds
+            }
+          },
+          data: {
+            orderMergeId: orderMerge.orderMergeId
+          }
+        })
+
+       await tx.order.update({
+        where: {
+          orderId: orderId
+        },
+        data:{
+          orderMergeId: orderMerge.orderMergeId
+        }
+       })
+
+        await tx.table.updateMany({
+          where: {
+            tableId: {
+              in: data.a
+            }
+          },
+          data: {
+            status: 'OCCUPIED'
+          }
+        })
+
+        return orders
+      })
+    } catch (error) {
+      next(error)
     }
   }
 }
