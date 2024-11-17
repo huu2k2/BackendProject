@@ -25,11 +25,14 @@ export class ProductController {
 
   async getProductById(req: Request, res: Response, next: NextFunction): Promise<any> {
     try {
-      const product = await  productService.getProductById(req.params.productId,next)
+      const product = await productService.getProductById(req.params.productId, next)
       if (!product) {
         return res.status(404).json({ message: 'Product not found' })
       }
-      res.json(product)
+      res.json({
+        message: 'get data',
+        data: product
+      })
     } catch (error) {
       next(error)
     }
@@ -47,7 +50,7 @@ export class ProductController {
   async deleteProduct(req: Request, res: Response, next: NextFunction): Promise<any> {
     try {
       await productService.deleteProduct(req.params.productId)
-      res. json(true)
+      res.json(true)
     } catch (error) {
       next(error)
     }
@@ -56,7 +59,7 @@ export class ProductController {
   async getProductByCategoryById(req: Request, res: Response, next: NextFunction): Promise<any> {
     try {
       const { categoryId } = req.params
-      const products = await  productService.getProductByCategoryById(categoryId, next)
+      const products = await productService.getProductByCategoryById(categoryId, next)
       res.status(200).json({
         message: 'Get products success',
         data: products
@@ -68,7 +71,7 @@ export class ProductController {
 
   async getRandProducts(req: Request, res: Response, next: NextFunction): Promise<any> {
     try {
-      const products = await productService.getRandProducts(next);
+      const products = await productService.getRandProducts(next)
       res.status(200).json({
         message: 'Get products success',
         data: products
