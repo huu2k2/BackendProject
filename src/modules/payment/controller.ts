@@ -17,10 +17,23 @@ export class PaymentController {
     }
   }
 
+  async getPaymentByTableId(req: Request, res: Response, next: NextFunction): Promise<any> {
+    try {
+      const { tableId } = req.params
+      const payment = await paymentService.getPaymentByTableId(tableId, next)
+      return res.status(200).json({
+        data: payment,
+        message: 'Get payment success'
+      })
+    } catch (error) {
+      next(error)
+    }
+  }
+
   async confirmPayment(req: Request, res: Response, next: NextFunction): Promise<any> {
     try {
-      const { paymentId } = req.params
-      const payment = await paymentService.confirmPayment(paymentId, next)
+      const { paymentId, tableId } = req.params
+      const payment = await paymentService.confirmPayment({ paymentId: paymentId, tableId: tableId }, next)
       return res.status(200).json({
         data: payment,
         message: 'Confirm payment success'

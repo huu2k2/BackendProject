@@ -1,8 +1,6 @@
-export interface ICreatePayment{
-    method:string,
-    total: number
-}
-
-export class Payment {
-
+export interface IPayment {
+  paymentId: string
+  orderId: string
+  method: string
+  amount: number
 }
