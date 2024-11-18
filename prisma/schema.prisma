@@ -34,7 +34,10 @@ enum PaymentStatus {
   FINISH
 }
 
-
+enum ReceiverType  {
+  ACCOUNT 
+  CUSTOMER
+}
 
 model Profile {
   profileId    String    @id @default(dbgenerated("(UUID())")) @map("profile_id")
@@ -58,7 +61,7 @@ model Account {
   roleId        String?         @map("role_id")
   isActive      Boolean         @default(true) @map("is_active")
   profile       Profile?
-  notifications Notification[]
+  // notifications Notification[]
   createdAt     DateTime        @default(now()) @map("created_at")
 
   @@map("accounts")
@@ -78,7 +81,7 @@ model Customer {
   name         String
   phoneNumber  String    @map("phone_number") @db.VarChar(20)
   orders       Order[]
-  notifications Notification[]
+  // notifications Notification[]
   createdAt    DateTime  @default(now()) @map("created_at")
 
   @@map("customers")
@@ -86,15 +89,13 @@ model Customer {
 
 model Notification {
   notificationId  String              @id @default(dbgenerated("(UUID())")) @map("notification_id")
-  type            Int
+  type            ReceiverType        
   content         String
   status          NotificationStatus
   createdAt       DateTime            @default(now()) @map("created_at")
   updatedAt       DateTime            @updatedAt @map("updated_at")
-  account         Account?            @relation(fields: [accountId], references: [accountId])
-  accountId       String?             @map("account_id")
-  customer        Customer?           @relation(fields: [customerId], references: [customerId])
-  customerId      String?             @map("customer_id")
+  senderId        String?
+  receiverId      String?              
 
   @@map("notifications")
 }
