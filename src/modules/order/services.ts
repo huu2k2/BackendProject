@@ -1,5 +1,5 @@
-import { OrderDetailStatus, OrderStatus, PrismaClient } from '@prisma/client'
-import { IOrder, IOrderDetail, IOrderMerge } from './interface'
+import { OrderDetailStatus, OrderStatus, PrismaClient, Table } from '@prisma/client'
+import { IOrder, IOrderDetail, IOrderMerge, SocketOrer } from './interface'
 import { NextFunction } from 'express'
 import { ApiError } from '../../middleware/error.middleware'
 
@@ -217,22 +217,24 @@ export class OrderService {
     }
   }
 
-  async getOrdersSocket(): Promise<IOrder[] | undefined> {
+  async getOrdersSocket(): Promise<SocketOrer> {
     return new Promise(async (resovle, reject) => {
       try {
         const orders = await prisma.order.findMany({
+          where: { status: 'FAILED' },
           include: {
             customer: true,
             orderDetails: true,
             payments: true,
-            tableDetails: true,
+            tableDetails: { include: { table: true } },
             orderMerge: true
           }
         })
         if (!orders) {
           reject('Failed to get orders')
         }
-        resovle(orders)
+
+        resovle({ orders })
       } catch (error) {
         reject(error)
       }

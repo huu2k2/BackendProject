@@ -1,4 +1,4 @@
-import { Order, TableStatus } from '@prisma/client'
+import { Order, Table, TableStatus } from '@prisma/client'
 
 export interface ICreateTable {
   tableId: string
@@ -23,4 +23,16 @@ export class TableDetail {
   endTime?: Date | null
   createdAt!: Date
   updatedAt?: Date | null
+}
+
+export class TableDetailSocket {
+  tableDetailId!: string
+  tableId!: string
+  orderId!: string
+  note?: string | null
+  startTime!: Date
+  endTime?: Date | null
+  createdAt!: Date
+  updatedAt?: Date | null
+  table!: Table
 }
