@@ -9,20 +9,18 @@ let cheffHandler: CheffHandler
 let customerHandler: CustomerHandler
 
 export function initSocket(server: HttpServer) {
-  const io = new Server(3000, {
+  const io = new Server(server, {
     cors: {
       origin: '*'
     }
   })
 
-
   cheffHandler = new CheffHandler(io)
 
   customerHandler = new CustomerHandler(io)
-
 
   console.log('Socket.IO server is running on port 3000')
   return io
 }
 
-export const cheffList = new Map();
+export const cheffList = new Map()

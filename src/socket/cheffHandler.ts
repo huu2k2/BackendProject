@@ -1,7 +1,6 @@
 import { Namespace, Server, Socket } from 'socket.io'
 import { CHEFF, CUSTOMER } from '../utils/namespase'
 import { OrderService } from '../modules/order/services'
-import { NextFunction } from 'express'
 import { Service } from '../modules/category/services'
 import { cheffList } from '.'
 
@@ -18,8 +17,9 @@ export class CheffHandler {
       console.log('Client connected to /cheff')
 
       this.sendOrders(socket)
+      this.getNewOrder(socket)
 
-      this.io.on('newOrder', (mess: string) => {
+      socket.on('newOrder', (mess: string) => {
         console.log(mess)
       })
 
@@ -35,7 +35,13 @@ export class CheffHandler {
   }
 
   async receiveNewOrder(socket: any) {
-    this.io.on('newOrder', (mess: string) => {
+    socket.on('newOrder', (mess: string) => {
+      console.log(mess)
+    })
+  }
+
+  async getNewOrder(socket: any) {
+    socket.on('getNewOrder', (mess: string) => {
       console.log(mess)
     })
   }

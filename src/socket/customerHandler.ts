@@ -1,10 +1,5 @@
 import { Namespace, Server, Socket } from 'socket.io'
-import { CHEFF, CUSTOMER } from '../utils/namespase'
-import { OrderService } from '../modules/order/services'
-import { NextFunction } from 'express'
-import { Service } from '../modules/category/services'
-import { CheffHandler } from './cheffHandler'
-import { cheffList } from '.'
+import { CHEFF } from '../utils/namespase'
 
 export class CustomerHandler {
   private io: Server
