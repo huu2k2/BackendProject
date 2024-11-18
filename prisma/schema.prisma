@@ -35,7 +35,7 @@ enum PaymentStatus {
 }
 
 enum ReceiverType  {
-  ACCOUNT 
+  ACCOUNT
   CUSTOMER
 }
 
@@ -54,15 +54,15 @@ model Profile {
 }
 
 model Account {
-  accountId     String          @id @default(dbgenerated("(UUID())")) @map("account_id")
-  username      String          @unique
+  accountId     String      @id @default(dbgenerated("(UUID())")) @map("account_id")
+  username      String      @unique
   password      String
-  role          Role?           @relation(fields: [roleId], references: [roleId])
-  roleId        String?         @map("role_id")
-  isActive      Boolean         @default(true) @map("is_active")
+  role          Role?       @relation(fields: [roleId], references: [roleId])
+  roleId        String?     @map("role_id")
+  isActive      Boolean     @default(true) @map("is_active")
   profile       Profile?
-  // notifications Notification[]
-  createdAt     DateTime        @default(now()) @map("created_at")
+  createdAt     DateTime    @default(now()) @map("created_at")
+  notifications Notification[] @relation("AccountNotifications")
 
   @@map("accounts")
 }
@@ -81,7 +81,7 @@ model Customer {
   name         String
   phoneNumber  String    @map("phone_number") @db.VarChar(20)
   orders       Order[]
-  // notifications Notification[]
+  notifications Notification[] @relation("CustomerNotifications")
   createdAt    DateTime  @default(now()) @map("created_at")
 
   @@map("customers")
@@ -95,7 +95,10 @@ model Notification {
   createdAt       DateTime            @default(now()) @map("created_at")
   updatedAt       DateTime            @updatedAt @map("updated_at")
   senderId        String?
-  receiverId      String?              
+  receiverId      String?
+
+  account         Account? @relation("AccountNotifications", fields: [senderId], references: [accountId])
+  customer        Customer? @relation("CustomerNotifications", fields: [receiverId], references: [customerId])
 
   @@map("notifications")
 }
@@ -109,8 +112,8 @@ model Order {
   orderMerge    OrderMerge?      @relation(fields: [orderMergeId], references: [orderMergeId])
   orderMergeId  String?          @map("order_merge_id")
   orderDetails  OrderDetail[]
-  payments      Payment[]
-  tableDetails  TableDetail[]
+  payment       Payment?
+  tableDetail   TableDetail?
   createdAt     DateTime      @default(now()) @map("created_at")
   updatedAt     DateTime      @updatedAt @map("updated_at")
 
@@ -127,7 +130,7 @@ model OrderDetail {
   price          Float
   status         OrderDetailStatus
   createdAt      DateTime  @default(now()) @map("created_at")
-  updatedAt      DateTime?  @updatedAt @map("updated_at")
+  updatedAt      DateTime? @updatedAt @map("updated_at")
 
   @@map("order_details")
 }
@@ -183,7 +186,7 @@ model TableDetail {
   table          Table             @relation(fields: [tableId], references: [tableId])
   tableId        String            @map("table_id")
   order          Order             @relation(fields: [orderId], references: [orderId])
-  orderId        String            @map("order_id")
+  orderId        String            @map("order_id") @unique
   createdAt      DateTime          @default(now()) @map("created_at")
   updatedAt      DateTime?         @updatedAt @map("updated_at")
 
@@ -201,7 +204,7 @@ model OrderMerge {
 model Payment {
   paymentId     String    @id @default(dbgenerated("(UUID())")) @map("payment_id")
   order         Order     @relation(fields: [orderId], references: [orderId])
-  orderId       String    @map("order_id")
+  orderId       String    @map("order_id") @unique
   amount        Float
   method        String
   status        PaymentStatus
