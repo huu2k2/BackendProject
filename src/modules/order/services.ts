@@ -216,4 +216,26 @@ export class OrderService {
       throw error
     }
   }
+
+  async getOrdersSocket(): Promise<IOrder[] | undefined> {
+    return new Promise(async (resovle, reject) => {
+      try {
+        const orders = await prisma.order.findMany({
+          include: {
+            customer: true,
+            orderDetails: true,
+            payments: true,
+            tableDetails: true,
+            orderMerge: true
+          }
+        })
+        if (!orders) {
+          reject('Failed to get orders')
+        }
+        resovle(orders)
+      } catch (error) {
+        reject(error)
+      }
+    })
+  }
 }

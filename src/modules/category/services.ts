@@ -75,4 +75,15 @@ export class Service {
       next(error)
     }
   }
+
+  async getAllSocket(): Promise<any> {
+    return new Promise(async (resovle, reject) => {
+      try {
+        const category = await prisma.category.findMany()
+        resovle(category)
+      } catch (error) {
+        reject(error)
+      }
+    })
+  }
 }

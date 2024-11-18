@@ -1,10 +1,11 @@
 import { Server } from 'socket.io'
 import { Server as HttpServer } from 'http'
 import { NotificationHandler } from './notificationHandler'
-import { OrderHandler } from './orderHandler'
+import { CheffHandler } from './cheffHandler'
+import { CustomerHandler } from './customerHandler'
 
-let notificationHandler: NotificationHandler
-let orderHandler: OrderHandler
+let cheffHandler: CheffHandler
+let customerHandler: CustomerHandler
 
 export function initSocket(server: HttpServer) {
   const io = new Server(server, {
@@ -13,23 +14,9 @@ export function initSocket(server: HttpServer) {
     }
   })
 
-  notificationHandler = new NotificationHandler(io)
+  cheffHandler = new CheffHandler(io)
 
-  orderHandler = new OrderHandler(io)
-
-  io.on('connection', (socket) => {
-    console.log('A user connected')
-
-    // Handle notifications
-    notificationHandler.handleConnection(socket)
-
-    socket.on('clientMessage', (msg) => {
-      console.log('Message from client:', msg)
-      socket.emit('serverMessage', 'Hello from server!')
-    })
-  })
-
-  return io
+  customerHandler = new CustomerHandler(io)
 }
 
-export { notificationHandler }
+export const cheffList = new Map()
