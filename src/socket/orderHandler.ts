@@ -7,11 +7,6 @@ export class OrderHandler {
   constructor(io: Server) {
     this.io = io.of(CHEFF)
     this.io.on('connection', (socket) => {
-      console.log('Client connected to /cheff')
-      console.log('socketId', socket.id)
-
-      socket.emit('test', 'tao nè')
-
       socket.on('message', (msg) => {
         console.log(`Message from /admin: ${msg}`)
       })

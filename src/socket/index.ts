@@ -7,28 +7,28 @@ let notificationHandler: NotificationHandler
 let orderHandler: OrderHandler
 
 export function initSocket(server: HttpServer) {
-  const io = new Server(server, {
+  const io = new Server(3000, {
     cors: {
       origin: '*'
     }
   })
 
-  notificationHandler = new NotificationHandler(io)
+  // notificationHandler = new NotificationHandler(io)
 
   orderHandler = new OrderHandler(io)
 
-  io.on('connection', (socket) => {
-    console.log('A user connected')
+  // io.on('connection', (socket) => {
+  //   console.log('A user connected')
 
-    // Handle notifications
-    notificationHandler.handleConnection(socket)
+  //   // Handle notifications
+  //   notificationHandler.handleConnection(socket)
 
-    socket.on('clientMessage', (msg) => {
-      console.log('Message from client:', msg)
-      socket.emit('serverMessage', 'Hello from server!')
-    })
-  })
-
+  //   socket.on('clientMessage', (msg) => {
+  //     console.log('Message from client:', msg)
+  //     socket.emit('serverMessage', 'Hello from server!')
+  //   })
+  // })
+  console.log('Socket.IO server is running on port 3000')
   return io
 }
 
