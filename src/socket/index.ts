@@ -19,8 +19,8 @@ export function initSocket(server: HttpServer) {
 
   customerHandler = new CustomerHandler(io)
 
-  console.log('Socket.IO server is running on port 3000')
   return io
 }
 
 export const cheffList = new Map()
+export const customerList = new Map()

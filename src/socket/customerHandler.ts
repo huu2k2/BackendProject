@@ -1,5 +1,6 @@
 import { Namespace, Server, Socket } from 'socket.io'
 import { CHEFF } from '../utils/namespase'
+import { customerList } from '.'
 
 export class CustomerHandler {
   private io: Server
@@ -12,7 +13,7 @@ export class CustomerHandler {
       console.log('Client connected to customer')
 
       socket.on('sendOrder', (val: string) => {
-        console.log(val)
+        customerList.set(val, socket)
         try {
           if (this.cheffNamespace.sockets.size > 0) {
             this.cheffNamespace.emit('newOrder', 'Có đơn mới')
