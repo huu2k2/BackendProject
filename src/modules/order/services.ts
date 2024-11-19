@@ -1,4 +1,4 @@
-import { OrderDetailStatus, OrderStatus, PrismaClient, Table } from '@prisma/client'
+import { OrderDetail, OrderDetailStatus, OrderStatus, PrismaClient, Table } from '@prisma/client'
 import { IOrder, IOrderDetail, IOrderMerge, SocketOrer } from './interface'
 import { NextFunction } from 'express'
 import { ApiError } from '../../middleware/error.middleware'
@@ -218,7 +218,7 @@ export class OrderService {
   }
 
   async getOrdersSocket(): Promise<SocketOrer> {
-    return new Promise(async (resovle, reject) => {
+    return new Promise(async (resolve, reject) => {
       try {
         const orders = await prisma.order.findMany({
           where: { status: 'FAILED' },
@@ -234,7 +234,91 @@ export class OrderService {
           reject('Failed to get orders')
         }
 
-        resovle({ orders })
+        resolve({ orders })
+      } catch (error) {
+        reject(error)
+      }
+    })
+  }
+
+  async getOrderDetailsByOrderIdSocket(id: string): Promise<OrderDetail[]> {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const order = await prisma.order.findFirst({
+          where: { orderId: id },
+          include: {
+            orderDetails: {
+              include: {
+                product: true
+              }
+            }
+          }
+        })
+        if (!order) {
+          reject('Failed to get order')
+        }
+        console.log()
+        resolve(order!.orderDetails)
+      } catch (error) {
+        reject(error)
+      }
+    })
+  }
+
+  async deleteOrderDetailSocket(data: string[]): Promise<any> {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const count = prisma.orderDetail.deleteMany({
+          where: {
+            orderDetailId: { in: data }
+          }
+        })
+        resolve(count)
+      } catch (error) {
+        reject(error)
+      }
+    })
+  }
+
+  async updateOrderDetailSocket(val: OrderDetail[]): Promise<string> {
+    return new Promise(async (resolve, reject) => {
+      try {
+        let removes: string[] = []
+        let updates: { id: string; quantity: number }[] = []
+
+        val.forEach((item) => {
+          if (item.quantity == 0) {
+            removes.push(item.orderDetailId)
+          } else {
+            updates.push({ id: item.orderDetailId, quantity: item.quantity })
+          }
+        })
+
+        await prisma.$transaction(async (prisma) => {
+          if (removes.length > 0) {
+            await prisma.orderDetail.deleteMany({
+              where: {
+                orderDetailId: {
+                  in: removes
+                }
+              }
+            })
+          }
+          if (updates.length > 0) {
+            for (const update of updates) {
+              await prisma.orderDetail.update({
+                where: {
+                  orderDetailId: update.id
+                },
+                data: {
+                  quantity: update.quantity
+                }
+              })
+            }
+          }
+        })
+
+        resolve('success')
       } catch (error) {
         reject(error)
       }
