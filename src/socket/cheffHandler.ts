@@ -3,7 +3,7 @@ import { CHEFF, CUSTOMER } from '../utils/namespase'
 import { OrderService } from '../modules/order/services'
 import { Service } from '../modules/category/services'
 import { cheffList } from '.'
-import { resourceUsage } from 'process'
+import { IGetOrderDetail } from '../modules/order/interface'
 
 const orderService = new OrderService()
 const categoryService = new Service()
@@ -25,11 +25,30 @@ export class CheffHandler {
       })
 
       socket.on('getAllOrders', async (mess: string) => {
-        console.log(mess)
         const result = await orderService.getOrdersSocket()
-        console.log(result.orders[0].tableDetails)
         socket.emit('sendAllOrders', result.orders)
       })
+
+      socket.on('cancelOrders', async ({ orderDetailIds, reason }: { orderDetailIds: string[]; reason: string }) => {
+        console.log(reason, orderDetailIds)
+        // get order detail to get table
+        // emit to customer
+      })
+
+      socket.on(
+        'updateOrdersDetail',
+        async ({ orderDetailIds, updateType }: { orderDetailIds: string[]; updateType: number }) => {
+          let mess = 'success'
+          let result: any[] = []
+          try {
+            result = await orderService.updateOrderDetailSocket(orderDetailIds, updateType)
+          } catch (error: any) {
+            mess = error
+          }
+          socket.emit('getUpdateOrdersDetail', { mess, result, updateType })
+          // emit to customer
+        }
+      )
 
       socket.on('disconnect', () => {
         console.log('Client disconnected from /cheff')

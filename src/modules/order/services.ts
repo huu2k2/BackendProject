@@ -1,7 +1,8 @@
 import { OrderDetailStatus, OrderStatus, PrismaClient, Table } from '@prisma/client'
-import { IOrder, IOrderDetail, IOrderMerge, SocketOrer } from './interface'
+import { IGetOrderDetail, IOrder, IOrderDetail, IOrderMerge, SocketOrer } from './interface'
 import { NextFunction } from 'express'
 import { ApiError } from '../../middleware/error.middleware'
+import { stat } from 'fs'
 
 const prisma = new PrismaClient()
 
@@ -166,7 +167,7 @@ export class OrderService {
     }
   }
 
-  async getOrderDetailByOrderId(orderId: string, next: NextFunction): Promise<IOrderDetail[] | undefined> {
+  async getOrderDetailByOrderId(orderId: string, next: NextFunction): Promise<IGetOrderDetail[] | undefined> {
     try {
       const orderDetails = await prisma.orderDetail.findMany({
         where: { orderId: orderId },
@@ -239,5 +240,26 @@ export class OrderService {
         reject(error)
       }
     })
+  }
+
+  async updateOrderDetailSocket(orderDetailIds: string[], updateType: number): Promise<IOrderDetail[]> {
+    try {
+      const status = updateType === 0 ? 'CANCELED' : updateType === 1 ? 'CONFIRMED' : 'COMPLETED'
+
+      // Update the order details
+      await prisma.orderDetail.updateMany({
+        where: { orderDetailId: { in: orderDetailIds } },
+        data: { status: status }
+      })
+
+      // Fetch the updated order details
+      const updatedOrderDetails = await prisma.orderDetail.findMany({
+        where: { orderDetailId: { in: orderDetailIds } }
+      })
+
+      return updatedOrderDetails
+    } catch (error) {
+      throw 'error update'
+    }
   }
 }

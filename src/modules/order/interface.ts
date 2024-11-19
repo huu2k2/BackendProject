@@ -1,4 +1,4 @@
-import { OrderDetailStatus, OrderStatus, Product, Table } from '@prisma/client'
+import { OrderDetail, OrderDetailStatus, OrderStatus, Product, Table } from '@prisma/client'
 import { TableDetail, TableDetailSocket } from '../table/interface'
 
 export interface IOrderMerge {
@@ -25,6 +25,7 @@ export interface IOrderSocket {
   createdAt: Date
   updatedAt: Date
   tableDetails: TableDetailSocket[]
+  orderDetails: OrderDetail[]
 }
 
 export interface IOrderDetail {
@@ -36,6 +37,18 @@ export interface IOrderDetail {
   status: OrderDetailStatus
   createdAt: Date
   updatedAt: Date | null
+}
+
+export interface IGetOrderDetail {
+  price: number
+  orderDetailId: string
+  orderId: string
+  productId: string
+  quantity: number
+  status: OrderDetailStatus
+  createdAt: Date
+  updatedAt: Date | null
+  product: Product
 }
 
 export interface SocketOrer {
