@@ -14,26 +14,25 @@ export class CustomerHandler {
     this.io = io
     this.cheffNamespace = this.io.of(CHEFF)
     this.io.on('connection', (socket) => {
-      console.log('Client connected to customer: ')
-
       this.recieveNewOrder(socket)
 
       this.recieveOrderStatus(socket)
 
-      this.receiveCancleOrderDetails(socket)
+      this.receiveCancelOrderDetails(socket)
 
       this.receiveUpdateOrderDetails(socket)
 
-      socket.on('disconnect', () => {
-        console.log('Client disconnected from customer')
-      })
+      this.receiveNewOrderDetailFromCustomer(socket)
+
+      socket.on('disconnect', () => {})
     })
   }
 
-  async receiveCancleOrderDetails(socket: Socket) {
-    socket.on('requestCanleOrderDetail', async (val: string[]) => {
+  async receiveCancelOrderDetails(customerSocket: Socket) {
+    customerSocket.on('requestCanleOrderDetail', async (val: string[]) => {
       let result = await orderService.deleteOrderDetailSocket(val)
-      socket.emit('sendNotification', { mess: `remove successful ${result} datas`, val, status: true })
+      customerSocket.emit('sendNotification', { mess: `remove successful ${result} datas`, val, status: true })
+      this.io.of(CHEFF).emit('cancelOrderDetails', val)
     })
   }
 
@@ -41,6 +40,7 @@ export class CustomerHandler {
     socket.on('requestUpdateOrderDetail', async (val: OrderDetail[]) => {
       let result = await orderService.updateOrderDetailSocketCustomer(val)
       socket.emit('sendNotification', { mess: 'update successful', val, status: true })
+      this.io.of(CHEFF).emit('updateOrderDetails', val)
     })
   }
 
@@ -57,13 +57,21 @@ export class CustomerHandler {
       customerList.set(val, socket)
       try {
         if (this.cheffNamespace.sockets.size > 0) {
-          this.io.of(CHEFF).emit('newOrder', 'Có đơn mới')
+          this.io.of(CHEFF).emit('newOrder', val)
         } else {
           console.log('No cheff clients connected')
         }
       } catch (error) {
         console.error('Error sending order to cheff:', error)
       }
+    })
+  }
+
+  async receiveNewOrderDetailFromCustomer(socket: any) {
+    socket.on('sendOrderDetail', async ({ data, orderId }: { data: OrderDetail[]; orderId: string }) => {
+      console.log(data)
+      this.io.of(CHEFF).emit('sendOrderDetailForCheff', data)
+      this.io.of(CHEFF).emit('sendUpdateOrderQuantityForCheff', { orderId: orderId, quantity: data.length })
     })
   }
 }

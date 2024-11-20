@@ -3,6 +3,7 @@ import { OrderDetail, OrderDetailStatus, OrderStatus, PrismaClient, Table } from
 import { NextFunction } from 'express'
 import { ApiError } from '../../middleware/error.middleware'
 import { stat } from 'fs'
+import { console } from 'inspector'
 
 const prisma = new PrismaClient()
 
@@ -129,21 +130,28 @@ export class OrderService {
   }
 
   // Order detail
-  async createOrderDetail(dto: IOrderDetail[], next: NextFunction): Promise<IOrderDetail[] | undefined> {
+  async createOrderDetail(dto: IOrderDetail[], next: NextFunction): Promise<IGetOrderDetail[] | undefined> {
     try {
-      const newOrderDetail = await prisma.orderDetail.createMany({
-        data: dto
-      })
-      const createdOrderDetails = await prisma.orderDetail.findMany({
+      const createdOrderDetails = []
+      for (const detail of dto) {
+        const newDetail = await prisma.orderDetail.create({
+          data: detail
+        })
+        createdOrderDetails.push(newDetail)
+      }
+
+      const orderDetails = await prisma.orderDetail.findMany({
         where: {
-          OR: dto.map((item) => ({
-            orderId: item.orderId,
-            productId: item.productId,
-            status: 'PENDING'
+          AND: createdOrderDetails.map((item) => ({
+            orderDetailId: item.orderDetailId
           }))
+        },
+        include: {
+          product: true
         }
       })
-      return createdOrderDetails
+
+      return orderDetails
     } catch (error) {
       next(error)
     }
@@ -171,6 +179,24 @@ export class OrderService {
     try {
       const orderDetails = await prisma.orderDetail.findMany({
         where: { orderId: orderId },
+        include: {
+          order: true,
+          product: true
+        }
+      })
+      if (!orderDetails) {
+        throw new ApiError(400, 'Failed to get order details')
+      }
+      return orderDetails
+    } catch (error) {
+      throw error
+    }
+  }
+
+  async getOrderDetailByOrderIdKitchen(orderId: string, next: NextFunction): Promise<IGetOrderDetail[] | undefined> {
+    try {
+      const orderDetails = await prisma.orderDetail.findMany({
+        where: { orderId: orderId, OR: [{ status: 'PENDING' }, { status: 'CONFIRMED' }] },
         include: {
           order: true,
           product: true
@@ -344,6 +370,27 @@ export class OrderService {
       return updatedOrderDetails
     } catch (error) {
       throw 'error update'
+    }
+  }
+
+  async getOrderByIdSocket(orderId: string): Promise<IOrder | undefined> {
+    try {
+      const order = await prisma.order.findUnique({
+        where: { orderId: orderId },
+        include: {
+          customer: true,
+          orderDetails: true,
+          payments: true,
+          tableDetails: true,
+          orderMerge: true
+        }
+      })
+      if (!order) {
+        throw new ApiError(400, 'Failed to get order')
+      }
+      return order
+    } catch (error) {
+      throw error
     }
   }
 }

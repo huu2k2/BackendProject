@@ -14,6 +14,8 @@ router.route('/:orderId').get(controller.getOrderById).put(controller.updateOrde
 
 router.route('/:orderId/detail').get(controller.getOrderDetailByOrderId)
 
+router.route('/:orderId/detail/kitchen').get(controller.getOrderDetailByOrderIdKitchen)
+
 router
   .route('/detail/:orderDetailId')
   .post(controller.getOrderDetailById)

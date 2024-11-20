@@ -1,5 +1,6 @@
 import e, { Request, Response, NextFunction } from 'express'
 import { OrderService } from './services'
+import { IOrderDetail } from './interface'
 
 const orderService = new OrderService()
 
@@ -103,6 +104,21 @@ export class OrderController {
   async getOrderDetailByOrderId(req: Request, res: Response, next: NextFunction): Promise<any> {
     try {
       const orderDetail = await orderService.getOrderDetailByOrderId(req.params.orderId, next)
+      if (!orderDetail) {
+        return res.status(404).json({ message: 'order detail not found' })
+      }
+      return res.json({
+        message: 'Get successful orderDetails',
+        data: orderDetail
+      })
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  async getOrderDetailByOrderIdKitchen(req: Request, res: Response, next: NextFunction): Promise<any> {
+    try {
+      const orderDetail = await orderService.getOrderDetailByOrderIdKitchen(req.params.orderId, next)
       if (!orderDetail) {
         return res.status(404).json({ message: 'order detail not found' })
       }

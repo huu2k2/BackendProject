@@ -127,7 +127,7 @@ export class TableService {
   ): Promise<{ order: IOrder; tableDetail: TableDetail } | undefined> {
     try {
       // Change customer id here
-      let order = await orderService.createOrder('e5c3d9ca-a4bf-11ef-88c5-0242ac130002', next)
+      let order = await orderService.createOrder('2cd54ef8-a3d2-11ef-a569-0242ac120002', next)
 
       if (order == null) {
         throw new ApiError(400, 'Failed to create order table')
@@ -263,14 +263,14 @@ export class TableService {
           }
         })
 
-       await tx.order.update({
-        where: {
-          orderId: orderId
-        },
-        data:{
-          orderMergeId: orderMerge.orderMergeId
-        }
-       })
+        await tx.order.update({
+          where: {
+            orderId: orderId
+          },
+          data: {
+            orderMergeId: orderMerge.orderMergeId
+          }
+        })
 
         await tx.table.updateMany({
           where: {

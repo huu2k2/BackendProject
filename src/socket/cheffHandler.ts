@@ -1,12 +1,12 @@
 import { Namespace, Server, Socket } from 'socket.io'
 import { CHEFF, CUSTOMER } from '../utils/namespase'
 import { OrderService } from '../modules/order/services'
-import { Service } from '../modules/category/services'
+
 import { cheffList } from '.'
 import { IGetOrderDetail } from '../modules/order/interface'
+import { OrderDetail } from '@prisma/client'
 
 const orderService = new OrderService()
-const categoryService = new Service()
 
 export class CheffHandler {
   private io: Namespace
@@ -16,60 +16,54 @@ export class CheffHandler {
     this.io.on('connection', (socket) => {
       cheffList.set('cheff', socket)
 
-      this.sendOrders(socket)
+      this.cancelOrdersFromCheff(socket)
+      this.updateOrdersDetailFromCheff(socket)
+      this.getAllOrdersFromCheff(socket)
 
-      this.getNewOrder(socket)
+      socket.on('disconnect', () => {})
+    })
+  }
 
-      socket.on('newOrder', (mess: string) => {
-        console.log(mess)
-      })
+  async receiveGetNewOrder(socket: any) {
+    socket.on('getNewOrder', async (mess: string) => {
+      try {
+        let result = await orderService.getOrderByIdSocket(mess)
+        socket.emit('showNewOrder', result)
+      } catch (error) {
+        console.log(error)
+      }
+    })
+  }
 
-      socket.on('getAllOrders', async (mess: string) => {
-        const result = await orderService.getOrdersSocket()
-        socket.emit('sendAllOrders', result.orders)
-      })
+  async cancelOrdersFromCheff(socket: any) {
+    socket.on('cancelOrders', async ({ orderDetailIds, reason }: { orderDetailIds: string[]; reason: string }) => {
+      console.log(reason, orderDetailIds)
+      // get order detail to get table
+      // emit to customer
+    })
+  }
 
-      socket.on('cancelOrders', async ({ orderDetailIds, reason }: { orderDetailIds: string[]; reason: string }) => {
-        console.log(reason, orderDetailIds)
-        // get order detail to get table
-        // emit to customer
-      })
-
-      socket.on(
-        'updateOrdersDetail',
-        async ({ orderDetailIds, updateType }: { orderDetailIds: string[]; updateType: number }) => {
-          let mess = 'success'
-          let result: any[] = []
-          try {
-            result = await orderService.updateOrderDetailSocket(orderDetailIds, updateType)
-          } catch (error: any) {
-            mess = error
-          }
-          socket.emit('getUpdateOrdersDetail', { mess, result, updateType })
-          // emit to customer
+  async updateOrdersDetailFromCheff(socket: any) {
+    socket.on(
+      'updateOrdersDetailFromCheff',
+      async ({ orderDetailIds, updateType }: { orderDetailIds: string[]; updateType: number }) => {
+        let mess = 'success'
+        let result: any[] = []
+        try {
+          result = await orderService.updateOrderDetailSocket(orderDetailIds, updateType)
+        } catch (error: any) {
+          mess = error
         }
-      )
-
-      socket.on('disconnect', () => {
-        console.log('Client disconnected from /cheff')
-      })
-    })
+        socket.emit('getUpdateOrdersDetailFromCheff', { mess, result, updateType })
+        // emit to customer
+      }
+    )
   }
 
-  async sendOrders(socket: any) {
-    let result = await categoryService.getAllSocket()
-    socket.emit('sendOrders', result)
-  }
-
-  async receiveNewOrder(socket: any) {
-    socket.on('newOrder', (mess: string) => {
-      console.log(mess)
-    })
-  }
-
-  async getNewOrder(socket: any) {
-    socket.on('getNewOrder', (mess: string) => {
-      console.log(mess)
+  async getAllOrdersFromCheff(socket: any) {
+    socket.on('getAllOrdersFromCheff', async (mess: string) => {
+      const result = await orderService.getOrdersSocket()
+      socket.emit('sendAllOrdersFromCheff', result.orders)
     })
   }
 }
