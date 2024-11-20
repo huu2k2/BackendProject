@@ -1,9 +1,7 @@
 import { Server } from 'socket.io'
 import { Server as HttpServer } from 'http'
-import { NotificationHandler } from './notificationHandler'
 import { CheffHandler } from './cheffHandler'
 import { CustomerHandler } from './customerHandler'
-import { OrderHandler } from './orderHandler'
 
 let cheffHandler: CheffHandler
 let customerHandler: CustomerHandler

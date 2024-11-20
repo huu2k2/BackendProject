@@ -1,4 +1,4 @@
-import { IGetOrderDetail, IOrder, IOrderDetail, IOrderMerge, SocketOrer } from './interface'
+import { IGetOrderDetail, IOrder, IOrderDetail, IOrderMerge, IOrderSocket, SocketOrer } from './interface'
 import { OrderDetail, OrderDetailStatus, OrderStatus, PrismaClient, Table } from '@prisma/client'
 import { NextFunction } from 'express'
 import { ApiError } from '../../middleware/error.middleware'
@@ -369,7 +369,7 @@ export class OrderService {
     }
   }
 
-  async getOrderByIdSocket(orderId: string): Promise<IOrder | undefined> {
+  async getOrderByIdSocket(orderId: string): Promise<IOrderSocket | undefined> {
     try {
       const order = await prisma.order.findUnique({
         where: { orderId: orderId },
@@ -377,7 +377,11 @@ export class OrderService {
           customer: true,
           orderDetails: true,
           payments: true,
-          tableDetails: true,
+          tableDetails: {
+            include: {
+              table: true
+            }
+          },
           orderMerge: true
         }
       })

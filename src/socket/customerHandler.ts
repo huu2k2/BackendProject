@@ -29,11 +29,21 @@ export class CustomerHandler {
   }
 
   async receiveCancelOrderDetails(customerSocket: Socket) {
-    customerSocket.on('requestCanleOrderDetail', async (val: string[]) => {
-      let result = await orderService.deleteOrderDetailSocket(val)
-      customerSocket.emit('sendNotification', { mess: `remove successful ${result} datas`, val, status: true })
-      this.io.of(CHEFF).emit('cancelOrderDetails', val)
-    })
+    customerSocket.on(
+      'requestCanleOrderDetail',
+      async ({ orderDetails, orderId }: { orderDetails: string[]; orderId: string }) => {
+        console.log(orderDetails)
+        console.log(orderId)
+        let result = await orderService.deleteOrderDetailSocket(orderDetails)
+        customerSocket.emit('sendNotification', {
+          mess: `remove successful ${result} datas`,
+          val: orderDetails,
+          status: true
+        })
+        this.io.of(CHEFF).emit('cancelOrderDetails', orderDetails)
+        this.io.of(CHEFF).emit('updateCancelOrderDetailsQuantity', { orderId: orderId, quantity: orderDetails.length })
+      }
+    )
   }
 
   async receiveUpdateOrderDetails(socket: Socket) {
