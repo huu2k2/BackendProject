@@ -132,19 +132,15 @@ export class OrderService {
   // Order detail
   async createOrderDetail(dto: IOrderDetail[], next: NextFunction): Promise<IGetOrderDetail[] | undefined> {
     try {
-      const createdOrderDetails = []
-      for (const detail of dto) {
-        const newDetail = await prisma.orderDetail.create({
-          data: detail
-        })
-        createdOrderDetails.push(newDetail)
-      }
+      const createdOrderDetails = await Promise.all(dto.map((detail) => prisma.orderDetail.create({ data: detail })))
 
+      // Lấy danh sách ID từ các bản ghi đã tạo
+      const ids = createdOrderDetails.map((item) => item.orderDetailId)
+
+      // Truy vấn để lấy thông tin chi tiết kèm sản phẩm
       const orderDetails = await prisma.orderDetail.findMany({
         where: {
-          AND: createdOrderDetails.map((item) => ({
-            orderDetailId: item.orderDetailId
-          }))
+          orderDetailId: { in: ids }
         },
         include: {
           product: true

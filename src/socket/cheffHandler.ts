@@ -24,17 +24,6 @@ export class CheffHandler {
     })
   }
 
-  async receiveGetNewOrder(socket: any) {
-    socket.on('getNewOrder', async (mess: string) => {
-      try {
-        let result = await orderService.getOrderByIdSocket(mess)
-        socket.emit('showNewOrder', result)
-      } catch (error) {
-        console.log(error)
-      }
-    })
-  }
-
   async cancelOrdersFromCheff(socket: any) {
     socket.on('cancelOrders', async ({ orderDetailIds, reason }: { orderDetailIds: string[]; reason: string }) => {
       console.log(reason, orderDetailIds)
