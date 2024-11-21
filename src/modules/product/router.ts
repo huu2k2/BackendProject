@@ -5,8 +5,8 @@ import { isAdmin } from '../../middleware/auth.middleware'
 const router = Router()
 const controller = new ProductController()
 
-router.route('/').post(controller.createProduct).get(controller.getProducts)
- 
+router.route('/').post(isAdmin, controller.createProduct).get(controller.getProducts)
+
 router
   .route('/:productId')
   .get(controller.getProductById)

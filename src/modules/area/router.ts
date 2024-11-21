@@ -6,8 +6,8 @@ const router = Router()
 
 router
   .route('/')
-  .post(isAdmin,areaController.createArea.bind(areaController))
-  .get(isAdmin, isStaff ,areaController.getAreas.bind(areaController))
+  .post(isAdmin, areaController.createArea.bind(areaController))
+  .get(isAdmin, isStaff, areaController.getAreas.bind(areaController))
 
 router
   .route('/:areaId')

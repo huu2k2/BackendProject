@@ -1,29 +1,30 @@
 import { Router } from 'express'
 import { OrderController } from './controller'
+import { isAdmin, isStaff, isCustomer, isChef } from '../../middleware/auth.middleware'
 
 const router = Router()
 const controller = new OrderController()
 
-router.route('/').post(controller.createOrder).get(controller.getOrders)
+router.route('/').post(isCustomer, controller.createOrder).get(controller.getOrders)
 
-router.route('/detail').post(controller.createOrderDetail)
+router.route('/detail').post(isCustomer, controller.createOrderDetail)
 
-router.route('/merge').post(controller.createOrderMerge).get(controller.getOrderMerges)
+router.route('/merge').post(isStaff, controller.createOrderMerge).get(controller.getOrderMerges)
 
-router.route('/:orderId').get(controller.getOrderById).put(controller.updateOrder)
+router.route('/:orderId').get(controller.getOrderById).put(isCustomer, controller.updateOrder)
 
-router.route('/:orderId/detail').get(controller.getOrderDetailByOrderId)
+router.route('/:orderId/detail').get(isStaff, isCustomer, isChef, controller.getOrderDetailByOrderId)
 
-router.route('/:orderId/detail/kitchen').get(controller.getOrderDetailByOrderIdKitchen)
+router.route('/:orderId/detail/kitchen').get(isChef, controller.getOrderDetailByOrderIdKitchen)
 
-router.route('/:orderId/detail/payment').get(controller.getOrderDetailByOrderIdOfMergeOrder)
+router.route('/:orderId/detail/payment').get(isStaff, isCustomer, controller.getOrderDetailByOrderIdOfMergeOrder)
 
 router
   .route('/detail/:orderDetailId')
-  .post(controller.getOrderDetailById)
-  .put(controller.updateOrderDetail)
-  .delete(controller.deleteOrderDetail)
+  .post(isStaff, isCustomer, isChef, controller.getOrderDetailById)
+  .put(isCustomer, isChef, controller.updateOrderDetail)
+  .delete(isCustomer, controller.deleteOrderDetail)
 
-router.route('/merge/:orderMergeId').get(controller.getOrderMergeById)
+router.route('/merge/:orderMergeId').get(isStaff, isCustomer, controller.getOrderMergeById)
 
 export default router
