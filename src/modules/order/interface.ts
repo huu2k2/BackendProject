@@ -1,5 +1,5 @@
-import { OrderDetail, OrderDetailStatus, OrderStatus, Product, Table } from '@prisma/client'
-import { TableDetail, TableDetailSocket } from '../table/interface'
+import { OrderDetail, OrderDetailStatus, OrderStatus, Product } from '@prisma/client'
+import { TableDetailSocket } from '../table/interface'
 
 export interface IOrderMerge {
   orderMergeId: string
@@ -22,10 +22,10 @@ export interface IOrderSocket {
   totalAmount: number
   status: OrderStatus
   orderMergeId?: string | null
-  createdAt: Date
-  updatedAt: Date
-  tableDetails: TableDetailSocket[]
-  orderDetails: OrderDetail[]
+  createdAt?: Date
+  updatedAt?: Date
+  tableDetails?: TableDetailSocket[]
+  orderDetails?: OrderDetail[]
 }
 
 export interface IOrderDetail {

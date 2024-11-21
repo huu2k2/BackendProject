@@ -31,7 +31,8 @@ export class NotificationService {
     if (!body.senderId || !body.type) {
       throw new Error('Thiếu senderId hoặc type trong đầu vào.')
     }
-    let where
+
+    let where;
     if (body.type === TypeGet.RECEIVER) {
       where = {
         receiverId: body.senderId

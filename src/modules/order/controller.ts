@@ -17,9 +17,6 @@ export class OrderController {
   async getOrderMergeById(req: Request, res: Response, next: NextFunction): Promise<any> {
     try {
       const orderMerge = await orderService.getOrderMergeById(req.params.orderMergeId, next)
-      if (!orderMerge) {
-        return res.status(404).json({ message: 'OrderMerge not found' })
-      }
       return res.json({ message: 'get successful', data: orderMerge })
     } catch (error) {
       next(error)
@@ -35,7 +32,6 @@ export class OrderController {
     }
   }
 
-  // Order
   async createOrder(req: Request, res: Response, next: NextFunction): Promise<any> {
     try {
       const order = await orderService.createOrder(req.body.customerId, next)
@@ -48,9 +44,6 @@ export class OrderController {
   async getOrderById(req: Request, res: Response, next: NextFunction): Promise<any> {
     try {
       const order = await orderService.getOrderById(req.params.orderId, next)
-      if (!order) {
-        return res.status(404).json({ message: 'Order not found' })
-      }
       return res.json({ message: 'get successful', data: order })
     } catch (error) {
       next(error)

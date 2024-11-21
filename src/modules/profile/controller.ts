@@ -32,17 +32,7 @@ export class ProfileController {
       next(error)
     }
   }
-
-  // async deleteProfile(req: Request, res: Response, next: NextFunction) {
-  //   try {
-  //     const { profileId } = req.params
-  //     await profileService.deleteProfile(profileId, next)
-  //     res.status(200).json({ message: 'Profile deleted successfully' })
-  //   } catch (error) {
-  //     next(error)
-  //   }
-  // }
-
+ 
   async getAllProfiles(req: Request, res: Response, next: NextFunction): Promise<any> {
     try {
       const { skip, take, ...where } = req.query

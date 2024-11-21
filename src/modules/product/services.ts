@@ -8,7 +8,6 @@ const prisma = new PrismaClient()
 export class ProductService {
   async createProduct(dto: CreateProductDto) {
     const { image, ...rest } = dto
-    console.log(dto)
     const { url, publicId } = await createImage(image)
     const rs = await prisma.product.create({
       data: { ...rest, image: url, imagePublicId: publicId }
@@ -60,20 +59,27 @@ export class ProductService {
       })
       const shuffled = products.sort(() => 0.5 - Math.random())
       return shuffled.slice(0, 10)
-      return products
     } catch (error) {
       next(error)
     }
   }
 
   async updateProduct(productId: string, dto: UpdateProductDto) {
-    return await prisma.product.update({
-      where: { productId },
-      data: dto,
-      include: {
-        category: true
+    try {
+      const updateProduct = await prisma.product.update({
+        where: { productId },
+        data: dto,
+        include: {
+          category: true
+        }
+      })
+      if (!updateProduct) {
+        throw new Error('Update is not success!')
       }
-    })
+      return updateProduct
+    } catch (error: any) {
+      throw new Error(error.message)
+    }
   }
 
   async deleteProduct(productId: string) {
@@ -85,8 +91,8 @@ export class ProductService {
 
   async getProductByCategoryById(categoryId: string, next: NextFunction): Promise<Product[] | undefined> {
     try {
-      let products = []
-      if (categoryId == 'all') {
+      let products: Product[]
+      if (!categoryId) {
         products = await prisma.product.findMany()
       } else {
         products = await prisma.product.findMany({

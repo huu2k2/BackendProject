@@ -21,7 +21,6 @@ export class LoginService {
   }
 
   async loginStaff(dto: StaffLoginDto): Promise<any> {
-    // Tìm user dựa trên username
     const staff = await prisma.account.findUnique({
       where: {
         username: dto.username
@@ -54,7 +53,6 @@ export class LoginService {
   
 
   async registerCustomer(dto: CustomerLoginDto): Promise<Boolean | undefined> {
- 
       const isExistPhoneNumber = await prisma.customer.findFirst({
         where: {
           phoneNumber: dto.phoneNumber
@@ -71,11 +69,12 @@ export class LoginService {
           phoneNumber: dto.phoneNumber
         }
       })
+
       if (!customer) {
         throw new Error('Failed to create customer')
       }
+      
       return true
- 
   }
 }
 

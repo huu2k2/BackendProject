@@ -79,8 +79,8 @@ export class OrderService {
         include: {
           customer: true,
           orderDetails: true,
-          payments: true,
-          tableDetails: true,
+          payment: true,
+          tableDetail: true,
           orderMerge: true
         }
       })
@@ -99,8 +99,8 @@ export class OrderService {
         include: {
           customer: true,
           orderDetails: true,
-          payments: true,
-          tableDetails: true,
+          payment: true,
+          tableDetail: true,
           orderMerge: true
         }
       })
@@ -296,28 +296,25 @@ export class OrderService {
     }
   }
 
-  async getOrdersSocket(): Promise<SocketOrer> {
-    return new Promise(async (resolve, reject) => {
-      try {
-        const orders = await prisma.order.findMany({
-          where: { status: 'FAILED' },
-          include: {
-            customer: true,
-            orderDetails: true,
-            payments: true,
-            tableDetails: { include: { table: true } },
-            orderMerge: true
-          }
-        })
-        if (!orders) {
-          reject('Failed to get orders')
+  async getOrdersSocket(): Promise<IOrderSocket[]> {
+    try {
+      const orders = await prisma.order.findMany({
+        where: { status: OrderStatus.FAILED },
+        include: {
+          customer: true,
+          orderDetails: true,
+          payment: true,
+          tableDetail: { include: { table: true } },
+          orderMerge: true
         }
-
-        resolve({ orders })
-      } catch (error) {
-        reject(error)
+      })
+      if (!orders) {
+        throw new Error('Failed to get orders')
       }
-    })
+      return orders
+    } catch (error:any) {
+      throw new Error(error.message)
+    }
   }
 
   async getOrderDetailsByOrderIdSocket(id: string): Promise<OrderDetail[]> {
@@ -425,15 +422,15 @@ export class OrderService {
     }
   }
 
-  async getOrderByIdSocket(orderId: string): Promise<IOrderSocket | undefined> {
-    try {
+  async getOrderByIdSocket(orderId: string): Promise<Omit<IOrderSocket,"tableDetails"> | undefined> {
+
       const order = await prisma.order.findUnique({
         where: { orderId: orderId },
         include: {
           customer: true,
           orderDetails: true,
-          payments: true,
-          tableDetails: {
+          payment: true,
+          tableDetail: {
             include: {
               table: true
             }
@@ -444,9 +441,6 @@ export class OrderService {
       if (!order) {
         throw new ApiError(400, 'Failed to get order')
       }
-      return order
-    } catch (error) {
-      throw error
-    }
+      return order 
   }
 }

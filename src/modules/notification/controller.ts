@@ -15,6 +15,7 @@ export class NotificationController {
   async getAllNotificationById(req: Request, res: Response, next: NextFunction): Promise<any> {
     try {
      const rs = await notificationService.getAllNotificationById(req.body as GetNotficationInput)
+     return res.json(rs)
     } catch (error) {
       next(error)
     }
