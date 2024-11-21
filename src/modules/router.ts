@@ -11,19 +11,20 @@ import orderRouter from './order/router'
 import paymentRouter from './payment/router'
 import customerRouter from './customer/router'
 import login from './login/router'
+import { isAuthenticated } from '../middleware/auth.middleware'
 
 const router = express.Router()
 
 router.use(express.json())
-router.use('/api/areas', areaRouter)
-router.use('/api/customers', customerRouter)
-router.use('/api/orders', orderRouter)
-router.use('/api/payments', paymentRouter)
-router.use('/api/accounts', accountRouter)
-router.use('/api/profiles', profileRouter)
-router.use('/api/roles', roleRouter)
-router.use('/api/tables', tableRouter)
-router.use('/api/products', productRouter)
-router.use('/api/categories', categoryRouter)
+router.use('/api/areas', isAuthenticated, areaRouter)
+router.use('/api/customers', isAuthenticated, customerRouter)
+router.use('/api/orders', isAuthenticated, orderRouter)
+router.use('/api/payments', isAuthenticated, paymentRouter)
+router.use('/api/accounts', isAuthenticated, accountRouter)
+router.use('/api/profiles', isAuthenticated, profileRouter)
+router.use('/api/roles', isAuthenticated, roleRouter)
+router.use('/api/tables', isAuthenticated, tableRouter)
+router.use('/api/products', isAuthenticated, productRouter)
+router.use('/api/categories', isAuthenticated, categoryRouter)
 router.use('/api', login)
 export default router

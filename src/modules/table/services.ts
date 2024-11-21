@@ -4,7 +4,7 @@ import { NextFunction } from 'express'
 import { ApiError } from '../../middleware/error.middleware'
 import { OrderService } from '../order/services'
 import { IOrder } from '../order/interface'
-import { table } from 'console'
+import { table, table } from 'console'
 
 const prisma = new PrismaClient()
 const orderService = new OrderService()
@@ -230,12 +230,29 @@ export class TableService {
   // o[]: list contain tableDetailId
   // a[]: list contain tableId
   async createMergeTable(
-    orderId: string,
+    tableId: string,
     data: { a: string[]; o: string[] },
     next: NextFunction
   ): Promise<Order[] | undefined> {
     try {
       return await prisma.$transaction(async (tx) => {
+        const table = await prisma.table.findFirst({
+          where: {
+            tableId: tableId
+          },
+          include: {
+            tableDetails: {
+              orderBy: {
+                createdAt: 'desc'
+              },
+              take: 1,
+              include: {
+                order: true
+              }
+            }
+          }
+        })
+
         const orderMerge = await tx.orderMerge.create({
           data: {
             createdAt: new Date()
@@ -265,7 +282,7 @@ export class TableService {
 
         await tx.order.update({
           where: {
-            orderId: orderId
+            orderId: table!.tableDetails[0].order.orderId
           },
           data: {
             orderMergeId: orderMerge.orderMergeId

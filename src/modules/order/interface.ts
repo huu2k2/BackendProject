@@ -46,7 +46,7 @@ export interface IGetOrderDetail {
   productId: string
   quantity: number
   status: OrderDetailStatus
-  createdAt: Date
+  createdAt: Date | null
   updatedAt: Date | null
   product: Product
 }

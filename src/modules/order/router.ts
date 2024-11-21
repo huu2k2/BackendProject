@@ -16,6 +16,8 @@ router.route('/:orderId/detail').get(controller.getOrderDetailByOrderId)
 
 router.route('/:orderId/detail/kitchen').get(controller.getOrderDetailByOrderIdKitchen)
 
+router.route('/:orderId/detail/payment').get(controller.getOrderDetailByOrderIdOfMergeOrder)
+
 router
   .route('/detail/:orderDetailId')
   .post(controller.getOrderDetailById)

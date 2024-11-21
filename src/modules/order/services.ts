@@ -189,6 +189,62 @@ export class OrderService {
     }
   }
 
+  async getOrderDetailByOrderIdOfMergeOrder(
+    orderId: string,
+    next: NextFunction
+  ): Promise<IGetOrderDetail[] | undefined> {
+    try {
+      let result: IGetOrderDetail[] = []
+      const order = await prisma.order.findFirst({
+        where: {
+          orderId: orderId
+        },
+        include: {
+          orderDetails: {
+            include: {
+              product: true
+            }
+          }
+        }
+      })
+
+      if (!order) {
+        throw new ApiError(400, 'order not found')
+      }
+
+      order.orderDetails.forEach((item) => {
+        result.push(item)
+      })
+
+      if (order?.orderMergeId) {
+        const orders = await prisma.order.findMany({
+          where: {
+            orderMergeId: order.orderMergeId,
+            NOT: {
+              orderId: order.orderId
+            }
+          },
+          include: {
+            orderDetails: {
+              include: {
+                product: true
+              }
+            }
+          }
+        })
+
+        orders.forEach((order) => {
+          order.orderDetails.forEach((item) => {
+            result.push(item)
+          })
+        })
+      }
+      return result
+    } catch (error) {
+      throw error
+    }
+  }
+
   async getOrderDetailByOrderIdKitchen(orderId: string, next: NextFunction): Promise<IGetOrderDetail[] | undefined> {
     try {
       const orderDetails = await prisma.orderDetail.findMany({

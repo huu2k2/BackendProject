@@ -116,6 +116,21 @@ export class OrderController {
     }
   }
 
+  async getOrderDetailByOrderIdOfMergeOrder(req: Request, res: Response, next: NextFunction): Promise<any> {
+    try {
+      const orderDetail = await orderService.getOrderDetailByOrderIdOfMergeOrder(req.params.orderId, next)
+      if (!orderDetail) {
+        return res.status(404).json({ message: 'order detail not found' })
+      }
+      return res.json({
+        message: 'Get successful orderDetails',
+        data: orderDetail
+      })
+    } catch (error) {
+      next(error)
+    }
+  }
+
   async getOrderDetailByOrderIdKitchen(req: Request, res: Response, next: NextFunction): Promise<any> {
     try {
       const orderDetail = await orderService.getOrderDetailByOrderIdKitchen(req.params.orderId, next)

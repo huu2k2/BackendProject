@@ -17,7 +17,9 @@ export class PaymentService {
           status: 'WAIT'
         }
       })
-
+      if (!payment) {
+        throw new ApiError(400, 'err create payment')
+      }
       return payment
     } catch (error) {
       throw error
@@ -26,18 +28,14 @@ export class PaymentService {
 
   async getPaymentByTableId(tableId: string, next: NextFunction): Promise<Payment | undefined> {
     try {
-      const table = await prisma.table.findUnique({
-        where: { tableId: tableId }, // Tìm theo tableId
-        include: { tableDetails: true } // Gồm thông tin đơn hàng liên quan
-      })
-
+      console.log(tableId)
       const tableDetail = await prisma.tableDetail.findFirst({
         where: {
-          tableId: tableId, // Điều kiện theo tableId
-          endTime: null // Điều kiện endTime là null
+          tableId: tableId,
+          endTime: null
         },
         include: {
-          order: true // Gồm thông tin đơn hàng liên quan
+          order: true
         }
       })
 
@@ -73,18 +71,15 @@ export class PaymentService {
 
       if (order) {
         if (order.orderMergeId) {
-          // Tìm các order có cùng mergeOrderId
           const mergedOrders = await prisma.order.findMany({
             where: { orderMergeId: order.orderMergeId }
           })
 
-          // Cập nhật trạng thái của các order liên quan
           await prisma.order.updateMany({
             where: { orderMergeId: order.orderMergeId },
             data: { status: 'SUCCESS' }
           })
 
-          // Từ order, tìm đến tableDetail và lấy table id (má nó dài ác)
           for (const mergedOrder of mergedOrders) {
             await prisma.payment.updateMany({
               where: { orderId: mergedOrder.orderId },
@@ -93,6 +88,16 @@ export class PaymentService {
             const tableDetail = await prisma.tableDetail.findFirst({
               where: { orderId: mergedOrder.orderId }
             })
+
+            console.log(tableDetail?.tableDetailId)
+
+            const asd = await prisma.tableDetail.update({
+              where: { tableDetailId: tableDetail!.tableDetailId },
+              data: { endTime: new Date() }
+            })
+
+            console.log(asd)
+
             if (tableDetail?.tableId) {
               await prisma.table.update({
                 where: { tableId: tableDetail?.tableId },
@@ -100,10 +105,7 @@ export class PaymentService {
               })
             }
           }
-
-          // Cập nhật các payment khác
         } else {
-          // Nếu orderMergeId là null, chỉ cập nhật order và table hiện tại
           await prisma.order.update({
             where: { orderId: order.orderId },
             data: { status: 'SUCCESS' }
