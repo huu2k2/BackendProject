@@ -5,13 +5,13 @@ import { isAdmin, isStaff, isCustomer, isChef } from '../../middleware/auth.midd
 const router = Router()
 const controller = new OrderController()
 
-router.route('/').post(isCustomer, controller.createOrder).get(controller.getOrders)
+router.route('/').post(isCustomer, controller.createOrder).get(isChef, controller.getOrders)
 
 router.route('/detail').post(isCustomer, controller.createOrderDetail)
 
 router.route('/merge').post(isStaff, controller.createOrderMerge).get(controller.getOrderMerges)
 
-router.route('/:orderId').get(controller.getOrderById).put(isCustomer, controller.updateOrder)
+router.route('/:orderId').get(isChef, controller.getOrderById).put(isCustomer, controller.updateOrder)
 
 router.route('/:orderId/detail').get(isStaff || isCustomer || isChef, controller.getOrderDetailByOrderId)
 

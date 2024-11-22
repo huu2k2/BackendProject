@@ -1,11 +1,11 @@
 import { Account } from '@prisma/client'
-import { IAccount } from './interface'
+import { IAccount, IAccountCreate } from './interface'
 import bcrypt from 'bcrypt'
 import { NextFunction } from 'express'
 import { prisma } from '../../prismaClient'
 import { ApiError } from '../../middleware/error.middleware'
 export class AccountService {
-  async createAccount(data: Omit<IAccount, "accountId">, next: NextFunction): Promise<any> {
+  async createAccount(data: Omit<IAccountCreate, 'accountId'>, next: NextFunction): Promise<any> {
     try {
       if (!data.password || !data.username) {
         throw new ApiError(400, 'Username and password are required')
@@ -28,13 +28,24 @@ export class AccountService {
         data: {
           username: data.username,
           password: hashedPassword,
-          roleId: data.roleId,
+          roleId: data.role.roleId,
           isActive: true
         },
         include: {
           profile: true,
           role: true,
           notifications: true
+        }
+      })
+
+      await prisma.profile.create({
+        data: {
+          firstName: data.profile.firstName,
+          lastName: data.profile.lastName,
+          address: data.profile.address,
+          cccd: data.profile.cccd,
+          phoneNumber: data.profile.phoneNumber,
+          accountId: account.accountId
         }
       })
 

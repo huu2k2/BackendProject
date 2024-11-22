@@ -76,13 +76,18 @@ export class TableController {
   async createDetail(req: Request, res: Response, next: NextFunction): Promise<any> {
     try {
       const customerId = req.user.customerId
-      console.log('customerId, req.params')
-      return 'true'
-      // const result = await tableService.createTableDetail(req.params.tableId, customerId, next)
-      // return res.status(200).json({
-      //   message: 'create detail success',
-      //   data: result
-      // })
+      // console.log('customerId, req.params')
+      //! Change customer Id here
+      const result = await tableService.createTableDetail(
+        req.params.tableId,
+        '5603739a-a8b5-11ef-b713-0242ac120002',
+        next
+      )
+      return res.status(200).json({
+        message: 'create detail success',
+        data: result
+      })
+      // return 'true'
     } catch (error) {
       next(error)
     }

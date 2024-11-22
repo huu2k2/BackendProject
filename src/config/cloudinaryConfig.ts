@@ -19,8 +19,6 @@ export const createImage = async (image: string): Promise<CloudinaryResponse> =>
     width: 150,
     crop: 'scale'
   })
-
-  console.log(result)
   return {
     url: result.secure_url,
     publicId: result.public_id
