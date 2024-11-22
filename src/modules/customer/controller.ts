@@ -8,7 +8,6 @@ export class CustomerController {
     try {
       const customer = await customerService.createCustomer(req.body, next)
       if ('message' in customer) {
-        // Trả về thông báo khách hàng đã tồn tại
         return res.status(200).json({
           message: customer.message,
           data: customer.data
@@ -43,6 +42,7 @@ export class CustomerController {
 
   async updateCustomer(req: Request, res: Response, next: NextFunction): Promise<any> {
     try {
+      console.log(1)
       const customer = await customerService.updateCustomer(req.params.customerId, req.body, next)
       return res.json({ message: 'update successful', data: customer })
     } catch (error) {

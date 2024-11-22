@@ -59,6 +59,16 @@ export class OrderController {
     }
   }
 
+  async getAllOrderOfCustomer(req: Request, res: Response, next: NextFunction): Promise<any> {
+    try {
+      const { customerID } = req.params
+      const orders = await orderService.getAllOrderOfCustomer(customerID,next)
+      return res.json({ message: 'get successful', data: orders })
+    } catch (error) {
+      next(error)
+    }
+  }
+
   async updateOrder(req: Request, res: Response, next: NextFunction): Promise<any> {
     try {
       // console.log(req.body)

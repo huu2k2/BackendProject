@@ -296,6 +296,20 @@ export class OrderService {
     }
   }
 
+  async getAllOrderOfCustomer(customerId: string, next: NextFunction): Promise<any> {
+    try {
+      const orderDetail = await prisma.order.findMany({
+        where: { customerId: customerId }
+      })
+      if (!orderDetail) {
+        throw new ApiError(400, 'Failed to delete table')
+      }
+      return orderDetail
+    } catch (error) {
+      throw error
+    }
+  }
+
   async getOrdersSocket(): Promise<IOrderSocket[]> {
     try {
       const orders = await prisma.order.findMany({
@@ -312,7 +326,7 @@ export class OrderService {
         throw new Error('Failed to get orders')
       }
       return orders
-    } catch (error:any) {
+    } catch (error: any) {
       throw new Error(error.message)
     }
   }
@@ -422,25 +436,24 @@ export class OrderService {
     }
   }
 
-  async getOrderByIdSocket(orderId: string): Promise<Omit<IOrderSocket,"tableDetails"> | undefined> {
-
-      const order = await prisma.order.findUnique({
-        where: { orderId: orderId },
-        include: {
-          customer: true,
-          orderDetails: true,
-          payment: true,
-          tableDetail: {
-            include: {
-              table: true
-            }
-          },
-          orderMerge: true
-        }
-      })
-      if (!order) {
-        throw new ApiError(400, 'Failed to get order')
+  async getOrderByIdSocket(orderId: string): Promise<Omit<IOrderSocket, 'tableDetails'> | undefined> {
+    const order = await prisma.order.findUnique({
+      where: { orderId: orderId },
+      include: {
+        customer: true,
+        orderDetails: true,
+        payment: true,
+        tableDetail: {
+          include: {
+            table: true
+          }
+        },
+        orderMerge: true
       }
-      return order 
+    })
+    if (!order) {
+      throw new ApiError(400, 'Failed to get order')
+    }
+    return order
   }
 }

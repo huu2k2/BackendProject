@@ -92,7 +92,7 @@ export class ProductService {
   async getProductByCategoryById(categoryId: string, next: NextFunction): Promise<Product[] | undefined> {
     try {
       let products: Product[]
-      if (!categoryId) {
+      if (categoryId == 'all') {
         products = await prisma.product.findMany()
       } else {
         products = await prisma.product.findMany({

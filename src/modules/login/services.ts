@@ -1,3 +1,4 @@
+import { ERole } from '../../common/enum'
 import { prisma } from '../../prismaClient'
 import { generateTokenAndRefreshToken } from '../../utils/jwt'
 import { CustomerLoginDto, CustomerLoginResponse, StaffLoginDto } from './dto'
@@ -15,8 +16,16 @@ export class LoginService {
     if (!customer) {
       throw new Error('Customer not found')
     }
-
-    const { token, refreshToken } = generateTokenAndRefreshToken(customer)
+    let addRoleToCustomer = {
+      customerId: customer.customerId,
+      createdAt: customer.createdAt,
+      phoneNumber: customer.phoneNumber,
+      name: customer.name,
+      role: {
+        name: ERole.CUSTOMER
+      }
+    }
+    const { token, refreshToken } = generateTokenAndRefreshToken(addRoleToCustomer)
     return { token, refreshToken }
   }
 

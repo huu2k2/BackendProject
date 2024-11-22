@@ -76,7 +76,8 @@ export class CheffHandler {
   async getAllOrdersFromCheff(socket: any) {
     socket.on('getAllOrdersFromCheff', async (mess: string) => {
       const result = await orderService.getOrdersSocket()
-      socket.emit('sendAllOrdersFromCheff', result.orders)
+      console.log(result)
+      socket.emit('sendAllOrdersFromCheff', result)
     })
   }
 }

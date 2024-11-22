@@ -8,9 +8,6 @@ const controller = new CustomerController()
 // Routes với middleware
 router.route('/').post(controller.createCustomer).get(isCustomer, controller.getCustomers)
 
-router
-  .route('/:customerId')
-  .get(isAuthenticated || isCustomer, controller.getCustomerById)
-  .put(isCustomer, controller.updateCustomer)
+router.route('/:customerId').get(isCustomer, controller.getCustomerById).put(isCustomer, controller.updateCustomer)
 
 export default router
