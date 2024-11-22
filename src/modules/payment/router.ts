@@ -7,7 +7,7 @@ const controller = new PaymentController()
 
 router.route('/order/:orderId').post(isCustomer, controller.createPayment)
 
-router.route('/:tableId').get(isStaff, isCustomer, controller.getPaymentByTableId)
+router.route('/:tableId').get(isStaff || isCustomer, controller.getPaymentByTableId)
 
 router.route('/:paymentId/:tableId/confirm').put(isStaff, controller.confirmPayment)
 

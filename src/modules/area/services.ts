@@ -7,21 +7,38 @@ import { ApiError } from '../../middleware/error.middleware'
 export class AreaService {
   async createArea(data: ICreateArea, next: NextFunction): Promise<Partial<Area> | undefined> {
     try {
-      return await prisma.$transaction(async (tx) => {
-        const existingArea = await tx.area.findFirst({
-          where: { name: data.name }
-        })
+      // return await prisma.$transaction(async (tx) => {
+      //   const existingArea = await tx.area.findFirst({
+      //     where: { name: data.name }
+      //   })
 
-        if (existingArea) {
-          throw new ApiError(400, 'name exist!')
-        }
-        return tx.area.create({
-          data: {
-            name: data.name,
-            total: 0
-          }
-        })
+      //   if (existingArea) {
+      //     throw new ApiError(400, 'name exist!')
+      //   }
+      //   return tx.area.create({
+      //     data: {
+      //       name: data.name,
+      //       total: 0
+      //     }
+      //   })
+      // })
+      const existingArea = await prisma.area.findFirst({
+        where: { name: data.name }
       })
+
+      if (existingArea) {
+        throw new ApiError(400, 'name exist!')
+      }
+      const area = await prisma.area.create({
+        data: {
+          name: data.name,
+          total: 0
+        }
+      })
+      if (!area) {
+        throw new ApiError(400, 'Failed to create category')
+      }
+      return area
     } catch (error) {
       throw error
     }
@@ -29,7 +46,8 @@ export class AreaService {
 
   async getAreas(next: NextFunction): Promise<Partial<Area>[] | undefined> {
     try {
-      return await prisma.area.findMany({})
+      const area = await prisma.area.findMany()
+      return area
     } catch (error) {
       next(error)
     }

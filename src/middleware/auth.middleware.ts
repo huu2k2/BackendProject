@@ -13,7 +13,7 @@ declare global {
 export const isAuthenticated = (req: Request, res: Response, next: NextFunction) => {
   try {
     const authHeader = req?.headers?.authorization
-    console.log('authHeader', req.headers.authorization)
+    // console.log('authHeader', req.headers.authorization)
     if (!authHeader) {
       throw new Error('Authorization header is missing')
     }
@@ -21,7 +21,6 @@ export const isAuthenticated = (req: Request, res: Response, next: NextFunction)
     const token = authHeader?.split(' ')[1]
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET!)
-    console.log('decode', decoded)
     req.user = decoded
 
     next()

@@ -7,11 +7,11 @@ const router = Router()
 router
   .route('/')
   .post(isAdmin, accountController.createAccount.bind(accountController))
-  .get(isAdmin, isStaff, isChef, accountController.getAccounts.bind(accountController))
+  .get(isAdmin || isStaff || isChef, accountController.getAccounts.bind(accountController))
 
 router
   .route('/:accountId')
-  .get(isAdmin, isStaff, isChef, accountController.getAccountById.bind(accountController))
+  .get(isAdmin || isStaff || isChef, accountController.getAccountById.bind(accountController))
   .put(isAdmin, accountController.updateAccount.bind(accountController))
 
 export default router

@@ -10,7 +10,7 @@ router.route('/').post(controller.createCustomer).get(isCustomer, controller.get
 
 router
   .route('/:customerId')
-  .get(isAuthenticated, isCustomer, controller.getCustomerById)
+  .get(isAuthenticated || isCustomer, controller.getCustomerById)
   .put(isCustomer, controller.updateCustomer)
 
 export default router
