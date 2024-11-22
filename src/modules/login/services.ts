@@ -32,49 +32,48 @@ export class LoginService {
           }
         }
       }
-    });
-  
+    })
+
     if (!staff) {
-      throw new Error('Staff not found');
+      throw new Error('Staff not found')
     }
     if (!staff.isActive) {
-      throw new Error('Staff is block!');
+      throw new Error('Staff is block!')
     }
-    
-    const isPasswordValid = await bcrypt.compare(dto.password, staff.password); 
-  
+
+    const isPasswordValid = await bcrypt.compare(dto.password, staff.password)
+
     if (!isPasswordValid) {
-      throw new Error('Invalid password');
+      throw new Error('Invalid password')
     }
-  
-    const { token, refreshToken } = generateTokenAndRefreshToken(staff);
-    return { token, refreshToken };
+
+    const { token, refreshToken } = generateTokenAndRefreshToken(staff)
+    return { token, refreshToken }
   }
-  
 
   async registerCustomer(dto: CustomerLoginDto): Promise<Boolean | undefined> {
-      const isExistPhoneNumber = await prisma.customer.findFirst({
-        where: {
-          phoneNumber: dto.phoneNumber
-        }
-      })
-
-      if (isExistPhoneNumber) {
-        throw new Error('Customer already exists')
+    const isExistPhoneNumber = await prisma.customer.findFirst({
+      where: {
+        phoneNumber: dto.phoneNumber
       }
+    })
 
-      const customer = await prisma.customer.create({
-        data: {
-          name: dto.name,
-          phoneNumber: dto.phoneNumber
-        }
-      })
-
-      if (!customer) {
-        throw new Error('Failed to create customer')
-      }
-      
+    if (isExistPhoneNumber) {
       return true
+    }
+
+    const customer = await prisma.customer.create({
+      data: {
+        name: dto.name,
+        phoneNumber: dto.phoneNumber
+      }
+    })
+
+    if (!customer) {
+      throw new Error('Failed to create customer')
+    }
+
+    return true
   }
 }
 

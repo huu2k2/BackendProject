@@ -75,11 +75,14 @@ export class TableController {
 
   async createDetail(req: Request, res: Response, next: NextFunction): Promise<any> {
     try {
-      const result = await tableService.createTableDetail(req.params.tableId, next)
-      return res.status(200).json({
-        message: 'create detail success',
-        data: result
-      })
+      const customerId = req.user.customerId
+      console.log('customerId, req.params')
+      return 'true'
+      // const result = await tableService.createTableDetail(req.params.tableId, customerId, next)
+      // return res.status(200).json({
+      //   message: 'create detail success',
+      //   data: result
+      // })
     } catch (error) {
       next(error)
     }
@@ -114,7 +117,7 @@ export class TableController {
   async createMergeTable(req: Request, res: Response, next: NextFunction): Promise<any> {
     try {
       const { tableId } = req.params
-      const data:{ a: string[], o: string[]} = req.body
+      const data: { a: string[]; o: string[] } = req.body
       const order = await tableService.createMergeTable(tableId, data, next)
       return res.status(200).json({
         message: 'merge successful tables',

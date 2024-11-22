@@ -17,7 +17,7 @@ router
 
 router.route('/merge/:tableId').get(isStaff, isCustomer, controller.getTableDetailToMergeByTableId)
 
-router.route('/:tableId/detail').post(isCustomer, controller.createDetail)
+router.route('/:tableId/detail').post(controller.createDetail)
 
 router.route('/detail/:id/order').get(isStaff, isCustomer, isChef, controller.getOrderByTableDetailId)
 

@@ -123,35 +123,32 @@ export class TableService {
 
   async createTableDetail(
     tableId: string,
+    customerId: string,
     next: NextFunction
   ): Promise<{ order: IOrder; tableDetail: TableDetail } | undefined> {
-    try {
-      // Change customer id here
-      let order = await orderService.createOrder('2cd54ef8-a3d2-11ef-a569-0242ac120002', next)
+    console.log('tableId, customerId', customerId)
+    let order = await orderService.createOrder(customerId, next)
 
-      if (order == null) {
-        throw new ApiError(400, 'Failed to create order table')
-      }
-
-      const tableDetail = await prisma.tableDetail.create({
-        data: {
-          tableId: tableId,
-          orderId: order!.orderId,
-          startTime: new Date()
-        }
-      })
-
-      await prisma.table.update({
-        where: { tableId: tableId },
-        data: {
-          status: 'OCCUPIED'
-        }
-      })
-
-      return { order, tableDetail }
-    } catch (error) {
-      throw error
+    if (!order) {
+      throw new ApiError(400, 'Failed to create order table')
     }
+
+    const tableDetail = await prisma.tableDetail.create({
+      data: {
+        tableId: tableId,
+        orderId: order!.orderId,
+        startTime: new Date()
+      }
+    })
+
+    await prisma.table.update({
+      where: { tableId: tableId },
+      data: {
+        status: 'OCCUPIED'
+      }
+    })
+
+    return { order, tableDetail }
   }
 
   async getTableDetailToMergeByTableId(tableId: string, next: NextFunction): Promise<TableDetail | undefined> {

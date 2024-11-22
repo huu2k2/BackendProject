@@ -12,13 +12,16 @@ declare global {
 }
 export const isAuthenticated = (req: Request, res: Response, next: NextFunction) => {
   try {
-    const token = req.headers.authorization?.split(' ')[1]
-
-    if (!token) {
-      next(ApiResponse.badRequest(res, 'No token provided'))
+    const authHeader = req?.headers?.authorization
+    console.log('authHeader', req.headers.authorization)
+    if (!authHeader) {
+      throw new Error('Authorization header is missing')
     }
 
-    const decoded = jwt.verify(token!, process.env.JWT_SECRET!)
+    const token = authHeader?.split(' ')[1]
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET!)
+    console.log('decode', decoded)
     req.user = decoded
 
     next()

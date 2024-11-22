@@ -2,11 +2,13 @@ import { PrismaClient, Table, TableStatus } from '@prisma/client'
 import { ICustomer } from './interface'
 import { NextFunction } from 'express'
 import { ApiError } from '../../middleware/error.middleware'
+import { generateTokenAndRefreshToken } from '../../utils/jwt'
+import { CustomerLoginResponse } from '../login/dto'
 
 const prisma = new PrismaClient()
 
 export class CustomerService {
-  async createCustomer(dto: ICustomer, next: NextFunction): Promise<ICustomer | { message: string; data: ICustomer }> {
+  async createCustomer(dto: ICustomer, next: NextFunction): Promise<CustomerLoginResponse> {
     try {
       // Kiểm tra xem tên bảng đã tồn tại trong cơ sở dữ liệu chưa
       const existingCustomer = await prisma.customer.findFirst({
@@ -18,10 +20,8 @@ export class CustomerService {
       // Nếu đã tồn tại bảng với tên này, ném lỗi
       if (existingCustomer) {
         // Chuyển sang đăng nhập
-        return {
-          message: 'Name or phoneNumber already exists. Please login instead.',
-          data: existingCustomer
-        }
+        const { token, refreshToken } = generateTokenAndRefreshToken(existingCustomer)
+        return { token, refreshToken }
       }
 
       const newCustomer = await prisma.customer.create({
@@ -35,7 +35,8 @@ export class CustomerService {
         throw new ApiError(400, 'Failed to create customer account')
       }
 
-      return newCustomer
+      const { token, refreshToken } = generateTokenAndRefreshToken(newCustomer)
+      return { token, refreshToken }
     } catch (error) {
       throw error
     }
