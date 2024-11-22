@@ -91,7 +91,7 @@ export class AccountService {
     }
   }
 
-  async updateAccount(accountId: string, data: IAccount, next: NextFunction): Promise<IAccount | undefined> {
+  async updateAccount(accountId: string, data: IAccountCreate, next: NextFunction): Promise<IAccount | undefined> {
     try {
       const result = await prisma.account.update({
         where: { accountId },
@@ -99,9 +99,15 @@ export class AccountService {
           username: data.username,
           password: data.password,
           isActive: data.isActive,
-          roleId: data.roleId
+          roleId: data.role.roleId
         }
       })
+
+      await prisma.profile.update({
+        where: { accountId },
+        data: data.profile
+      })
+
       if (!result) {
         throw new ApiError(400, 'Fail to update Account')
       }
