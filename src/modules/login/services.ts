@@ -21,6 +21,7 @@ export class LoginService {
   }
 
   async loginStaff(dto: StaffLoginDto): Promise<any> {
+    console.log(dto)
     const staff = await prisma.account.findUnique({
       where: {
         username: dto.username
