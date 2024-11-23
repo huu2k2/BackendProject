@@ -210,6 +210,9 @@ export class TableService {
           order: {
             include: {
               orderDetails: {
+                where: {
+                  status: 'COMPLETED'
+                },
                 include: {
                   product: true
                 }

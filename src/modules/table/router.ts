@@ -1,16 +1,13 @@
 import { Router } from 'express'
 import { TableController } from './controller'
-import { isStaff, isCustomer, isAdmin, isChef } from '../../middleware/auth.middleware'
+import { isStaff, isCustomer, isAdmin, isChef, isAdminOrStaff } from '../../middleware/auth.middleware'
 
 const router = Router()
 const controller = new TableController()
 
-router
-  .route('/')
-  .post(isAdmin, controller.createTable)
-  .get(isAdmin || isStaff, controller.getTables)
+router.route('/').post(isAdmin, controller.createTable).get(isAdminOrStaff, controller.getTables)
 
-router.route('/area/:areaId').get(isAdmin || isStaff, controller.getTablesByAreaId)
+router.route('/area/:areaId').get(isAdminOrStaff, controller.getTablesByAreaId)
 
 router
   .route('/:tableId')

@@ -40,7 +40,8 @@ export class LoginService {
           select: {
             name: true
           }
-        }
+        },
+        profile: true
       }
     })
 

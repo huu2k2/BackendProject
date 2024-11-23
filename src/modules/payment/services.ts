@@ -28,7 +28,6 @@ export class PaymentService {
 
   async getPaymentByTableId(tableId: string, next: NextFunction): Promise<Payment | undefined> {
     try {
-      console.log(tableId)
       const tableDetail = await prisma.tableDetail.findFirst({
         where: {
           tableId: tableId,
@@ -61,7 +60,7 @@ export class PaymentService {
       const payment = await prisma.payment.update({
         where: { paymentId: dataPayment.paymentId },
         data: {
-          status: PaymentStatus.FINISH
+          status: 'FINISH'
         }
       })
 
@@ -77,47 +76,45 @@ export class PaymentService {
 
           await prisma.order.updateMany({
             where: { orderMergeId: order.orderMergeId },
-            data: { status: OrderStatus.SUCCESS }
+            data: { status: 'SUCCESS' }
           })
 
           for (const mergedOrder of mergedOrders) {
+            await prisma.payment.updateMany({
+              where: { orderId: mergedOrder.orderId },
+              data: { status: 'FINISH' }
+            })
             const tableDetail = await prisma.tableDetail.findFirst({
               where: { orderId: mergedOrder.orderId }
             })
 
-            await Promise.all([
-              prisma.payment.updateMany({
-                where: { orderId: mergedOrder.orderId },
-                data: { status: PaymentStatus.FINISH }
-              }),
-
-              prisma.tableDetail.update({
-                where: { tableDetailId: tableDetail!.tableDetailId },
-                data: { endTime: new Date() }
-              })
-            ])
+            const asd = await prisma.tableDetail.update({
+              where: { tableDetailId: tableDetail!.tableDetailId },
+              data: { endTime: new Date() }
+            })
 
             if (tableDetail?.tableId) {
               await prisma.table.update({
                 where: { tableId: tableDetail?.tableId },
-                data: { status: TableStatus.AVAILABLE }
+                data: { status: 'AVAILABLE' }
               })
             }
           }
         } else {
-          await Promise.all([
-            prisma.order.update({
-              where: { orderId: order.orderId },
-              data: { status: OrderStatus.SUCCESS }
-            }),
+          await prisma.order.update({
+            where: { orderId: order.orderId },
+            data: { status: 'SUCCESS' }
+          })
 
-            prisma.order.update({
-              where: { orderId: payment.orderId },
-              data: {
-                status: OrderStatus.SUCCESS
-              }
-            })
-          ])
+          const tableDetail = await prisma.tableDetail.update({
+            where: { orderId: order.orderId },
+            data: { endTime: new Date() }
+          })
+
+          await prisma.table.update({
+            where: { tableId: tableDetail?.tableId },
+            data: { status: 'AVAILABLE' }
+          })
         }
       }
 
