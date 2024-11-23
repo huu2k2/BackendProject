@@ -13,7 +13,7 @@ export class CheffHandler {
   constructor(io: Server) {
     this.server = io
     this.io = io.of(CHEFF)
-    this.sendNotificationHandler = new SendNotificationHandler()
+    this.sendNotificationHandler = new SendNotificationHandler(io)
     this.io.on('connection', (socket) => {
       cheffList.set('cheff', socket)
 
@@ -26,7 +26,7 @@ export class CheffHandler {
       this.getAllOrdersFromCheff(socket)
 
       this.sendNotificationHandler.handelSendNotificationFromCheff(socket)
-      
+
       socket.on('disconnect', () => {})
     })
   }

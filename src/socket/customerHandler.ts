@@ -15,7 +15,7 @@ export class CustomerHandler {
     this.cheffNamespace = this.io.of(CHEFF)
     this.io.on('connection', (socket) => {
       console.log("conection" , socket.id)
-      
+
       this.recieveNewOrder(socket)
 
       this.recieveOrderStatus(socket)
@@ -48,7 +48,7 @@ export class CustomerHandler {
 
   async receiveUpdateOrderDetails(socket: Socket) {
     socket.on('requestUpdateOrderDetail', async (val: OrderDetail[]) => {
-      let result = await orderService.updateOrderDetailSocketCustomer(val)
+      await orderService.updateOrderDetailSocketCustomer(val)
       socket.emit('sendNotification', { mess: 'update successful', val, status: true })
       this.io.of(CHEFF).emit('updateOrderDetails', val)
     })
@@ -63,10 +63,8 @@ export class CustomerHandler {
 
   async recieveNewOrder(socket: Socket) {
     socket.on('sendOrder', async (val: string) => {
-      customerList.set(val, socket.id)
-      // Todo: save orderId into hashTable redis
       await redis.set(val, socket.id)
-      console.log('=========================set key ==============')
+
       try {
         if (this.cheffNamespace.sockets.size > 0) {
           this.io.of(CHEFF).emit('newOrder', val)

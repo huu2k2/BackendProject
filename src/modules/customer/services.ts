@@ -92,6 +92,21 @@ export class CustomerService {
     }
   }
 
+  async getCustomersByOrderId(orderId: string, next: NextFunction): Promise<any> {
+    try {
+      const orderItem = await prisma.order.findUnique({
+        where: { orderId },
+      })
+      if (!orderItem) {
+        throw new ApiError(400, 'Failed to get customer')
+      }
+      return orderItem.customerId
+    } catch (error) {
+      throw error
+    }
+  }
+
+
   async updateCustomer(customerId: string, dto: ICustomer, next: NextFunction): Promise<ICustomer | undefined> {
     try {
       // Kiểm tra xem tên bảng đã tồn tại trong cơ sở dữ liệu chưa

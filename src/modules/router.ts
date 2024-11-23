@@ -11,6 +11,7 @@ import orderRouter from './order/router'
 import paymentRouter from './payment/router'
 import customerRouter from './customer/router'
 import login from './login/router'
+import notification from './notification/router'
 import { isAuthenticated } from '../middleware/auth.middleware'
 
 const router = express.Router()
@@ -27,4 +28,5 @@ router.use('/api/tables', isAuthenticated, tableRouter)
 router.use('/api/products', isAuthenticated, productRouter)
 router.use('/api/categories', isAuthenticated, categoryRouter)
 router.use('/api', login)
+router.use('/api/notifications', notification )
 export default router

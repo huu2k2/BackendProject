@@ -1,23 +1,67 @@
-import { Socket } from 'socket.io'
-import { customerList } from '.'
-import { actionSend, KeyNotification } from './types/notifications'
+import { Socket, Server } from 'socket.io'; // Import Server
+import redis from '../config/redis.config';
+import { actionSend, KeyNotification } from './types/notifications';
+import { NotificationService } from '../modules/notification/service';
+import { CreateNotificationInput } from '../modules/notification/dto';
+import { NotificationStatus, ReceiverType } from '@prisma/client';
+
+const notificationService = new NotificationService();
 
 export class SendNotificationHandler {
+  private io: Server;
+
+  constructor(io: Server) {
+    this.io = io; // Gán io vào class
+  }
+
   async handelSendNotificationFromCheff(socket: Socket) {
-    socket.on(KeyNotification.CancelledDish, ({ nameDish, orderId }: { nameDish: string; orderId: string[] }) => {
-      const notification = actionSend.get(KeyNotification.CancelledDish)
-      console.log("customerList" ,customerList ,orderId)
+    this.registerEvent(socket, KeyNotification.CancelledDish);
+    this.registerEvent(socket, KeyNotification.ConfirmedDish);
+    this.registerEvent(socket, KeyNotification.SuccessDish);
+  }
+
+  private registerEvent(socket: Socket, event: KeyNotification) {
+    socket.on(event, async (payload: NotificationPayload) => {
+      await this.handleNotification(socket, event, payload);
+    });
+  }
+
+  private async handleNotification(
+    socket: Socket,
+    event: KeyNotification,
+    { nameDish, orderId, receiverId, senderId }: NotificationPayload
+  ) {
+ 
+    try {
+      const notification = actionSend.get(event);
+      const socketId = await redis.get(orderId);
+
+      this.io.to(socketId as string).emit('customer_notification', {
+        data: nameDish,
+        message: notification,
+      });
+
+      const payload: CreateNotificationInput = {
+        type: ReceiverType.CUSTOMER,
+        content: `${notification} ${nameDish}`,
+        status: NotificationStatus.UNREAD,
+        receiverId,
+        senderId,
+      };
+       await notificationService.createNotification(payload);
       
-      if (notification) {
-        console.log(`${nameDish} ${orderId}`, '=======================')
-        // this.io.to(idReceiver).emit('customer_notification', {
-        //   data: `${notification} ${nameDish}`
-        // })
-      } else {
-        socket.emit('customer_notification', {
-          data: 'No notification found for this action.'
-        })
-      }
-    })
+    } catch (error) {
+      console.error('Error handling notification:', error);
+      socket.emit('customer_notification', {
+        data: 'An error occurred while processing the notification.',
+      });
+    }
   }
 }
+
+type NotificationPayload = {
+  nameDish: string;
+  orderId: string;
+  receiverId: string;
+  senderId: string;
+};

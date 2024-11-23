@@ -6,7 +6,7 @@ const customerService = new CustomerService()
 export class CustomerController {
   async createCustomer(req: Request, res: Response, next: NextFunction): Promise<any> {
     try {
-      const customer = await customerService.createCustomer(req.body, next)
+      const customer:any = await customerService.createCustomer(req.body, next)
       if ('message' in customer) {
         return res.status(200).json({
           message: customer.message,
@@ -31,6 +31,18 @@ export class CustomerController {
   async getCustomerById(req: Request, res: Response, next: NextFunction): Promise<any> {
     try {
       const customer = await customerService.getCustomersById(req.params.customerId, next)
+      if (!customer) {
+        return res.status(404).json({ message: 'Table not found' })
+      }
+      return res.json({ message: 'get successful', data: customer })
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  async getCustomerByOrderId (req: Request, res: Response, next: NextFunction): Promise<any> {
+    try {
+      const customer = await customerService.getCustomersByOrderId(req.params.orderId, next)
       if (!customer) {
         return res.status(404).json({ message: 'Table not found' })
       }

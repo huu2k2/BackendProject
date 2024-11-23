@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express'
 import { notificationService } from './service'
-import { CreateNotificationInput, GetNotficationInput } from './dto'
+import { CreateNotificationInput, GetNotficationInput, TypeGet } from './dto'
 
 
 export class NotificationController {
@@ -14,7 +14,8 @@ export class NotificationController {
  
   async getAllNotificationById(req: Request, res: Response, next: NextFunction): Promise<any> {
     try {
-     const rs = await notificationService.getAllNotificationById(req.body as GetNotficationInput)
+      const { type, senderId } = req.query;
+     const rs = await notificationService.getAllNotificationById(type as TypeGet, senderId as string)
      return res.json(rs)
     } catch (error) {
       next(error)

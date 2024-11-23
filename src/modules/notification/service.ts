@@ -27,19 +27,19 @@ export class NotificationService {
     }
   }
 
-  async getAllNotificationById(body: GetNotficationInput) {
-    if (!body.senderId || !body.type) {
+  async getAllNotificationById(type: TypeGet, senderId: string) {
+    if (!senderId || !type) {
       throw new Error('Thiếu senderId hoặc type trong đầu vào.')
     }
 
-    let where;
-    if (body.type === TypeGet.RECEIVER) {
+    let where
+    if (type === TypeGet.RECEIVER) {
       where = {
-        receiverId: body.senderId
+        receiverId: senderId
       }
     } else {
       where = {
-        senderId: body.senderId
+        senderId: senderId
       }
     }
     const notificationData = await prisma.notification.findMany({
