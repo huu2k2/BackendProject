@@ -1,6 +1,6 @@
 import { PrismaClient, Product } from '@prisma/client'
 import { CreateProductDto, UpdateProductDto, ProductQuery } from './dto'
-import { createImage } from '../../config/cloudinaryConfig'
+import { createImage } from '../../config/cloudinary.config'
 import { NextFunction } from 'express'
 
 const prisma = new PrismaClient()

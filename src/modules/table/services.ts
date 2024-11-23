@@ -4,7 +4,6 @@ import { NextFunction } from 'express'
 import { ApiError } from '../../middleware/error.middleware'
 import { OrderService } from '../order/services'
 import { IOrder } from '../order/interface'
-import { table, table } from 'console'
 
 const prisma = new PrismaClient()
 const orderService = new OrderService()
@@ -126,7 +125,6 @@ export class TableService {
     customerId: string,
     next: NextFunction
   ): Promise<{ order: IOrder; tableDetail: TableDetail } | undefined> {
-    console.log('tableId, customerId', customerId)
     let order = await orderService.createOrder(customerId, next)
 
     if (!order) {
@@ -226,13 +224,9 @@ export class TableService {
 
   // o[]: list contain tableDetailId
   // a[]: list contain tableId
-  async createMergeTable(
-    tableId: string,
-    data: { a: string[]; o: string[] },
-    next: NextFunction
-  ): Promise<Order[] | undefined> {
+  async createMergeTable(tableId: string, data: { a: string[]; o: string[] }, next: NextFunction): Promise<any> {
     try {
-      return await prisma.$transaction(async (tx) => {
+      const ks = await prisma.$transaction(async (tx) => {
         const table = await prisma.table.findFirst({
           where: {
             tableId: tableId
@@ -299,6 +293,7 @@ export class TableService {
 
         return orders
       })
+      return ks
     } catch (error) {
       next(error)
     }

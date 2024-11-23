@@ -10,7 +10,7 @@ export class CustomerController {
       if ('message' in customer) {
         return res.status(200).json({
           message: customer.message,
-          data: customer.data
+          data: customer?.data
         })
       }
       return res.status(201).json({ message: 'create successful', data: customer })
@@ -42,7 +42,6 @@ export class CustomerController {
 
   async updateCustomer(req: Request, res: Response, next: NextFunction): Promise<any> {
     try {
-      console.log(1)
       const customer = await customerService.updateCustomer(req.params.customerId, req.body, next)
       return res.json({ message: 'update successful', data: customer })
     } catch (error) {

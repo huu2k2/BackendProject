@@ -28,7 +28,6 @@ export class PaymentService {
 
   async getPaymentByTableId(tableId: string, next: NextFunction): Promise<Payment | undefined> {
     try {
-      console.log(tableId)
       const tableDetail = await prisma.tableDetail.findFirst({
         where: {
           tableId: tableId,

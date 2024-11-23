@@ -3,7 +3,7 @@ import { CHEFF } from '../utils/namespase'
 import { customerList } from '.'
 import { OrderService } from '../modules/order/services'
 import { OrderDetail } from '@prisma/client'
-
+import redis from '../config/redis.config'
 const orderService = new OrderService()
 
 export class CustomerHandler {
@@ -14,6 +14,8 @@ export class CustomerHandler {
     this.io = io
     this.cheffNamespace = this.io.of(CHEFF)
     this.io.on('connection', (socket) => {
+      console.log("conection" , socket.id)
+      
       this.recieveNewOrder(socket)
 
       this.recieveOrderStatus(socket)
@@ -60,9 +62,11 @@ export class CustomerHandler {
   }
 
   async recieveNewOrder(socket: Socket) {
-    socket.on('sendOrder', (val: string) => {
-      console.log(val)
-      customerList.set(val, socket)
+    socket.on('sendOrder', async (val: string) => {
+      customerList.set(val, socket.id)
+      // Todo: save orderId into hashTable redis
+      await redis.set(val, socket.id)
+      console.log('=========================set key ==============')
       try {
         if (this.cheffNamespace.sockets.size > 0) {
           this.io.of(CHEFF).emit('newOrder', val)
@@ -77,7 +81,6 @@ export class CustomerHandler {
 
   async receiveNewOrderDetailFromCustomer(socket: any) {
     socket.on('sendOrderDetail', async ({ data, orderId }: { data: OrderDetail[]; orderId: string }) => {
-      console.log(data)
       this.io.of(CHEFF).emit('sendOrderDetailForCheff', data)
       this.io.of(CHEFF).emit('sendUpdateOrderQuantityForCheff', { orderId: orderId, quantity: data.length })
     })

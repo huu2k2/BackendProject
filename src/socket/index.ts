@@ -14,7 +14,6 @@ export function initSocket(server: HttpServer) {
   })
 
   cheffHandler = new CheffHandler(io)
-
   customerHandler = new CustomerHandler(io)
 
   return io

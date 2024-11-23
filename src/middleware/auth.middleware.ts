@@ -27,7 +27,6 @@ export const isAuthenticated = (req: Request, res: Response, next: NextFunction)
 }
 
 export const isCustomer = (req: Request, res: Response, next: NextFunction) => {
-  console.log(1, req.user)
   if (req.user.role.name !== ERole.CUSTOMER) {
     next(ApiResponse.badRequest(res, 'You are not authorized to access this resource'))
   }

@@ -2,16 +2,18 @@ import { Namespace, Server, Socket } from 'socket.io'
 import { CHEFF, CUSTOMER } from '../utils/namespase'
 import { OrderService } from '../modules/order/services'
 import { cheffList } from '.'
+import { SendNotificationHandler } from './sendNottificationHandler'
 
 const orderService = new OrderService()
 
 export class CheffHandler {
   private io: Namespace
   private server: Server
-
+  private sendNotificationHandler: SendNotificationHandler
   constructor(io: Server) {
     this.server = io
     this.io = io.of(CHEFF)
+    this.sendNotificationHandler = new SendNotificationHandler()
     this.io.on('connection', (socket) => {
       cheffList.set('cheff', socket)
 
@@ -23,6 +25,8 @@ export class CheffHandler {
 
       this.getAllOrdersFromCheff(socket)
 
+      this.sendNotificationHandler.handelSendNotificationFromCheff(socket)
+      
       socket.on('disconnect', () => {})
     })
   }
@@ -38,7 +42,7 @@ export class CheffHandler {
     socket.on(
       'cancelOrders',
       async ({ orderId, orderDetailIds, reason }: { orderId: string; orderDetailIds: string[]; reason: string }) => {
-        console.log(reason, orderDetailIds)
+
         // get order detail to get table
         // emit to customer
       }
@@ -76,7 +80,6 @@ export class CheffHandler {
   async getAllOrdersFromCheff(socket: any) {
     socket.on('getAllOrdersFromCheff', async (mess: string) => {
       const result = await orderService.getOrdersSocket()
-      console.log(result)
       socket.emit('sendAllOrdersFromCheff', result)
     })
   }

@@ -119,7 +119,6 @@ export class OrderService {
         where: { orderId: orderId },
         data: dto
       })
-      console.log(updateOrder)
       if (!updateOrder) {
         throw new ApiError(400, 'Failed to update table')
       }
@@ -352,7 +351,6 @@ export class OrderService {
         if (!order) {
           reject('Failed to get order')
         }
-        console.log()
         resolve(order!.orderDetails)
       } catch (error) {
         reject(error)

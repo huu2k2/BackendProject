@@ -1,34 +1,36 @@
-import express from 'express';
-import cors from 'cors';
-import http from 'http';
-import router from './modules/router';
-import { initSocket } from './socket';
-import { errorHandler } from './middleware/error.middleware';
-import bodyParser from 'body-parser';
+import express from 'express'
+import cors from 'cors'
+import http from 'http'
+import router from './modules/router'
+import { initSocket } from './socket'
+import { errorHandler } from './middleware/error.middleware'
+import bodyParser from 'body-parser'
+import redis from './config/redis.config'
 
-const app = express();
-const server = http.createServer(app);
+const app = express()
+const server = http.createServer(app)
 
 // Cấu hình CORS
-app.use(cors({
-  origin: "*", 
-  methods: ["GET", "POST", "PUT", "DELETE"],
-  credentials: true  
-}));
-app.use(bodyParser.json({limit: '50mb'}));
-app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
+app.use(
+  cors({
+    origin: '*',
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    credentials: true
+  })
+)
+app.use(bodyParser.json({ limit: '50mb' }))
+app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }))
 
-initSocket(server);
+initSocket(server)
 
 app.use(router)
 app.use((err: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {
-  errorHandler(err, req, res, next);
-});
-
-app.use('/', (_req,res) =>{
-  return res.json({"cvbn":"DFGHJK"})
+  errorHandler(err, req, res, next)
 })
-server.listen(8989, () => {
-  console.log('Server is running');
-  console.log('Listening on http://localhost:8989');
-});
+
+server.listen(8989, async () => {
+  const keys = await redis.keys('*')
+  console.log('All keys:', keys)
+
+  console.log('Listening on http://localhost:8989')
+})
