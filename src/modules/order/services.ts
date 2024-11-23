@@ -299,7 +299,12 @@ export class OrderService {
   async getAllOrderOfCustomer(customerId: string, next: NextFunction): Promise<any> {
     try {
       const orderDetail = await prisma.order.findMany({
-        where: { customerId: customerId }
+        where: {
+          customerId: customerId,
+          AND: {
+            status: 'SUCCESS'
+          }
+        }
       })
       if (!orderDetail) {
         throw new ApiError(400, 'Failed to delete table')

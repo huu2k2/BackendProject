@@ -24,7 +24,11 @@ app.use(router)
 app.use((err: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {
   errorHandler(err, req, res, next);
 });
- 
+
+app.use('/', (_req,res) =>{
+  return res.json({"cvbn":"DFGHJK"})
+})
 server.listen(8989, () => {
+  console.log('Server is running');
   console.log('Listening on http://localhost:8989');
 });

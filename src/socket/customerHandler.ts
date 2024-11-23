@@ -32,8 +32,6 @@ export class CustomerHandler {
     customerSocket.on(
       'requestCanleOrderDetail',
       async ({ orderDetails, orderId }: { orderDetails: string[]; orderId: string }) => {
-        console.log(orderDetails)
-        console.log(orderId)
         let result = await orderService.deleteOrderDetailSocket(orderDetails)
         customerSocket.emit('sendNotification', {
           mess: `remove successful ${result} datas`,

@@ -17,7 +17,7 @@ const router = express.Router()
 
 router.use(express.json())
 router.use('/api/areas', isAuthenticated, areaRouter)
-router.use('/api/customers', isAuthenticated, customerRouter)
+router.use('/api/customers', customerRouter)
 router.use('/api/orders', isAuthenticated, orderRouter)
 router.use('/api/payments', isAuthenticated, paymentRouter)
 router.use('/api/accounts', isAuthenticated, accountRouter)
