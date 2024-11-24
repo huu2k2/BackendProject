@@ -129,4 +129,15 @@ export class TableController {
       next(error)
     }
   }
+
+  async updateStatusTable(req: Request, res: Response, next: NextFunction): Promise<any> {
+    try {
+      const { tableId } = req.params
+      const result = await tableService.updateStatusTableById(tableId)
+      return res.json(result)
+    } catch (error) {
+      next(error)
+    }
+  }
+
 }

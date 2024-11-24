@@ -1,6 +1,5 @@
 import { Namespace, Server, Socket } from 'socket.io'
 import { CHEFF } from '../utils/namespase'
-import { customerList } from '.'
 import { OrderService } from '../modules/order/services'
 import { OrderDetail } from '@prisma/client'
 import redis from '../config/redis.config'

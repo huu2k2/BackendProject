@@ -31,6 +31,5 @@ app.use((err: Error, req: express.Request, res: express.Response, next: express.
 server.listen(8989, async () => {
   const keys = await redis.keys('*')
   console.log('All keys:', keys)
-
   console.log('Listening on http://localhost:8989')
 })

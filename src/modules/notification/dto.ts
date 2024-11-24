@@ -1,16 +1,18 @@
-import { NotificationStatus,ReceiverType } from "@prisma/client";
-export enum TypeGet{
+import { NotificationStatus, ReceiverType } from '@prisma/client'
+export enum TypeGet {
   SENDER = 'SENDER',
-  RECEIVER = 'RECEIVER',
+  RECEIVER = 'RECEIVER'
 }
-export interface CreateNotificationInput{
-  type:ReceiverType;
-  content:string;
-  status:NotificationStatus;
-  receiverId:string;
-  senderId:string;
+export interface CreateNotificationInput {
+  type: ReceiverType
+  content: string
+  status: NotificationStatus
+  receiverId: string
+  senderId: string
+  orderId: string
+  productId: string
 }
-export interface GetNotficationInput{
-  type: TypeGet;
-  senderId:string;
+export interface GetNotficationInput {
+  type: TypeGet
+  senderId: string
 }

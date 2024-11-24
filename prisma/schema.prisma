@@ -94,9 +94,10 @@ model Notification {
   status          NotificationStatus
   createdAt       DateTime            @default(now()) @map("created_at")
   updatedAt       DateTime            @updatedAt @map("updated_at")
-  senderId        String?
-  receiverId      String?
-
+  senderId        String?             @map("sender_id")
+  receiverId      String?             @map("receiver_id")
+  orderId         String?             @map("order_id")
+  productId        String?             @map("product_id")
   account         Account? @relation("AccountNotifications", fields: [senderId], references: [accountId])
   customer        Customer? @relation("CustomerNotifications", fields: [receiverId], references: [customerId])
 

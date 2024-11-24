@@ -25,7 +25,8 @@ export class CheffHandler {
 
       this.getAllOrdersFromCheff(socket)
 
-      this.sendNotificationHandler.handelSendNotificationFromCheff(socket)
+      this.sendNotificationHandler.handlerSendNotificationFromCheff(socket)
+      this.sendNotificationHandler.handlerRemoveOrderAfterPayment(socket)
 
       socket.on('disconnect', () => {})
     })

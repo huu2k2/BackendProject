@@ -26,4 +26,6 @@ router.route('/detail/:id/order').get(isStaff || isCustomer || isChef, controlle
 
 router.route('/:tableId/merge').post(isStaff, controller.createMergeTable)
 
+router.route('/:tableId').put(controller.updateStatusTable)
+
 export default router

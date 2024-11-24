@@ -14,10 +14,16 @@ export class SendNotificationHandler {
     this.io = io; // Gán io vào class
   }
 
-  async handelSendNotificationFromCheff(socket: Socket) {
+  async handlerSendNotificationFromCheff(socket: Socket) {
     this.registerEvent(socket, KeyNotification.CancelledDish);
     this.registerEvent(socket, KeyNotification.ConfirmedDish);
     this.registerEvent(socket, KeyNotification.SuccessDish);
+  }
+
+  async handlerRemoveOrderAfterPayment(socket: Socket){
+    socket.on("payment", async (orderId: string ) => {
+      await redis.del(orderId)
+    });
   }
 
   private registerEvent(socket: Socket, event: KeyNotification) {
@@ -29,7 +35,7 @@ export class SendNotificationHandler {
   private async handleNotification(
     socket: Socket,
     event: KeyNotification,
-    { nameDish, orderId, receiverId, senderId }: NotificationPayload
+    { nameDish, orderId, receiverId, senderId, productId }: NotificationPayload
   ) {
  
     try {
@@ -40,13 +46,15 @@ export class SendNotificationHandler {
         data: nameDish,
         message: notification,
       });
-
+      
       const payload: CreateNotificationInput = {
         type: ReceiverType.CUSTOMER,
-        content: `${notification} ${nameDish}`,
+        content: `${nameDish}`,
         status: NotificationStatus.UNREAD,
         receiverId,
         senderId,
+        orderId,
+        productId
       };
        await notificationService.createNotification(payload);
       
@@ -64,4 +72,5 @@ type NotificationPayload = {
   orderId: string;
   receiverId: string;
   senderId: string;
+  productId: string;
 };
