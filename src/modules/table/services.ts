@@ -126,7 +126,6 @@ export class TableService {
     customerId: string,
     next: NextFunction
   ): Promise<{ order: IOrder; tableDetail: TableDetail } | undefined> {
-    console.log('tableId, customerId', customerId)
     let order = await orderService.createOrder(customerId, next)
 
     if (!order) {

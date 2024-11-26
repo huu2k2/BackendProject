@@ -14,6 +14,8 @@ export class CustomerHandler {
     this.io = io
     this.cheffNamespace = this.io.of(CHEFF)
     this.io.on('connection', (socket) => {
+      this.againConnect(socket)
+
       this.recieveNewOrder(socket)
 
       this.recieveOrderStatus(socket)
@@ -25,6 +27,13 @@ export class CustomerHandler {
       this.receiveNewOrderDetailFromCustomer(socket)
 
       socket.on('disconnect', () => {})
+    })
+  }
+
+  async againConnect(customerSocket: Socket) {
+    customerSocket.on('agianConnect', (val) => {
+      customerList.set(val, customerSocket)
+      console.log('check customer', customerList.get(val).id)
     })
   }
 
@@ -61,8 +70,6 @@ export class CustomerHandler {
 
   async recieveNewOrder(socket: Socket) {
     socket.on('sendOrder', (val: string) => {
-      console.log(val)
-      customerList.set(val, socket)
       try {
         if (this.cheffNamespace.sockets.size > 0) {
           this.io.of(CHEFF).emit('newOrder', val)
@@ -77,7 +84,6 @@ export class CustomerHandler {
 
   async receiveNewOrderDetailFromCustomer(socket: any) {
     socket.on('sendOrderDetail', async ({ data, orderId }: { data: OrderDetail[]; orderId: string }) => {
-      console.log(data)
       this.io.of(CHEFF).emit('sendOrderDetailForCheff', data)
       this.io.of(CHEFF).emit('sendUpdateOrderQuantityForCheff', { orderId: orderId, quantity: data.length })
     })

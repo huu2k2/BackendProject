@@ -56,7 +56,6 @@ export class ProductController {
   async getProductByCategoryById(req: Request, res: Response, next: NextFunction): Promise<any> {
     try {
       const { categoryId } = req.params
-      console.log(categoryId)
       const products = await productService.getProductByCategoryById(categoryId, next)
       return res.status(200).json({
         message: 'Get products success',

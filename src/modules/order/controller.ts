@@ -71,7 +71,6 @@ export class OrderController {
 
   async updateOrder(req: Request, res: Response, next: NextFunction): Promise<any> {
     try {
-      // console.log(req.body)
       const order = await orderService.updateOrder(req.params.orderId, req.body, next)
       return res.json({ message: 'update successful', data: order })
     } catch (error) {

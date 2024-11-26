@@ -1,7 +1,7 @@
 import { Namespace, Server, Socket } from 'socket.io'
 import { CHEFF, CUSTOMER } from '../utils/namespase'
 import { OrderService } from '../modules/order/services'
-import { cheffList } from '.'
+import { cheffList, customerList } from '.'
 
 const orderService = new OrderService()
 
@@ -68,8 +68,10 @@ export class CheffHandler {
         socket.emit('getUpdateOrdersQuantityFromCheff', { orderId, quantity: orderDetailIds.length, updateType })
 
         // emit to customer
-        // FIX
-        this.server.of('/').emit('updateOrderDetailStatusForCustomer', { orderId, orderDetailIds, updateType })
+        const socketCustomer = customerList.get(orderId)
+        console.log("checkCheff",socketCustomer.id)
+        socketCustomer.emit('updateOrderDetailStatusForCustomer', { orderId, orderDetailIds, updateType })
+        // socket.to(socketCustomer)
       }
     )
   }
@@ -77,7 +79,6 @@ export class CheffHandler {
   async getAllOrdersFromCheff(socket: any) {
     socket.on('getAllOrdersFromCheff', async (mess: string) => {
       const result = await orderService.getOrdersSocket()
-      // console.log(result)
       socket.emit('sendAllOrdersFromCheff', result)
     })
   }

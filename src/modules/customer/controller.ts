@@ -42,7 +42,6 @@ export class CustomerController {
 
   async updateCustomer(req: Request, res: Response, next: NextFunction): Promise<any> {
     try {
-      console.log(1)
       const customer = await customerService.updateCustomer(req.params.customerId, req.body, next)
       return res.json({ message: 'update successful', data: customer })
     } catch (error) {

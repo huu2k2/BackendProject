@@ -2,8 +2,7 @@ import { IGetOrderDetail, IOrder, IOrderDetail, IOrderMerge, IOrderSocket, Socke
 import { OrderDetail, OrderDetailStatus, OrderStatus, PrismaClient, Table } from '@prisma/client'
 import { NextFunction } from 'express'
 import { ApiError } from '../../middleware/error.middleware'
-import { stat } from 'fs'
-import { console } from 'inspector'
+
 
 const prisma = new PrismaClient()
 
@@ -119,7 +118,6 @@ export class OrderService {
         where: { orderId: orderId },
         data: dto
       })
-      console.log(updateOrder)
       if (!updateOrder) {
         throw new ApiError(400, 'Failed to update table')
       }
@@ -352,7 +350,6 @@ export class OrderService {
         if (!order) {
           reject('Failed to get order')
         }
-        console.log()
         resolve(order!.orderDetails)
       } catch (error) {
         reject(error)
