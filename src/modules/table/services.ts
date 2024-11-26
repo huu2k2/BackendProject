@@ -4,7 +4,7 @@ import { NextFunction } from 'express'
 import { ApiError } from '../../middleware/error.middleware'
 import { OrderService } from '../order/services'
 import { IOrder } from '../order/interface'
-import { table, table } from 'console'
+import { table } from 'console'
 
 const prisma = new PrismaClient()
 const orderService = new OrderService()

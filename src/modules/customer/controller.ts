@@ -32,7 +32,7 @@ export class CustomerController {
     try {
       const customer = await customerService.getCustomersById(req.params.customerId, next)
       if (!customer) {
-        return res.status(404).json({ message: 'Table not found' })
+        return res.status(404).json({ message: 'Customer not found' })
       }
       return res.json({ message: 'get successful', data: customer })
     } catch (error) {

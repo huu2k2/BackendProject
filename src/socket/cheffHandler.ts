@@ -38,7 +38,7 @@ export class CheffHandler {
     socket.on(
       'cancelOrders',
       async ({ orderId, orderDetailIds, reason }: { orderId: string; orderDetailIds: string[]; reason: string }) => {
-        console.log(reason, orderDetailIds)
+        // console.log(reason, orderDetailIds)
         // get order detail to get table
         // emit to customer
       }
@@ -65,6 +65,7 @@ export class CheffHandler {
           mess = error
         }
         socket.emit('getUpdateOrdersDetailFromCheff', { mess, result, updateType })
+        socket.emit('getUpdateOrdersQuantityFromCheff', { orderId, quantity: orderDetailIds.length, updateType })
 
         // emit to customer
         // FIX
@@ -76,7 +77,7 @@ export class CheffHandler {
   async getAllOrdersFromCheff(socket: any) {
     socket.on('getAllOrdersFromCheff', async (mess: string) => {
       const result = await orderService.getOrdersSocket()
-      console.log(result)
+      // console.log(result)
       socket.emit('sendAllOrdersFromCheff', result)
     })
   }
