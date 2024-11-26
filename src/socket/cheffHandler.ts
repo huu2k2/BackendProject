@@ -2,6 +2,8 @@ import { Namespace, Server, Socket } from 'socket.io'
 import { CHEFF, CUSTOMER } from '../utils/namespase'
 import { OrderService } from '../modules/order/services'
 import { cheffList, customerList } from '.'
+import { prisma } from '../prismaClient'
+import { notificationService } from '../modules/notification/service'
 
 const orderService = new OrderService()
 
@@ -38,9 +40,9 @@ export class CheffHandler {
     socket.on(
       'cancelOrders',
       async ({ orderId, orderDetailIds, reason }: { orderId: string; orderDetailIds: string[]; reason: string }) => {
-        // console.log(reason, orderDetailIds)
-        // get order detail to get table
-        // emit to customer
+        const notification =  await notificationService.notifyOfCheffWithCustomer(orderId, reason);
+        const socketCustomer = customerList.get(orderId)
+        this.server.to(socketCustomer.id).emit('receiveNotification', 'Bếp đã huỷ món của bạn')
       }
     )
   }
@@ -67,11 +69,10 @@ export class CheffHandler {
         socket.emit('getUpdateOrdersDetailFromCheff', { mess, result, updateType })
         socket.emit('getUpdateOrdersQuantityFromCheff', { orderId, quantity: orderDetailIds.length, updateType })
 
-        // emit to customer
         const socketCustomer = customerList.get(orderId)
-        console.log("checkCheff",socketCustomer.id)
-        socketCustomer.emit('updateOrderDetailStatusForCustomer', { orderId, orderDetailIds, updateType })
-        // socket.to(socketCustomer)
+        this.server
+          .to(socketCustomer.id)
+          .emit('updateOrderDetailStatusForCustomer', { orderId, orderDetailIds, updateType })
       }
     )
   }

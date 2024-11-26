@@ -1,5 +1,8 @@
 import { PrismaClient } from '@prisma/client'
 import { CreateNotificationInput, GetNotficationInput, TypeGet } from './dto'
+import { ApiError } from '../../middleware/error.middleware'
+import { CHEFF } from '../../utils/namespase'
+import { ERole } from '../../common/enum'
 
 const prisma = new PrismaClient()
 
@@ -32,7 +35,7 @@ export class NotificationService {
       throw new Error('Thiếu senderId hoặc type trong đầu vào.')
     }
 
-    let where;
+    let where
     if (body.type === TypeGet.RECEIVER) {
       where = {
         receiverId: body.senderId
@@ -47,6 +50,44 @@ export class NotificationService {
       orderBy: { createdAt: 'desc' }
     })
     return notificationData || []
+  }
+
+  async notifyOfCheffWithCustomer(orderId: string, reason: string): Promise<any> {
+    try {
+      const role = await prisma.role.findFirst({
+        where: {
+          name: ERole.CHEFF
+        }
+      })
+      const cheff = await prisma.account.findFirst({
+        where: {
+          role: role
+        }
+      })
+
+      const order = await prisma.order.findFirst({
+        where: {
+          orderId: orderId
+        },
+        include: {
+          customer: true
+        }
+      })
+
+      const notification = prisma.notification.create({
+        data: {
+          content: reason,
+          status: 'UNREAD',
+          senderId: cheff?.accountId,
+          receiverId: order?.customerId,
+          type: 'CUSTOMER'
+        }
+      })
+
+      return notification
+    } catch (error) {
+      throw new ApiError(400, 'error create notification')
+    }
   }
 }
 

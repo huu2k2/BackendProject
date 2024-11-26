@@ -32,8 +32,10 @@ export class CustomerHandler {
 
   async againConnect(customerSocket: Socket) {
     customerSocket.on('agianConnect', (val) => {
-      customerList.set(val, customerSocket)
-      console.log('check customer', customerList.get(val).id)
+      if (val) {
+        customerList.set(val, customerSocket)
+        console.log('check customer', customerList.get(val).id)
+      }
     })
   }
 
