@@ -85,7 +85,6 @@ export class TableController {
         message: 'create detail success',
         data: result
       })
-      return 'true'
     } catch (error) {
       next(error)
     }

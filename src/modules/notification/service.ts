@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client'
+import { Notification, PrismaClient } from '@prisma/client'
 import { CreateNotificationInput, GetNotficationInput, TypeGet } from './dto'
 import { ApiError } from '../../middleware/error.middleware'
 import { CHEFF } from '../../utils/namespase'
@@ -50,6 +50,19 @@ export class NotificationService {
       orderBy: { createdAt: 'desc' }
     })
     return notificationData || []
+  }
+
+  async getAllNotification(id: string): Promise<Notification[]> {
+    try {
+      const ressult = await prisma.notification.findMany({
+        where: {
+          receiverId: id
+        }
+      })
+      return ressult
+    } catch (error) {
+      throw error
+    }
   }
 
   async notifyOfCheffWithCustomer(orderId: string, reason: string): Promise<any> {

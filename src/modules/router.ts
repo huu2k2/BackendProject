@@ -7,6 +7,7 @@ import tableRouter from './table/router'
 import productRouter from './product/router'
 import categoryRouter from './category/router'
 import areaRouter from './area/router'
+import notificationRouter from './notification/router'
 import orderRouter from './order/router'
 import paymentRouter from './payment/router'
 import customerRouter from './customer/router'
@@ -17,6 +18,7 @@ const router = express.Router()
 
 router.use(express.json())
 router.use('/api/areas', isAuthenticated, areaRouter)
+router.use('/api/notifications', notificationRouter)
 router.use('/api/customers', customerRouter)
 router.use('/api/orders', isAuthenticated, orderRouter)
 router.use('/api/payments', isAuthenticated, paymentRouter)
