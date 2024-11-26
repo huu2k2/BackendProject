@@ -125,6 +125,7 @@ export class TableService {
     customerId: string,
     next: NextFunction
   ): Promise<{ order: IOrder; tableDetail: TableDetail } | undefined> {
+
     const isExistOrder = await prisma.order.findMany({
       where: {
         customerId: customerId,   
@@ -142,14 +143,11 @@ export class TableService {
           orderId: isExistOrder[0].orderId, 
         }
       });
-      console.log(isExistTableDetail)
       if (isExistTableDetail) {
         return { order: isExistOrder[0], tableDetail: isExistTableDetail };
       }
     }
   
-    
-    
     const order = await orderService.createOrder(customerId, next); 
     if (!order) {
       throw new ApiError(400, 'Failed to create order for table');
