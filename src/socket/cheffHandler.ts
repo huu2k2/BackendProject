@@ -37,14 +37,14 @@ export class CheffHandler {
   }
 
   async cancelOrdersFromCheff(socket: any) {
-    socket.on(
-      'cancelOrders',
-      async ({ orderId, orderDetailIds, reason }: { orderId: string; orderDetailIds: string[]; reason: string }) => {
-        const notification =  await notificationService.notifyOfCheffWithCustomer(orderId, reason);
-        const socketCustomer = customerList.get(orderId)
-        this.server.to(socketCustomer.id).emit('receiveNotification', 'Bếp đã huỷ món của bạn')
-      }
-    )
+    socket.on('cancelOrders', async ({ orderId, reason }: { orderId: string; reason: string }) => {
+      const content = `Món ăn của bạn đã bị huỷ do: ${reason}`,
+        title = 'Thông báo huỷ món'
+
+      const notification = await notificationService.notifyToCustomer(orderId, content, title)
+      const socketCustomer = customerList.get(orderId)
+      this.server.to(socketCustomer.id).emit('receiveNotification', notification)
+    })
   }
 
   async updateOrdersDetailFromCheff(socket: any) {

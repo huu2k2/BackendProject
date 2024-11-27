@@ -24,7 +24,7 @@ export interface IOrderSocket {
   orderMergeId?: string | null
   createdAt?: Date
   updatedAt?: Date
-  tableDetails?: TableDetailSocket
+  tableDetail?: TableDetailSocket
   orderDetails?: OrderDetail[]
 }
 

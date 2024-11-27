@@ -10,7 +10,7 @@ export class CustomerController {
       if ('message' in customer) {
         return res.status(200).json({
           message: customer.message,
-          data: customer.data
+          data: customer
         })
       }
       return res.status(201).json({ message: 'create successful', data: customer })

@@ -1,12 +1,12 @@
 import { NextFunction, Request, Response } from 'express'
 import { notificationService } from './service'
-import { CreateNotificationInput, GetNotficationInput } from './dto'
+import { INotification, GetNotficationInput } from './dto'
 import jwt from 'jsonwebtoken'
 
 export class NotificationController {
   async createNotification(req: Request, res: Response, next: NextFunction): Promise<any> {
     try {
-      const rs = await notificationService.createNotification(req.body as CreateNotificationInput)
+      const rs = await notificationService.createNotification(req.body as INotification)
     } catch (error) {
       next(error)
     }

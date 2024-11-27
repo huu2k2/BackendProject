@@ -1,25 +1,21 @@
 import { Notification, PrismaClient } from '@prisma/client'
-import { CreateNotificationInput, GetNotficationInput, TypeGet } from './dto'
+import { INotification } from './dto'
 import { ApiError } from '../../middleware/error.middleware'
-import { CHEFF } from '../../utils/namespase'
-import { ERole } from '../../common/enum'
 
 const prisma = new PrismaClient()
 
 export class NotificationService {
-  async createNotification(body: CreateNotificationInput): Promise<any> {
-    const { type, content, status, receiverId, senderId } = body
+  async createNotification(body: INotification): Promise<any> {
+    const { title, content, receiverId } = body
 
     if (!receiverId || !content) {
       throw new Error('receiverId và content là bắt buộc.')
     }
     const newNotification = await prisma.notification.create({
       data: {
-        type,
+        title,
         content,
-        status,
-        receiverId,
-        senderId
+        receiverId
       }
     })
 
@@ -30,23 +26,11 @@ export class NotificationService {
     }
   }
 
-  async getAllNotificationById(body: GetNotficationInput) {
-    if (!body.senderId || !body.type) {
-      throw new Error('Thiếu senderId hoặc type trong đầu vào.')
-    }
-
-    let where
-    if (body.type === TypeGet.RECEIVER) {
-      where = {
-        receiverId: body.senderId
-      }
-    } else {
-      where = {
-        senderId: body.senderId
-      }
-    }
+  async getAllNotificationById(body: INotification): Promise<Notification[]> {
     const notificationData = await prisma.notification.findMany({
-      where,
+      where: {
+        receiverId: body.receiverId
+      },
       orderBy: { createdAt: 'desc' }
     })
     return notificationData || []
@@ -65,19 +49,8 @@ export class NotificationService {
     }
   }
 
-  async notifyOfCheffWithCustomer(orderId: string, reason: string): Promise<any> {
+  async notifyToCustomer(orderId: string, content: string, title: string): Promise<any> {
     try {
-      const role = await prisma.role.findFirst({
-        where: {
-          name: ERole.CHEFF
-        }
-      })
-      const cheff = await prisma.account.findFirst({
-        where: {
-          role: role
-        }
-      })
-
       const order = await prisma.order.findFirst({
         where: {
           orderId: orderId
@@ -87,15 +60,43 @@ export class NotificationService {
         }
       })
 
-      const notification = prisma.notification.create({
+      const notification = await prisma.notification.create({
         data: {
-          content: reason,
-          status: 'UNREAD',
-          senderId: cheff?.accountId,
-          receiverId: order?.customerId,
-          type: 'CUSTOMER'
+          title: title,
+          content: content,
+          receiverId: order?.customerId
         }
       })
+
+      return notification
+    } catch (error) {
+      throw new ApiError(400, 'error create notification')
+    }
+  }
+
+  async notifyToStaff(content: string, title: string): Promise<any> {
+    try {
+      const role = await prisma.role.findFirst({
+        where: {
+          name: 'STAFF'
+        }
+      })
+
+      const staffs = await prisma.account.findMany({
+        where: { role: role }
+      })
+
+      staffs.forEach(async (staff) => {
+        await prisma.notification.create({
+          data: {
+            title: title,
+            content: content,
+            receiverId: staff?.accountId
+          }
+        })
+      })
+
+      const notification = { title, content }
 
       return notification
     } catch (error) {

@@ -3,7 +3,6 @@ import { OrderDetail, OrderDetailStatus, OrderStatus, PrismaClient, Table } from
 import { NextFunction } from 'express'
 import { ApiError } from '../../middleware/error.middleware'
 
-
 const prisma = new PrismaClient()
 
 export class OrderService {
@@ -438,8 +437,8 @@ export class OrderService {
     }
   }
 
-  async getOrderByIdSocket(orderId: string): Promise<Omit<IOrderSocket, 'tableDetails'> | undefined> {
-    const order = await prisma.order.findUnique({
+  async getOrderByIdSocket(orderId: string): Promise<IOrderSocket> {
+    let order = await prisma.order.findFirst({
       where: { orderId: orderId },
       include: {
         customer: true,
@@ -456,6 +455,7 @@ export class OrderService {
     if (!order) {
       throw new ApiError(400, 'Failed to get order')
     }
+    console.log(order.tableDetail?.table)
     return order
   }
 }

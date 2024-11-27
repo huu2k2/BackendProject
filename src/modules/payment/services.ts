@@ -52,6 +52,19 @@ export class PaymentService {
     }
   }
 
+  async getPaymentByIdSocket(paymentId: string): Promise<string> {
+    try {
+      const payment = await prisma.payment.findFirst({
+        where: { paymentId: paymentId },
+        include: { order: { include: { tableDetail: { include: { table: true } } } } }
+      })
+
+      return payment!.order!.tableDetail!.table.name
+    } catch (error) {
+      throw 'error update'
+    }
+  }
+
   async confirmPayment(
     dataPayment: { paymentId: string; tableId: string },
     next: NextFunction

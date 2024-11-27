@@ -9,7 +9,7 @@ export const generateTokenWithExpireTime = (payload: any, time: string): string 
 }
 
 export const generateTokenAndRefreshToken = (payload: any): { token: string; refreshToken: string } => {
-  const token = generateTokenWithExpireTime(payload, '1h')
+  const token = generateTokenWithExpireTime(payload, '5h')
   const refreshToken = generateTokenWithExpireTime(payload, '7d')
   return { token, refreshToken }
 }

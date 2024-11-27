@@ -61,8 +61,7 @@ export class CustomerService {
     try {
       const customers = await prisma.customer.findMany({
         include: {
-          orders: true,
-          notifications: true
+          orders: true
         }
       })
       if (!customers) {
@@ -79,8 +78,7 @@ export class CustomerService {
       const customer = await prisma.customer.findUnique({
         where: { customerId },
         include: {
-          orders: true,
-          notifications: true
+          orders: true
         }
       })
       if (!customer) {

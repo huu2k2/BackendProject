@@ -33,8 +33,7 @@ export class AccountService {
         },
         include: {
           profile: true,
-          role: true,
-          notifications: true
+          role: true
         }
       })
 
