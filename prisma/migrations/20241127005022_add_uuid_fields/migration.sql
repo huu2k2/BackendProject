@@ -48,12 +48,9 @@ CREATE TABLE `customers` (
 -- CreateTable
 CREATE TABLE `notifications` (
     `notification_id` VARCHAR(191) NOT NULL DEFAULT (UUID()),
-    `type` ENUM('ACCOUNT', 'CUSTOMER') NOT NULL,
+    `title` VARCHAR(191) NOT NULL,
     `content` VARCHAR(191) NOT NULL,
-    `status` ENUM('UNREAD', 'READ') NOT NULL,
     `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
-    `updated_at` DATETIME(3) NOT NULL,
-    `senderId` VARCHAR(191) NULL,
     `receiverId` VARCHAR(191) NULL,
 
     PRIMARY KEY (`notification_id`)
@@ -168,12 +165,6 @@ ALTER TABLE `profiles` ADD CONSTRAINT `profiles_account_id_fkey` FOREIGN KEY (`a
 
 -- AddForeignKey
 ALTER TABLE `accounts` ADD CONSTRAINT `accounts_role_id_fkey` FOREIGN KEY (`role_id`) REFERENCES `roles`(`role_id`) ON DELETE SET NULL ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE `notifications` ADD CONSTRAINT `notifications_senderId_fkey` FOREIGN KEY (`senderId`) REFERENCES `accounts`(`account_id`) ON DELETE SET NULL ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE `notifications` ADD CONSTRAINT `notifications_receiverId_fkey` FOREIGN KEY (`receiverId`) REFERENCES `customers`(`customer_id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `orders` ADD CONSTRAINT `orders_customer_id_fkey` FOREIGN KEY (`customer_id`) REFERENCES `customers`(`customer_id`) ON DELETE RESTRICT ON UPDATE CASCADE;

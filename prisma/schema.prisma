@@ -62,7 +62,6 @@ model Account {
   isActive      Boolean     @default(true) @map("is_active")
   profile       Profile?
   createdAt     DateTime    @default(now()) @map("created_at")
-  notifications Notification[] @relation("AccountNotifications")
 
   @@map("accounts")
 }
@@ -81,7 +80,6 @@ model Customer {
   name         String
   phoneNumber  String    @map("phone_number") @db.VarChar(20)
   orders       Order[]
-  notifications Notification[] @relation("CustomerNotifications")
   createdAt    DateTime  @default(now()) @map("created_at")
 
   @@map("customers")
@@ -89,16 +87,10 @@ model Customer {
 
 model Notification {
   notificationId  String              @id @default(dbgenerated("(UUID())")) @map("notification_id")
-  type            ReceiverType        
+  title           String        
   content         String
-  status          NotificationStatus
   createdAt       DateTime            @default(now()) @map("created_at")
-  updatedAt       DateTime            @updatedAt @map("updated_at")
-  senderId        String?
   receiverId      String?
-
-  account         Account? @relation("AccountNotifications", fields: [senderId], references: [accountId])
-  customer        Customer? @relation("CustomerNotifications", fields: [receiverId], references: [customerId])
 
   @@map("notifications")
 }
