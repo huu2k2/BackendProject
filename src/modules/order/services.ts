@@ -1,5 +1,5 @@
 import { IGetOrderDetail, IOrder, IOrderDetail, IOrderMerge, IOrderSocket, SocketOrer } from './interface'
-import { OrderDetail, OrderDetailStatus, OrderStatus, PrismaClient, Table } from '@prisma/client'
+import { Order, OrderDetail, OrderDetailStatus, OrderStatus, PrismaClient, Table } from '@prisma/client'
 import { NextFunction } from 'express'
 import { ApiError } from '../../middleware/error.middleware'
 
@@ -210,7 +210,9 @@ export class OrderService {
       }
 
       order.orderDetails.forEach((item) => {
-        result.push(item)
+        if (item.status === 'COMPLETED') {
+          result.push(item)
+        }
       })
 
       if (order?.orderMergeId) {
@@ -232,7 +234,9 @@ export class OrderService {
 
         orders.forEach((order) => {
           order.orderDetails.forEach((item) => {
-            result.push(item)
+            if (item.status === 'COMPLETED') {
+              result.push(item)
+            }
           })
         })
       }
@@ -437,7 +441,7 @@ export class OrderService {
     }
   }
 
-  async getOrderByIdSocket(orderId: string): Promise<IOrderSocket> {
+  async getOrderByIdSocket(orderId: string): Promise<Order> {
     let order = await prisma.order.findFirst({
       where: { orderId: orderId },
       include: {
@@ -455,7 +459,6 @@ export class OrderService {
     if (!order) {
       throw new ApiError(400, 'Failed to get order')
     }
-    console.log(order.tableDetail?.table)
     return order
   }
 }

@@ -1,6 +1,6 @@
 import { OrderStatus, Payment, PaymentStatus, PrismaClient, Table, TableStatus } from '@prisma/client'
 import { NextFunction } from 'express'
-import { IPayment } from './interface'
+import { IPayment, IPaymentSocket } from './interface'
 import { ApiError } from '../../middleware/error.middleware'
 
 const prisma = new PrismaClient()
@@ -52,14 +52,18 @@ export class PaymentService {
     }
   }
 
-  async getPaymentByIdSocket(paymentId: string): Promise<string> {
+  async getPaymentByIdSocket(paymentId: string): Promise<IPaymentSocket> {
     try {
       const payment = await prisma.payment.findFirst({
         where: { paymentId: paymentId },
         include: { order: { include: { tableDetail: { include: { table: true } } } } }
       })
 
-      return payment!.order!.tableDetail!.table.name
+      if (!payment) {
+        throw new Error('Payment not found')
+      }
+
+      return payment as IPaymentSocket
     } catch (error) {
       throw 'error update'
     }

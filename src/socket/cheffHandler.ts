@@ -1,5 +1,5 @@
 import { Namespace, Server, Socket } from 'socket.io'
-import { CHEFF, CUSTOMER } from '../utils/namespase'
+import { CHEFF, CUSTOMER, STAFF } from '../utils/namespase'
 import { OrderService } from '../modules/order/services'
 import { cheffList, customerList } from '.'
 import { prisma } from '../prismaClient'
@@ -25,6 +25,8 @@ export class CheffHandler {
 
       this.getAllOrdersFromCheff(socket)
 
+      this.receiveDishUp(socket)
+
       socket.on('disconnect', () => {})
     })
   }
@@ -36,11 +38,23 @@ export class CheffHandler {
     })
   }
 
+  async receiveDishUp(socket: any) {
+    socket.on('dishUp', async ({ orderId, quantity }: { orderId: string; quantity: number }) => {
+      console.log(orderId, quantity)
+
+      const content = `${quantity} món đã hoàn thành`,
+        title = 'Thông báo món hoàn thành'
+
+      const notification = await notificationService.notifyToStaff(content, title)
+      this.server.of(STAFF).emit('sendToDishUp', notification)
+    })
+  }
+
   async cancelOrdersFromCheff(socket: any) {
     socket.on('cancelOrders', async ({ orderId, reason }: { orderId: string; reason: string }) => {
       const content = `Món ăn của bạn đã bị huỷ do: ${reason}`,
         title = 'Thông báo huỷ món'
-
+      console.log(title)
       const notification = await notificationService.notifyToCustomer(orderId, content, title)
       const socketCustomer = customerList.get(orderId)
       this.server.to(socketCustomer.id).emit('receiveNotification', notification)

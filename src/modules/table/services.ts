@@ -150,48 +150,47 @@ export class TableService {
     // return { order, tableDetail }
     const isExistOrder = await prisma.order.findMany({
       where: {
-        customerId: customerId,   
+        customerId: customerId
       },
       orderBy: {
-        createdAt: 'desc',   
+        createdAt: 'desc'
       },
-      take: 1,   
-    });
- 
+      take: 1
+    })
+
     if (isExistOrder.length > 0) {
       const isExistTableDetail = await prisma.tableDetail.findUnique({
         where: {
           tableId: tableId,
-          orderId: isExistOrder[0].orderId, 
+          orderId: isExistOrder[0].orderId
         }
-      });
+      })
       if (isExistTableDetail) {
-        return { order: isExistOrder[0], tableDetail: isExistTableDetail };
+        return { order: isExistOrder[0], tableDetail: isExistTableDetail }
       }
     }
-  
-    const order = await orderService.createOrder(customerId, next); 
+
+    const order = await orderService.createOrder(customerId, next)
     if (!order) {
-      throw new ApiError(400, 'Failed to create order for table');
+      throw new ApiError(400, 'Failed to create order for table')
     }
-  
+
     const tableDetail = await prisma.tableDetail.create({
       data: {
         tableId: tableId,
-        orderId: order!.orderId,   
-        startTime: new Date(),
+        orderId: order!.orderId,
+        startTime: new Date()
       }
-    });
-  
- 
+    })
+
     await prisma.table.update({
       where: { tableId: tableId },
       data: {
-        status: TableStatus.OCCUPIED,
+        status: TableStatus.OCCUPIED
       }
-    });
-  
-    return { order, tableDetail };
+    })
+
+    return { order, tableDetail }
   }
 
   async getTableDetailToMergeByTableId(tableId: string, next: NextFunction): Promise<TableDetail | undefined> {
@@ -253,9 +252,6 @@ export class TableService {
           order: {
             include: {
               orderDetails: {
-                where: {
-                  status: 'COMPLETED'
-                },
                 include: {
                   product: true
                 }

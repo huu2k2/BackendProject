@@ -103,8 +103,8 @@ export class CustomerHandler {
     socket.on('sendPaymentRequest', async (payment: any) => {
       console.log('sendPaymentRequest: ', payment.paymentId)
       // Get table name
-      const tableName = await paymentService.getPaymentByIdSocket(payment.paymentId)
-      const content = `Yêu cầu thanh toán ở bàn ${tableName}. Phương thức thanh toán ${payment.method}`,
+      const result = await paymentService.getPaymentByIdSocket(payment.paymentId)
+      const content = `Yêu cầu thanh toán ở bàn ${result.order.tableDetail?.table.name}.\nPhương thức thanh toán ${payment.method}`,
         title = 'Yêu cầu thanh toán'
       const notification = await notificationService.notifyToStaff(content, title)
       console.log(notification)
@@ -114,6 +114,7 @@ export class CustomerHandler {
   async recieveSendMergeTableRequest(socket: Socket) {
     socket.on('sendMergeTableRequest', async (orderId: any) => {
       const order = await orderService.getOrderByIdSocket(orderId)
+      console.log(order)
       let content = `Bàn ${order.tableDetail!.table.name} yêu cầu gộp bàn`,
         title = 'Yêu cầu gộp bàn'
       const notification = await notificationService.notifyToStaff(content, title)
