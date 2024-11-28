@@ -62,7 +62,7 @@ export class OrderController {
   async getAllOrderOfCustomer(req: Request, res: Response, next: NextFunction): Promise<any> {
     try {
       const { customerID } = req.params
-      const orders = await orderService.getAllOrderOfCustomer(customerID,next)
+      const orders = await orderService.getAllOrderOfCustomer(customerID, next)
       return res.json({ message: 'get successful', data: orders })
     } catch (error) {
       next(error)
@@ -161,6 +161,22 @@ export class OrderController {
     try {
       const orderDetail = await orderService.deleteOrderDetail(req.params.orderDetailId, next)
       return res.status(200).send()
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  async getTurnover(req: Request, res: Response, next: NextFunction): Promise<any> {
+    try {
+      const fromDay = req.query.fromDay as string | undefined
+      const toDay = req.query.toDay as string | undefined
+
+      if (!fromDay || !toDay) {
+        return res.status(400).json({ message: 'fromDay and toDay are required' })
+      }
+
+      const data = await orderService.getTurnover(fromDay, toDay, next)
+      return res.json({ message: 'update successful', data: data })
     } catch (error) {
       next(error)
     }

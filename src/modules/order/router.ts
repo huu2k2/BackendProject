@@ -18,6 +18,8 @@ router.route('/customer/:customerId').get(isCustomer, controller.getAllOrderOfCu
 
 router.route('/detail').post(isCustomer, controller.createOrderDetail)
 
+router.route('/turnover').get(controller.getTurnover)
+
 router.route('/merge').post(isStaff, controller.createOrderMerge).get(controller.getOrderMerges)
 
 router.route('/:orderId').get(isChef, controller.getOrderById).put(isCustomer, controller.updateOrder)

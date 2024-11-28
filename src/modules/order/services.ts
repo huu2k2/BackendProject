@@ -6,6 +6,33 @@ import { ApiError } from '../../middleware/error.middleware'
 const prisma = new PrismaClient()
 
 export class OrderService {
+  async getTurnover(fromDay: string, toDay: string, next: NextFunction): Promise<IOrder[]> {
+    const fromDate = new Date(fromDay)
+    const toDate = new Date(toDay)
+    try {
+      const orders = await prisma.order.findMany({
+        where: {
+          createdAt: {
+            gte: fromDate,
+            lte: toDate
+          }
+        },
+        include: {
+          orderDetails: {
+            include: {
+              product: true
+            }
+          }
+        }
+      })
+      if (!orders) {
+        throw new ApiError(400, 'Failed to create order merge')
+      }
+      return orders
+    } catch (error) {
+      throw error
+    }
+  }
   // Order Merge
   async createOrderMerge(dto: IOrderMerge, next: NextFunction): Promise<IOrderMerge | undefined> {
     try {
