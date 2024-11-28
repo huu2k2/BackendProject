@@ -12,6 +12,7 @@ export class OrderService {
     try {
       const orders = await prisma.order.findMany({
         where: {
+          status: 'SUCCESS',
           createdAt: {
             gte: fromDate,
             lte: toDate
