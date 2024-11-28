@@ -8,6 +8,6 @@ router
   .post(notificationController.createNotification.bind(notificationController))
   .get(notificationController.getAllNotification.bind(notificationController))
 
-// router.route('/:id').get(notificationController.getAllNotification.bind(notificationController))
+router.route('/staff').get(notificationController.getAllNotificationForStaff.bind(notificationController))
 
 export default router
