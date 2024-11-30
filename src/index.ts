@@ -25,6 +25,9 @@ app.use((err: Error, req: express.Request, res: express.Response, next: express.
   errorHandler(err, req, res, next);
 });
 
+app.get('/',(_req, res:any)=>{
+ return res.send("hello word")
+})
 
 server.listen(8989, () => {
 
