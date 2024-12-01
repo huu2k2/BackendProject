@@ -7,7 +7,11 @@ WORKDIR /app
 COPY . .
 RUN yarn 
 
+# RUN yarn migration
+
 RUN yarn generation
+
+# RUN yarn deploy
 
 # Expose cổng mà ứng dụng lắng nghe
 EXPOSE 8989
