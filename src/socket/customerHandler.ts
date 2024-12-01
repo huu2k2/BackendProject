@@ -114,8 +114,7 @@ export class CustomerHandler {
   async recieveSendMergeTableRequest(socket: Socket) {
     socket.on('sendMergeTableRequest', async (orderId: any) => {
       const order = await orderService.getOrderByIdSocket(orderId)
-      console.log(order)
-      let content = `Bàn ${order.tableDetail!.table.name} yêu cầu gộp bàn`,
+      const content = `Bàn ${order?.tableDetail?.table.name || ""} yêu cầu gộp bàn`,
         title = 'Yêu cầu gộp bàn'
       const notification = await notificationService.notifyToStaff(content, title)
       this.io.of(STAFF).emit('requestMergeTable', notification)

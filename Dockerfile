@@ -1,0 +1,16 @@
+# Giai đoạn build
+FROM node:lts-alpine as build
+
+# Thiết lập thư mục làm việc trong container
+WORKDIR /app
+
+COPY . .
+RUN yarn 
+
+RUN yarn generation
+
+# Expose cổng mà ứng dụng lắng nghe
+EXPOSE 8989
+
+# Chạy ứng dụng
+CMD  yarn start

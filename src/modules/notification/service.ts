@@ -1,22 +1,16 @@
-import { Notification, PrismaClient } from '@prisma/client'
+import { Notification, Prisma, PrismaClient } from '@prisma/client'
 import { INotification } from './dto'
 import { ApiError } from '../../middleware/error.middleware'
 
 const prisma = new PrismaClient()
 
 export class NotificationService {
-  async createNotification(body: INotification): Promise<any> {
-    const { title, content, receiverId } = body
-
-    if (!receiverId || !content) {
+  async createNotification(body: INotification | any): Promise<any> {
+    if (!body.receiverId || !body.content) {
       throw new Error('receiverId và content là bắt buộc.')
     }
     const newNotification = await prisma.notification.create({
-      data: {
-        title,
-        content,
-        receiverId
-      }
+      data: body
     })
 
     return {

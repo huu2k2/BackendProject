@@ -344,7 +344,7 @@ export class OrderService {
     }
   }
 
-  async getOrdersSocket(): Promise<IOrderSocket[]> {
+  async getOrdersSocket(): Promise<any> {
     try {
       const orders = await prisma.order.findMany({
         where: { status: OrderStatus.FAILED },
@@ -469,7 +469,7 @@ export class OrderService {
     }
   }
 
-  async getOrderByIdSocket(orderId: string): Promise<Order> {
+  async getOrderByIdSocket(orderId: string): Promise<any> {
     let order = await prisma.order.findFirst({
       where: { orderId: orderId },
       include: {

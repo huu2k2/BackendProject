@@ -272,7 +272,7 @@ export class TableService {
     tableId: string,
     data: { a: string[]; o: string[] },
     next: NextFunction
-  ): Promise<Order[] | undefined> {
+  ): Promise<any> {
     try {
       return await prisma.$transaction(async (tx) => {
         const table = await prisma.table.findFirst({

@@ -5,7 +5,9 @@ import router from './modules/router';
 import { initSocket } from './socket';
 import { errorHandler } from './middleware/error.middleware';
 import bodyParser from 'body-parser';
+import { PrismaClient } from '@prisma/client';
 
+const prisma = new PrismaClient();
 const app = express();
 const server = http.createServer(app);
 
@@ -25,11 +27,16 @@ app.use((err: Error, req: express.Request, res: express.Response, next: express.
   errorHandler(err, req, res, next);
 });
 
-app.get('/',(_req, res:any)=>{
- return res.send("hello word")
+app.get('/',async(_req, res:any)=>{
+  try {
+    const users = await prisma.account.findMany();
+    res.json({ message: 'Prisma connected successfully!', users });
+  } catch (error) {
+    res.status(500).json({ message: 'Error connecting to database', error });
+  }
 })
 
 server.listen(8989, () => {
-
+  
   console.log('Listening on http://localhost:8989');
 });
