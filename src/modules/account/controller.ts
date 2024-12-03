@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express'
 import { AccountService } from './services'
-import { ApiResponse } from '../../utils/response.util'
+
 const accountService = new AccountService()
 export class AccountController {
   createAccount = async (req: Request, res: Response, next: NextFunction): Promise<any> => {
