@@ -5,11 +5,16 @@ const service = new Service()
 
 export class Controller {
   async create(req: Request, res: Response, next: NextFunction): Promise<any> {
-    const category = await service.create(req.body, next)
-    return res.status(201).json({
-      message: 'Create success',
-      data: category
-    })
+    try {
+      const category = await service.create(req.body)
+      return res.status(201).json({
+        message: 'Create success',
+        data: category
+      })
+    } catch (error) {
+      console.log(error)
+      next(error)
+    }
   }
 
   async getAll(req: Request, res: Response, next: NextFunction): Promise<any> {

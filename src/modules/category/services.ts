@@ -8,20 +8,24 @@ import { ApiError } from '../../middleware/error.middleware'
 const prisma = new PrismaClient()
 
 export class Service {
-  async create(dto: ICategoryDto, next: NextFunction): Promise<ICategory | undefined> {
-    try {
-      const category = await prisma.category.create({
-        data: {
-          name: dto.name
-        }
-      })
-      if (!category) {
-        throw new ApiError(400, 'Failed to create category')
+  async create(dto: ICategoryDto): Promise<ICategory | undefined> {
+    const check = await prisma.category.findFirst({
+      where: {
+        name: dto.name
       }
-      return category
-    } catch (error) {
-      next(error)
+    })
+    if (check) {
+      throw new ApiError(400, 'Tên danh mục đã tồn tại!')
     }
+    const category = await prisma.category.create({
+      data: {
+        name: dto.name
+      }
+    })
+    if (!category) {
+      throw new ApiError(400, 'Failed to create category')
+    }
+    return category
   }
 
   async getAll(next: NextFunction): Promise<any> {
