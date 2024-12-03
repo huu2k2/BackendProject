@@ -40,7 +40,7 @@ export class TableService {
 
       return result[0]
     } catch (error) {
-      next(error)
+      throw error
     }
   }
 
@@ -342,7 +342,7 @@ export class TableService {
         return orders
       })
     } catch (error) {
-      next(error)
+      throw error
     }
   }
 }

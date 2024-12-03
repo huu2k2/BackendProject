@@ -94,7 +94,7 @@ export class OrderService {
       })
       return newOrder
     } catch (error) {
-      next(error)
+      throw error
     }
   }
 
@@ -174,7 +174,7 @@ export class OrderService {
 
       return orderDetails
     } catch (error) {
-      next(error)
+      throw error
     }
   }
 

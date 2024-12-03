@@ -49,7 +49,7 @@ export class AreaService {
       const area = await prisma.area.findMany()
       return area
     } catch (error) {
-      next(error)
+      throw error
     }
   }
 

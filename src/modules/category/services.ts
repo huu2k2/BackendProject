@@ -9,23 +9,27 @@ const prisma = new PrismaClient()
 
 export class Service {
   async create(dto: ICategoryDto): Promise<ICategory | undefined> {
-    const check = await prisma.category.findFirst({
-      where: {
-        name: dto.name
+    try {
+      const check = await prisma.category.findFirst({
+        where: {
+          name: dto.name
+        }
+      })
+      if (check) {
+        throw new ApiError(400, 'Tên danh mục đã tồn tại!')
       }
-    })
-    if (check) {
-      throw new ApiError(400, 'Tên danh mục đã tồn tại!')
-    }
-    const category = await prisma.category.create({
-      data: {
-        name: dto.name
+      const category = await prisma.category.create({
+        data: {
+          name: dto.name
+        }
+      })
+      if (!category) {
+        throw new ApiError(400, 'Failed to create category')
       }
-    })
-    if (!category) {
-      throw new ApiError(400, 'Failed to create category')
+      return category
+    } catch (error) {
+      throw error
     }
-    return category
   }
 
   async getAll(next: NextFunction): Promise<any> {
@@ -33,7 +37,7 @@ export class Service {
       const category = await prisma.category.findMany()
       return category
     } catch (error) {
-      next(error)
+      throw error
     }
   }
 
@@ -47,7 +51,7 @@ export class Service {
       }
       return category
     } catch (error) {
-      next(error)
+      throw error
     }
   }
 
@@ -62,7 +66,7 @@ export class Service {
       }
       return category
     } catch (error) {
-      next(error)
+      throw error
     }
   }
 
@@ -76,7 +80,7 @@ export class Service {
       }
       return true
     } catch (error) {
-      next(error)
+      throw error
     }
   }
 
