@@ -10,38 +10,38 @@ const prisma = new PrismaClient()
 const orderService = new OrderService()
 
 export class TableService {
-  async createTable(dto: ICreateTable, next: NextFunction): Promise<ICreateTable | undefined> {
-    try {
-      const existingTable = await prisma.table.findFirst({
-        where: { name: dto.name }
-      })
+  async createTable(dto: ICreateTable): Promise<ICreateTable | undefined> {
+    const existingTable = await prisma.table.findFirst({
+      where: { name: dto.name }
+    })
 
-      if (existingTable) {
-        throw new ApiError(400, 'Table name already exists')
-      }
-
-      const result = await prisma.$transaction([
-        prisma.table.create({
-          data: {
-            status: 'AVAILABLE',
-            name: dto.name,
-            area: {
-              connect: { areaId: dto.areaId }
-            }
-          }
-        }),
-        prisma.area.update({
-          where: { areaId: dto.areaId },
-          data: {
-            total: { increment: 1 }
-          }
-        })
-      ])
-
-      return result[0]
-    } catch (error) {
-      next(error)
+    if (existingTable) {
+      throw new ApiError(400, 'Table name already exists')
     }
+
+    const result = await prisma.$transaction([
+      prisma.table.create({
+        data: {
+          status: 'AVAILABLE',
+          name: dto.name,
+          area: {
+            connect: { areaId: dto.areaId }
+          }
+        }
+      }),
+      prisma.area.update({
+        where: { areaId: dto.areaId },
+        data: {
+          total: { increment: 1 }
+        }
+      })
+    ])
+
+    if (!result) {
+      throw new ApiError(400, 'Failed to create table')
+    }
+
+    return result[0]
   }
 
   async getTables(next: NextFunction): Promise<Partial<Table>[] | undefined> {
@@ -268,11 +268,7 @@ export class TableService {
 
   // o[]: list contain tableDetailId
   // a[]: list contain tableId
-  async createMergeTable(
-    tableId: string,
-    data: { a: string[]; o: string[] },
-    next: NextFunction
-  ): Promise<any> {
+  async createMergeTable(tableId: string, data: { a: string[]; o: string[] }, next: NextFunction): Promise<any> {
     try {
       return await prisma.$transaction(async (tx) => {
         const table = await prisma.table.findFirst({
