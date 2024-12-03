@@ -7,7 +7,7 @@ const tableService = new TableService()
 export class TableController {
   async createTable(req: Request, res: Response, next: NextFunction): Promise<any> {
     try {
-      const table = await tableService.createTable(req.body, next)
+      const table = await tableService.createTable(req.body)
       return res.status(201).json(table)
     } catch (error) {
       next(error)
