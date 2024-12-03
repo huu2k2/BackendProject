@@ -14,6 +14,11 @@ export class TableService {
     const existingTable = await prisma.table.findFirst({
       where: { name: dto.name }
     })
+
+    if (existingTable) {
+      throw new ApiError(400, 'Table already exist')
+    }
+
     const result = await prisma.$transaction([
       prisma.table.create({
         data: {
