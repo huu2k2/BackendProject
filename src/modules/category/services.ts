@@ -57,6 +57,12 @@ export class Service {
 
   async update(id: string, dto: ICategoryDto, next: NextFunction): Promise<ICategory | undefined> {
     try {
+      const check = await prisma.category.findFirst({
+        where: { categoryId: id }
+      })
+      if (!check) {
+        throw new ApiError(404, 'Not found category')
+      }
       const category = await prisma.category.update({
         where: { categoryId: id },
         data: dto
@@ -72,6 +78,12 @@ export class Service {
 
   async delete(id: string, next: NextFunction): Promise<Boolean | undefined> {
     try {
+      const check = await prisma.category.findFirst({
+        where: { categoryId: id }
+      })
+      if (!check) {
+        throw new ApiError(404, 'Not found category')
+      }
       const category = await prisma.category.delete({
         where: { categoryId: id }
       })
