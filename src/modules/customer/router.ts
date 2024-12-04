@@ -5,7 +5,6 @@ import { isAuthenticated } from '../../middleware/auth.middleware'
 const router = Router()
 const controller = new CustomerController()
 
-// Routes với middleware
 router.route('/').post(controller.createCustomer).get(isAuthenticated, controller.getCustomers)
 
 router

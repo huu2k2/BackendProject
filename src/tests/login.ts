@@ -1,7 +1,7 @@
 export const loginTest = (request: any, app: any) => {
   describe('App test api login ', () => {
     it('POST /login/staff should be success', async () => {
-      const response = await request(app).post('/login/staff').send({ username: 'admin', password: '123456' })
+      const response = await request(app).post('/login/staff').send({ username: 'a', password: '1' })
 
       expect(response.status).toBe(200)
       expect(response.body.message).toBe('Staff logged in successfully')
@@ -22,13 +22,13 @@ export const loginTest = (request: any, app: any) => {
       })
     })
 
-    // it('POST /login/staff should be wrong isActive', async () => {
-    //   const response = await request(app).post('/login/staff').send({ username: 'admin', password: '123' })
-    //   expect(response.status).toBe(401)
-    //   expect(response.body).toEqual({
-    //     message: 'Staff is block!',
-    //     success: false
-    //   })
-    // })
+    it('POST /login/staff should be wrong isActive', async () => {
+      const response = await request(app).post('/login/staff').send({ username: 'admin', password: '123' })
+      expect(response.status).toBe(401)
+      expect(response.body).toEqual({
+        message: 'Staff is block!',
+        success: false
+      })
+    })
   })
 }

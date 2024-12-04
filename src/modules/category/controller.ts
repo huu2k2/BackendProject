@@ -18,7 +18,7 @@ export class Controller {
 
   async getAll(req: Request, res: Response, next: NextFunction): Promise<any> {
     try {
-      const category = await service.getAll(next)
+      const category = await service.getAll()
       return res.status(200).json({
         message: 'Get all category success',
         data: category
@@ -30,7 +30,7 @@ export class Controller {
 
   async getById(req: Request, res: Response, next: NextFunction): Promise<any> {
     try {
-      const category = await service.getById(req.params.categoryId, next)
+      const category = await service.getById(req.params.categoryId)
       return res.status(200).json({
         message: 'Get category success',
         data: category
@@ -42,7 +42,7 @@ export class Controller {
 
   async update(req: Request, res: Response, next: NextFunction): Promise<any> {
     try {
-      const category = await service.update(req.params.categoryId, req.body, next)
+      const category = await service.update(req.params.categoryId, req.body)
       return res.status(200).json({
         message: 'Update category success',
         data: category
@@ -54,7 +54,7 @@ export class Controller {
 
   async delete(req: Request, res: Response, next: NextFunction): Promise<any> {
     try {
-      const category = await service.delete(req.params.categoryId, next)
+      const category = await service.delete(req.params.categoryId)
       return res.status(200).json({
         message: 'delete category success',
         data: category

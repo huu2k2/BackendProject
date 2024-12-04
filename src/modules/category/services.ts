@@ -1,6 +1,4 @@
-import { PrismaClient, Table, TableStatus } from '@prisma/client'
-
-import { NextFunction } from 'express'
+import { PrismaClient } from '@prisma/client'
 
 import { ICategory, ICategoryDto } from './interface'
 import { ApiError } from '../../middleware/error.middleware'
@@ -9,91 +7,84 @@ const prisma = new PrismaClient()
 
 export class Service {
   async create(dto: ICategoryDto): Promise<ICategory | undefined> {
-    try {
-      const check = await prisma.category.findFirst({
-        where: {
-          name: dto.name
-        }
-      })
-      if (check) {
-        throw new ApiError(400, 'Tên danh mục đã tồn tại!')
+    const check = await prisma.category.findFirst({
+      where: {
+        name: dto.name
       }
-      const category = await prisma.category.create({
-        data: {
-          name: dto.name
-        }
-      })
-      if (!category) {
-        throw new ApiError(400, 'Failed to create category')
-      }
-      return category
-    } catch (error) {
-      throw error
+    })
+
+    if (check) {
+      throw new ApiError(400, 'Tên danh mục đã tồn tại!')
     }
+
+    const category = await prisma.category.create({
+      data: {
+        name: dto.name
+      }
+    })
+
+    if (!category) {
+      throw new ApiError(400, 'Failed to create category')
+    }
+
+    return category
   }
 
-  async getAll(next: NextFunction): Promise<any> {
-    try {
-      const category = await prisma.category.findMany()
-      return category
-    } catch (error) {
-      throw error
-    }
+  async getAll(): Promise<any> {
+    const category = await prisma.category.findMany()
+    if (!category) return []
+    return category
   }
 
-  async getById(id: string, next: NextFunction): Promise<any> {
-    try {
-      const category = await prisma.category.findUnique({
-        where: { categoryId: id }
-      })
-      if (!category) {
-        throw new ApiError(404, 'Not found category')
-      }
-      return category
-    } catch (error) {
-      throw error
+  async getById(id: string): Promise<any> {
+    const category = await prisma.category.findUnique({
+      where: { categoryId: id }
+    })
+    if (!category) {
+      throw new ApiError(404, 'Not found category')
     }
+    return category
   }
 
-  async update(id: string, dto: ICategoryDto, next: NextFunction): Promise<ICategory | undefined> {
-    try {
-      const check = await prisma.category.findFirst({
-        where: { categoryId: id }
-      })
-      if (!check) {
-        throw new ApiError(404, 'Not found category')
-      }
-      const category = await prisma.category.update({
-        where: { categoryId: id },
-        data: dto
-      })
-      if (!category) {
-        throw new ApiError(400, 'Failed to update category')
-      }
-      return category
-    } catch (error) {
-      throw error
+  async update(id: string, dto: ICategoryDto): Promise<ICategory | undefined> {
+    const check = await prisma.category.findFirst({
+      where: { categoryId: id }
+    })
+
+    if (!check) {
+      throw new ApiError(404, 'Not found category')
     }
+
+    const category = await prisma.category.update({
+      where: { categoryId: id },
+      data: dto
+    })
+
+    if (!category) {
+      throw new ApiError(400, 'Failed to update category')
+    }
+
+    return category
   }
 
-  async delete(id: string, next: NextFunction): Promise<Boolean | undefined> {
-    try {
-      const check = await prisma.category.findFirst({
-        where: { categoryId: id }
-      })
-      if (!check) {
-        throw new ApiError(404, 'Not found category')
-      }
-      const category = await prisma.category.delete({
-        where: { categoryId: id }
-      })
-      if (!category) {
-        throw new ApiError(400, 'Failed to delete category')
-      }
-      return true
-    } catch (error) {
-      throw error
+  async delete(categoryId: string): Promise<Boolean | undefined> {
+    const check = await prisma.category.findFirst({
+      where: { categoryId }
+    })
+
+    if (!check) {
+      throw new ApiError(404, 'Not found category')
     }
+
+    const category = await prisma.category.delete({
+      where: { categoryId }
+    })
+
+    if (!category) {
+      throw new ApiError(400, 'Failed to delete category')
+    }
+
+    return true
   }
 
   async getAllSocket(): Promise<any> {

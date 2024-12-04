@@ -1,228 +1,207 @@
-import { IGetOrderDetail, IOrder, IOrderDetail, IOrderMerge, IOrderSocket, SocketOrer } from './interface'
-import { Order, OrderDetail, OrderDetailStatus, OrderStatus, PrismaClient, Table } from '@prisma/client'
-import { NextFunction } from 'express'
+import { IGetOrderDetail, IOrder, IOrderDetail, IOrderMerge } from './interface'
+import { OrderDetail, OrderStatus, PrismaClient } from '@prisma/client'
 import { ApiError } from '../../middleware/error.middleware'
 
 const prisma = new PrismaClient()
 
 export class OrderService {
-  async getTurnover(fromDay: string, toDay: string, next: NextFunction): Promise<IOrder[]> {
+  async getTurnover(fromDay: string, toDay: string): Promise<IOrder[]> {
     const fromDate = new Date(fromDay)
     const toDate = new Date(toDay)
-    try {
-      const orders = await prisma.order.findMany({
-        where: {
-          status: 'SUCCESS',
-          createdAt: {
-            gte: fromDate,
-            lte: toDate
-          }
-        },
-        include: {
-          orderDetails: {
-            include: {
-              product: true
-            }
+
+    const orders = await prisma.order.findMany({
+      where: {
+        status: 'SUCCESS',
+        createdAt: {
+          gte: fromDate,
+          lte: toDate
+        }
+      },
+      include: {
+        orderDetails: {
+          include: {
+            product: true
           }
         }
-      })
-      if (!orders) {
-        throw new ApiError(400, 'Failed to create order merge')
       }
-      return orders
-    } catch (error) {
-      throw error
+    })
+
+    if (!orders) {
+      throw new ApiError(400, 'Failed to create order merge')
     }
-  }
-  // Order Merge
-  async createOrderMerge(dto: IOrderMerge, next: NextFunction): Promise<IOrderMerge | undefined> {
-    try {
-      const orderMerge = await prisma.orderMerge.create({
-        data: {}
-      })
-      if (!orderMerge) {
-        throw new ApiError(400, 'Failed to create order merge')
-      }
-      return orderMerge
-    } catch (error) {
-      throw error
-    }
+    return orders
   }
 
-  async getOrderMergeById(orderMergeId: string, next: NextFunction): Promise<IOrderMerge | undefined> {
-    try {
-      const orderMerge = await prisma.orderMerge.findUnique({
-        where: { orderMergeId: orderMergeId },
-        include: {
-          order: true
-        }
-      })
-      if (!orderMerge) {
-        throw new ApiError(400, 'Failed to get order merge')
-      }
-      return orderMerge
-    } catch (error) {
-      throw error
+  async createOrderMerge(dto: IOrderMerge): Promise<IOrderMerge | undefined> {
+    const orderMerge = await prisma.orderMerge.create({
+      data: {}
+    })
+    if (!orderMerge) {
+      throw new ApiError(400, 'Failed to create order merge')
     }
+    return orderMerge
   }
 
-  async getOrderMerges(next: NextFunction): Promise<Partial<IOrderMerge>[] | undefined> {
-    try {
-      const orderMerges = await prisma.orderMerge.findMany({
-        include: {
-          order: true
-        }
-      })
-      if (!orderMerges) {
-        throw new ApiError(400, 'Failed to get order merges')
+  async getOrderMergeById(orderMergeId: string): Promise<IOrderMerge | undefined> {
+    const orderMerge = await prisma.orderMerge.findUnique({
+      where: { orderMergeId: orderMergeId },
+      include: {
+        order: true
       }
-      return orderMerges
-    } catch (error) {
-      throw error
+    })
+    if (!orderMerge) {
+      throw new ApiError(400, 'Failed to get order merge')
     }
+    return orderMerge
+  }
+
+  async getOrderMerges(): Promise<Partial<IOrderMerge>[] | undefined> {
+    const orderMerges = await prisma.orderMerge.findMany({
+      include: {
+        order: true
+      }
+    })
+    if (!orderMerges) {
+      throw new ApiError(400, 'Failed to get order merges')
+    }
+    return orderMerges
   }
 
   // Order
-  async createOrder(customerId: string, next: NextFunction): Promise<IOrder | undefined> {
-    try {
-      const newOrder = await prisma.order.create({
-        data: {
-          customerId: customerId,
-          totalAmount: 0,
-          status: 'FAILED'
-        }
-      })
-      return newOrder
-    } catch (error) {
-      throw error
-    }
-  }
-
-  async getOrderById(orderId: string, next: NextFunction): Promise<IOrder | undefined> {
-    try {
-      const order = await prisma.order.findUnique({
-        where: { orderId: orderId },
-        include: {
-          customer: true,
-          orderDetails: true,
-          payment: true,
-          tableDetail: true,
-          orderMerge: true
-        }
-      })
-      if (!order) {
-        throw new ApiError(400, 'Failed to get order')
+  async createOrder(customerId: string): Promise<IOrder | undefined> {
+    const newOrder = await prisma.order.create({
+      data: {
+        customerId: customerId,
+        totalAmount: 0,
+        status: 'FAILED'
       }
-      return order
-    } catch (error) {
-      throw error
-    }
+    })
+    return newOrder
   }
 
-  async getOrders(next: NextFunction): Promise<Partial<IOrder>[] | undefined> {
-    try {
+  async getOrderById(orderId: string): Promise<IOrder | undefined> {
+    const order = await prisma.order.findUnique({
+      where: { orderId: orderId },
+      include: {
+        customer: true,
+        orderDetails: true,
+        payment: true,
+        tableDetail: true,
+        orderMerge: true
+      }
+    })
+    if (!order) {
+      throw new ApiError(400, 'Failed to get order')
+    }
+    return order
+  }
+
+  async getOrders(): Promise<Partial<IOrder>[] | undefined> {
+    const orders = await prisma.order.findMany({
+      include: {
+        customer: true,
+        orderDetails: true,
+        payment: true,
+        tableDetail: true,
+        orderMerge: true
+      }
+    })
+    if (!orders) {
+      throw new ApiError(400, 'Failed to get orders')
+    }
+    return orders
+  }
+
+  async updateOrder(orderId: string, dto: IOrder): Promise<IOrder | undefined> {
+    const updateOrder = await prisma.order.update({
+      where: { orderId: orderId },
+      data: dto
+    })
+    if (!updateOrder) {
+      throw new ApiError(400, 'Failed to update table')
+    }
+    return updateOrder
+  }
+
+  async createOrderDetail(dto: IOrderDetail[]): Promise<IGetOrderDetail[] | undefined> {
+    const createdOrderDetails = await Promise.all(dto.map((detail) => prisma.orderDetail.create({ data: detail })))
+
+    const ids = createdOrderDetails.map((item) => item.orderDetailId)
+
+    const orderDetails = await prisma.orderDetail.findMany({
+      where: {
+        orderDetailId: { in: ids }
+      },
+      include: {
+        product: true
+      }
+    })
+
+    return orderDetails
+  }
+
+  async getOrderDetailById(orderDetailId: string): Promise<IOrderDetail | undefined> {
+    const orderDetail = await prisma.orderDetail.findUnique({
+      where: { orderDetailId: orderDetailId },
+      include: {
+        order: true,
+        product: true
+      }
+    })
+    if (!orderDetail) {
+      throw new ApiError(400, 'Failed to get order detail')
+    }
+    return orderDetail
+  }
+
+  async getOrderDetailByOrderId(orderId: string): Promise<IGetOrderDetail[] | undefined> {
+    const orderDetails = await prisma.orderDetail.findMany({
+      where: { orderId: orderId },
+      include: {
+        order: true,
+        product: true
+      }
+    })
+
+    if (!orderDetails) {
+      throw new ApiError(400, 'Failed to get order details')
+    }
+
+    return orderDetails
+  }
+
+  async getOrderDetailByOrderIdOfMergeOrder(orderId: string): Promise<IGetOrderDetail[] | undefined> {
+    let result: IGetOrderDetail[] = []
+    const order = await prisma.order.findFirst({
+      where: {
+        orderId: orderId
+      },
+      include: {
+        orderDetails: {
+          include: {
+            product: true
+          }
+        }
+      }
+    })
+
+    if (!order) {
+      throw new ApiError(400, 'order not found')
+    }
+
+    order.orderDetails.forEach((item) => {
+      if (item.status === 'COMPLETED') {
+        result.push(item)
+      }
+    })
+
+    if (order?.orderMergeId) {
       const orders = await prisma.order.findMany({
-        include: {
-          customer: true,
-          orderDetails: true,
-          payment: true,
-          tableDetail: true,
-          orderMerge: true
-        }
-      })
-      if (!orders) {
-        throw new ApiError(400, 'Failed to get orders')
-      }
-      return orders
-    } catch (error) {
-      throw error
-    }
-  }
-
-  async updateOrder(orderId: string, dto: IOrder, next: NextFunction): Promise<IOrder | undefined> {
-    try {
-      const updateOrder = await prisma.order.update({
-        where: { orderId: orderId },
-        data: dto
-      })
-      if (!updateOrder) {
-        throw new ApiError(400, 'Failed to update table')
-      }
-      return updateOrder
-    } catch (error) {
-      throw error
-    }
-  }
-
-  // Order detail
-  async createOrderDetail(dto: IOrderDetail[], next: NextFunction): Promise<IGetOrderDetail[] | undefined> {
-    try {
-      const createdOrderDetails = await Promise.all(dto.map((detail) => prisma.orderDetail.create({ data: detail })))
-
-      // Lấy danh sách ID từ các bản ghi đã tạo
-      const ids = createdOrderDetails.map((item) => item.orderDetailId)
-
-      // Truy vấn để lấy thông tin chi tiết kèm sản phẩm
-      const orderDetails = await prisma.orderDetail.findMany({
         where: {
-          orderDetailId: { in: ids }
-        },
-        include: {
-          product: true
-        }
-      })
-
-      return orderDetails
-    } catch (error) {
-      throw error
-    }
-  }
-
-  async getOrderDetailById(orderDetailId: string, next: NextFunction): Promise<IOrderDetail | undefined> {
-    try {
-      const orderDetail = await prisma.orderDetail.findUnique({
-        where: { orderDetailId: orderDetailId },
-        include: {
-          order: true,
-          product: true
-        }
-      })
-      if (!orderDetail) {
-        throw new ApiError(400, 'Failed to get order detail')
-      }
-      return orderDetail
-    } catch (error) {
-      throw error
-    }
-  }
-
-  async getOrderDetailByOrderId(orderId: string, next: NextFunction): Promise<IGetOrderDetail[] | undefined> {
-    try {
-      const orderDetails = await prisma.orderDetail.findMany({
-        where: { orderId: orderId },
-        include: {
-          order: true,
-          product: true
-        }
-      })
-      if (!orderDetails) {
-        throw new ApiError(400, 'Failed to get order details')
-      }
-      return orderDetails
-    } catch (error) {
-      throw error
-    }
-  }
-
-  async getOrderDetailByOrderIdOfMergeOrder(
-    orderId: string,
-    next: NextFunction
-  ): Promise<IGetOrderDetail[] | undefined> {
-    try {
-      let result: IGetOrderDetail[] = []
-      const order = await prisma.order.findFirst({
-        where: {
-          orderId: orderId
+          orderMergeId: order.orderMergeId,
+          NOT: {
+            orderId: order.orderId
+          }
         },
         include: {
           orderDetails: {
@@ -233,115 +212,64 @@ export class OrderService {
         }
       })
 
-      if (!order) {
-        throw new ApiError(400, 'order not found')
-      }
-
-      order.orderDetails.forEach((item) => {
-        if (item.status === 'COMPLETED') {
-          result.push(item)
-        }
-      })
-
-      if (order?.orderMergeId) {
-        const orders = await prisma.order.findMany({
-          where: {
-            orderMergeId: order.orderMergeId,
-            NOT: {
-              orderId: order.orderId
-            }
-          },
-          include: {
-            orderDetails: {
-              include: {
-                product: true
-              }
-            }
+      orders.forEach((order) => {
+        order.orderDetails.forEach((item) => {
+          if (item.status === 'COMPLETED') {
+            result.push(item)
           }
         })
-
-        orders.forEach((order) => {
-          order.orderDetails.forEach((item) => {
-            if (item.status === 'COMPLETED') {
-              result.push(item)
-            }
-          })
-        })
-      }
-      return result
-    } catch (error) {
-      throw error
+      })
     }
+    return result
   }
 
-  async getOrderDetailByOrderIdKitchen(orderId: string, next: NextFunction): Promise<IGetOrderDetail[] | undefined> {
-    try {
-      const orderDetails = await prisma.orderDetail.findMany({
-        where: { orderId: orderId, OR: [{ status: 'PENDING' }, { status: 'CONFIRMED' }] },
-        include: {
-          order: true,
-          product: true
-        }
-      })
-      if (!orderDetails) {
-        throw new ApiError(400, 'Failed to get order details')
+  async getOrderDetailByOrderIdKitchen(orderId: string): Promise<IGetOrderDetail[] | undefined> {
+    const orderDetails = await prisma.orderDetail.findMany({
+      where: { orderId: orderId, OR: [{ status: 'PENDING' }, { status: 'CONFIRMED' }] },
+      include: {
+        order: true,
+        product: true
       }
-      return orderDetails
-    } catch (error) {
-      throw error
+    })
+    if (!orderDetails) {
+      throw new ApiError(400, 'Failed to get order details')
     }
+    return orderDetails
   }
 
-  async updateOrderDetail(
-    orderDetailId: string,
-    dto: IOrderDetail,
-    next: NextFunction
-  ): Promise<IOrderDetail | undefined> {
-    try {
-      const updateOrderDetail = await prisma.orderDetail.update({
-        where: { orderDetailId: orderDetailId },
-        data: dto
-      })
-      if (!updateOrderDetail) {
-        throw new ApiError(400, 'Failed to update order detail')
-      }
-      return updateOrderDetail
-    } catch (error) {
-      throw error
+  async updateOrderDetail(orderDetailId: string, dto: IOrderDetail): Promise<IOrderDetail | undefined> {
+    const updateOrderDetail = await prisma.orderDetail.update({
+      where: { orderDetailId: orderDetailId },
+      data: dto
+    })
+    if (!updateOrderDetail) {
+      throw new ApiError(400, 'Failed to update order detail')
     }
+    return updateOrderDetail
   }
 
-  async deleteOrderDetail(orderDetailId: string, next: NextFunction): Promise<Boolean | undefined> {
-    try {
-      const orderDetail = await prisma.orderDetail.delete({
-        where: { orderDetailId: orderDetailId }
-      })
-      if (!orderDetail) {
-        throw new ApiError(400, 'Failed to delete table')
-      }
-      return true
-    } catch (error) {
-      throw error
+  async deleteOrderDetail(orderDetailId: string): Promise<Boolean | undefined> {
+    const orderDetail = await prisma.orderDetail.delete({
+      where: { orderDetailId: orderDetailId }
+    })
+    if (!orderDetail) {
+      throw new ApiError(400, 'Failed to delete table')
     }
+    return true
   }
 
-  async getAllOrderOfCustomer(customerId: string, next: NextFunction): Promise<any> {
-    try {
-      const orderDetail = await prisma.order.findMany({
-        where: {
-          customerId: customerId,
-          AND: {
-            status: 'SUCCESS'
-          }
-        }
-      })
-      if (!orderDetail) {
-        throw new ApiError(400, 'Failed to delete table')
+  async getAllOrderOfCustomer(customerId: string): Promise<any> {
+    const orderDetail = await prisma.order.findMany({
+      where: {
+        customerId,
+        status: 'SUCCESS'
       }
-      return orderDetail
-    } catch (error) {
-      throw error
+    })
+
+    if (!orderDetail) {
+      throw new ApiError(400, 'Failed to delete table')
     }
+    return orderDetail
   }
 
   async getOrdersSocket(): Promise<any> {

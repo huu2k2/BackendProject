@@ -1,9 +1,9 @@
-export const categoryTest = (request: any, app: any, tokenAdmin: string, tokenCustomer: string) => {
+export const categoryTest = (request: any, app: any, tokenManager: string, tokenCustomer: string) => {
   describe('App test api categories ', () => {
     let id = 'e408e23c-b21b-11ef-93da-0242ac130002'
 
     it('GET /categories/ should return a list of categories', async () => {
-      const response = await request(app).get('/categories/').set('Authorization', `Bearer ${tokenAdmin}`)
+      const response = await request(app).get('/categories/').set('Authorization', `Bearer ${tokenManager}`)
       expect(response.status).toBe(200)
       expect(response.body).toMatchObject({
         data: expect.any(Array),
@@ -21,7 +21,7 @@ export const categoryTest = (request: any, app: any, tokenAdmin: string, tokenCu
     })
 
     it('POST /categories/ should return a new category', async () => {
-      const response = await request(app).post('/categories/').set('Authorization', `Bearer ${tokenAdmin}`).send({
+      const response = await request(app).post('/categories/').set('Authorization', `Bearer ${tokenManager}`).send({
         name: '123'
       })
       if (response.status === 400) {
@@ -41,7 +41,7 @@ export const categoryTest = (request: any, app: any, tokenAdmin: string, tokenCu
     })
 
     it('PUT /categories/ should be failed or dont created', async () => {
-      const response = await request(app).put(`/categories/${id}`).set('Authorization', `Bearer ${tokenAdmin}`).send({
+      const response = await request(app).put(`/categories/${id}`).set('Authorization', `Bearer ${tokenManager}`).send({
         name: 'ASDasdasdasdasdasd'
       })
       if (response.status === 404) {
@@ -68,7 +68,7 @@ export const categoryTest = (request: any, app: any, tokenAdmin: string, tokenCu
     })
 
     it('DELETE /categories/ should be failed or dont created', async () => {
-      const response = await request(app).put(`/categories/${id}`).set('Authorization', `Bearer ${tokenAdmin}`)
+      const response = await request(app).put(`/categories/${id}`).set('Authorization', `Bearer ${tokenManager}`)
       if (response.status === 404) {
         expect(response.status).toBe(404)
         console.log('404', response.body)

@@ -5,7 +5,7 @@ const accountService = new AccountService()
 export class AccountController {
   createAccount = async (req: Request, res: Response, next: NextFunction): Promise<any> => {
     try {
-      const result = await accountService.createAccount(req.body, next)
+      const result = await accountService.createAccount(req.body)
       return res.status(201).json({
         message: 'Account created successfully',
         data: result
@@ -17,7 +17,7 @@ export class AccountController {
 
   getAccounts = async (req: Request, res: Response, next: NextFunction): Promise<any> => {
     try {
-      const result = await accountService.getAccounts(next)
+      const result = await accountService.getAccounts()
       return res.status(200).json({
         message: 'Get all account successfully',
         data: result
@@ -30,7 +30,7 @@ export class AccountController {
   getAccountById = async (req: Request, res: Response, next: NextFunction): Promise<any> => {
     try {
       const { accountId } = req.params
-      const result = await accountService.getAccountById(accountId, next)
+      const result = await accountService.getAccountById(accountId)
       return res.status(200).json({
         message: 'Get account successfully',
         data: result
@@ -43,7 +43,7 @@ export class AccountController {
   updateAccount = async (req: Request, res: Response, next: NextFunction): Promise<any> => {
     try {
       const { accountId } = req.params
-      const result = await accountService.updateAccount(accountId, req.body, next)
+      const result = await accountService.updateAccount(accountId, req.body)
       return res.status(200).json({
         message: 'Update account successfully',
         data: result

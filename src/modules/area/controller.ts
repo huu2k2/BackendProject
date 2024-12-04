@@ -4,7 +4,7 @@ import { areaService } from './services'
 export class AreaController {
   async createArea(req: Request, res: Response, next: NextFunction): Promise<any> {
     try {
-      const area = await areaService.createArea(req.body, next)
+      const area = await areaService.createArea(req.body)
       return res.status(201).json({
         message: 'Area created successfully',
         data: area
@@ -16,7 +16,7 @@ export class AreaController {
 
   async getAreas(req: Request, res: Response, next: NextFunction): Promise<any> {
     try {
-      const areas = await areaService.getAreas(next)
+      const areas = await areaService.getAreas()
       return res.status(200).json({
         message: 'Get successful data',
         data: areas
@@ -29,7 +29,7 @@ export class AreaController {
   async getAreaById(req: Request, res: Response, next: NextFunction): Promise<any> {
     try {
       const { areaId } = req.params
-      const area = await areaService.getAreaById(areaId, next)
+      const area = await areaService.getAreaById(areaId)
       return res.status(200).json({
         data: area
       })
@@ -41,7 +41,7 @@ export class AreaController {
   async updateArea(req: Request, res: Response, next: NextFunction): Promise<any> {
     try {
       const { areaId } = req.params
-      const area = await areaService.updateArea(areaId, req.body, next)
+      const area = await areaService.updateArea(areaId, req.body)
       return res.status(200).json({
         message: 'Area updated successfully',
         data: area
@@ -53,8 +53,7 @@ export class AreaController {
 
   async deleteArea(req: Request, res: Response, next: NextFunction): Promise<any> {
     try {
-      const { areaId } = req.params
-      const result = await areaService.deleteArea(areaId, next)
+      const result = await areaService.deleteArea(req.params.areaId)
       res.status(200).json({
         data: result,
         message: 'Area deleted successfully'

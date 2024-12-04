@@ -9,9 +9,14 @@ export class NotificationService {
     if (!body.receiverId || !body.content) {
       throw new Error('receiverId và content là bắt buộc.')
     }
+
     const newNotification = await prisma.notification.create({
       data: body
     })
+
+    if (!newNotification) {
+      throw new ApiError(400, 'You dont create new notification!')
+    }
 
     return {
       success: true,
@@ -28,13 +33,17 @@ export class NotificationService {
       orderBy: { createdAt: 'desc' }
     })
 
+    if (!notificationData) {
+      return []
+    }
+
     return notificationData || []
   }
 
-  async getAllNotification(id: string): Promise<Notification[]> {
+  async getAllNotification(receiverId: string): Promise<Notification[]> {
     const result = await prisma.notification.findMany({
       where: {
-        receiverId: id
+        receiverId
       }
     })
 
@@ -79,7 +88,7 @@ export class NotificationService {
       })
 
       const staffs = await prisma.account.findMany({
-        where: { role: role }
+        where: { role }
       })
 
       staffs.forEach(async (staff) => {
@@ -92,9 +101,7 @@ export class NotificationService {
         })
       })
 
-      const notification = { title, content }
-
-      return notification
+      return { title, content }
     } catch (error) {
       throw new ApiError(400, 'error create notification')
     }
