@@ -11,7 +11,6 @@ export class ApiError extends Error {
 
 export const errorHandler = (err: Error | ApiError, req: Request, res: Response, next: NextFunction) => {
   if (err instanceof ApiError) {
-    console.log(err)
     return res.status(err.statusCode).json({
       success: false,
       message: err.message

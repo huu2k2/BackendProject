@@ -16,7 +16,6 @@ export class ApiResponse {
   }
 
   static error(res: Response, error: any, message: string = 'Internal server error') {
-    console.error(error)
     return res.status(500).json({
       success: false,
       message,
