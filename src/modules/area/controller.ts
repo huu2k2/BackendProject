@@ -54,8 +54,9 @@ export class AreaController {
   async deleteArea(req: Request, res: Response, next: NextFunction): Promise<any> {
     try {
       const { areaId } = req.params
-      await areaService.deleteArea(areaId, next)
+      const result = await areaService.deleteArea(areaId, next)
       res.status(200).json({
+        data: result,
         message: 'Area deleted successfully'
       })
     } catch (error) {

@@ -8,7 +8,10 @@ export class TableController {
   async createTable(req: Request, res: Response, next: NextFunction): Promise<any> {
     try {
       const table = await tableService.createTable(req.body)
-      return res.status(201).json(table)
+      return res.status(201).json({
+        message: 'new table created',
+        data: table
+      })
     } catch (error) {
       next(error)
     }
@@ -33,7 +36,7 @@ export class TableController {
         return res.status(404).json({ message: 'Table not found' })
       }
       return res.json({
-        message: 'get all table',
+        message: 'get table success',
         data: table
       })
     } catch (error) {
@@ -59,7 +62,10 @@ export class TableController {
   async updateTable(req: Request, res: Response, next: NextFunction): Promise<any> {
     try {
       const table = await tableService.updateTable(req.params.tableId, req.body, next)
-      return res.json(table)
+      return res.json({
+        message: 'table updated',
+        data: table
+      })
     } catch (error) {
       next(error)
     }
@@ -68,7 +74,10 @@ export class TableController {
   async deleteTable(req: Request, res: Response, next: NextFunction): Promise<any> {
     try {
       const table = await tableService.deleteTable(req.params.tableId, next)
-      return res.status(200).send()
+      return res.status(200).send({
+        message: 'table deleted',
+        data: table
+      })
     } catch (error) {
       next(error)
     }
