@@ -33,8 +33,9 @@ export class StaffHandler {
       const content = `Thanh toán thành công`
       const title = `Thanh toán thành công`
       const notification = await notificationService.notifyToCustomer(payment.orderId, content, title)
-      console.log(socketCustomer.id)
-      this.server.to(socketCustomer.id).emit('confirmPaymentSuccess', notification)
+      if (notification) {
+        this.server.to(socketCustomer.id).emit('confirmPaymentSuccess', notification)
+      }
     })
   }
 }

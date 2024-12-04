@@ -27,46 +27,47 @@ export class NotificationService {
       },
       orderBy: { createdAt: 'desc' }
     })
+
     return notificationData || []
   }
 
   async getAllNotification(id: string): Promise<Notification[]> {
-    try {
-      const ressult = await prisma.notification.findMany({
-        where: {
-          receiverId: id
-        }
-      })
-      return ressult
-    } catch (error) {
-      throw error
+    const result = await prisma.notification.findMany({
+      where: {
+        receiverId: id
+      }
+    })
+
+    if (!result) {
+      return []
     }
+
+    return result
   }
 
   async notifyToCustomer(orderId: string, content: string, title: string): Promise<any> {
-    try {
-      const order = await prisma.order.findFirst({
-        where: {
-          orderId: orderId
-        },
-        include: {
-          customer: true
-        }
-      })
+    const order = await prisma.order.findFirst({
+      where: {
+        orderId: orderId
+      },
+      include: {
+        customer: true
+      }
+    })
 
-      const notification = await prisma.notification.create({
-        data: {
-          title: title,
-          content: content,
-          receiverId: order?.customerId
-        }
-      })
+    const notification = await prisma.notification.create({
+      data: {
+        title: title,
+        content: content,
+        receiverId: order?.customerId
+      }
+    })
 
-      return notification
-    } catch (error) {
-      console.log(error)
-      throw new ApiError(400, 'error create notification')
+    if (!notification) {
+      return null
     }
+
+    return notification
   }
 
   async notifyToStaff(content: string, title: string): Promise<any> {

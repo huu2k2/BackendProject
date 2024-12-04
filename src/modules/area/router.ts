@@ -1,18 +1,18 @@
 import { Router } from 'express'
 import { areaController } from './controller'
-import { isAdmin, isAdminOrStaff, isStaff } from '../../middleware/auth.middleware'
+import { isManager, isManagerOrStaff, isStaff } from '../../middleware/auth.middleware'
 
 const router = Router()
 
 router
   .route('/')
-  .post(isAdmin, areaController.createArea.bind(areaController))
-  .get(isAdminOrStaff, areaController.getAreas.bind(areaController))
+  .post(isManager, areaController.createArea.bind(areaController))
+  .get(isManagerOrStaff, areaController.getAreas.bind(areaController))
 
 router
   .route('/:areaId')
-  .get(isAdminOrStaff, areaController.getAreaById.bind(areaController))
-  .put(isAdmin, areaController.updateArea.bind(areaController))
-  .delete(isAdmin, areaController.deleteArea.bind(areaController))
+  .get(isManagerOrStaff, areaController.getAreaById.bind(areaController))
+  .put(isManager, areaController.updateArea.bind(areaController))
+  .delete(isManager, areaController.deleteArea.bind(areaController))
 
 export default router

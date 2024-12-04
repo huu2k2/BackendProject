@@ -1,4 +1,5 @@
 import { ERole } from '../../common/enum'
+import { ApiError } from '../../middleware/error.middleware'
 import { prisma } from '../../prismaClient'
 import { generateTokenAndRefreshToken } from '../../utils/jwt'
 import { CustomerLoginDto, CustomerLoginResponse, StaffLoginDto } from './dto'
@@ -14,9 +15,10 @@ export class LoginService {
     })
 
     if (!customer) {
-      throw new Error('Customer not found')
+      throw new ApiError(404, 'Customer not found')
     }
-    let addRoleToCustomer = {
+
+    const addRoleToCustomer = {
       customerId: customer.customerId,
       createdAt: customer.createdAt,
       phoneNumber: customer.phoneNumber,
@@ -45,16 +47,17 @@ export class LoginService {
     })
 
     if (!staff) {
-      throw new Error('Staff not found')
+      throw new ApiError(404, 'Staff not found')
     }
+
     if (!staff.isActive) {
-      throw new Error('Staff is block!')
+      throw new ApiError(401, 'Staff is block!')
     }
 
     const isPasswordValid = await bcrypt.compare(dto.password, staff.password)
 
     if (!isPasswordValid) {
-      throw new Error('Invalid password')
+      throw new ApiError(400, 'Invalid password')
     }
 
     const { token, refreshToken } = generateTokenAndRefreshToken(staff)
@@ -80,7 +83,7 @@ export class LoginService {
     })
 
     if (!customer) {
-      throw new Error('Failed to create customer')
+      throw new ApiError(400, 'Failed to create customer')
     }
 
     return true

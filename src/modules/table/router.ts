@@ -1,19 +1,19 @@
 import { Router } from 'express'
 import { TableController } from './controller'
-import { isStaff, isCustomer, isAdmin, isChef, isAdminOrStaff } from '../../middleware/auth.middleware'
+import { isStaff, isCustomer, isManager, isChef, isManagerOrStaff } from '../../middleware/auth.middleware'
 
 const router = Router()
 const controller = new TableController()
 
-router.route('/').post(isAdmin, controller.createTable).get(isAdminOrStaff, controller.getTables)
+router.route('/').post(isManager, controller.createTable).get(isManagerOrStaff, controller.getTables)
 
-router.route('/area/:areaId').get(isAdminOrStaff, controller.getTablesByAreaId)
+router.route('/area/:areaId').get(isManagerOrStaff, controller.getTablesByAreaId)
 
 router
   .route('/:tableId')
-  .get(isStaff || isCustomer || isAdmin, controller.getTableById)
-  .put(isAdmin, controller.updateTable)
-  .delete(isAdmin, controller.deleteTable)
+  .get(isStaff || isCustomer || isManager, controller.getTableById)
+  .put(isManager, controller.updateTable)
+  .delete(isManager, controller.deleteTable)
 
 router.route('/merge/:tableId').get(isStaff || isCustomer, controller.getTableDetailToMergeByTableId)
 

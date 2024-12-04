@@ -40,21 +40,21 @@ export const isStaff = (req: Request, res: Response, next: NextFunction) => {
   next()
 }
 
-export const isAdmin = (req: Request, res: Response, next: NextFunction) => {
+export const isManager = (req: Request, res: Response, next: NextFunction) => {
   if (req.user.role.name !== ERole.ADMIN) {
     next(ApiResponse.badRequest(res, 'You are not authorized to access this resource'))
   }
   next()
 }
 
-export const isAdminOrStaff = (req: Request, res: Response, next: NextFunction) => {
+export const isManagerOrStaff = (req: Request, res: Response, next: NextFunction) => {
   if (req.user.role.name !== ERole.ADMIN && req.user.role.name !== ERole.STAFF) {
     next(ApiResponse.badRequest(res, 'You are not authorized to access this resource'))
   }
   next()
 }
 
-export const isAdminOrCustomer = (req: Request, res: Response, next: NextFunction) => {
+export const isManagerOrCustomer = (req: Request, res: Response, next: NextFunction) => {
   if (req.user.role.name !== ERole.ADMIN && req.user.role.name !== ERole.CUSTOMER) {
     next(ApiResponse.badRequest(res, 'You are not authorized to access this resource'))
   }

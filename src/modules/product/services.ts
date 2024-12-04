@@ -32,7 +32,7 @@ export class ProductService {
       }
     })
 
-    if (products.length === 0) {
+    if (products.length === 0 || !products) {
       return []
     }
     return products
