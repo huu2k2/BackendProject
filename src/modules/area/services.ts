@@ -27,7 +27,9 @@ export class AreaService {
 
   async getAreas(): Promise<Partial<Area>[] | undefined> {
     try {
-      const area = await prisma.area.findMany()
+      const area = await prisma.area.findMany({
+        orderBy: { name: 'asc' }
+      })
       if (!area) return []
       return area
     } catch (error) {

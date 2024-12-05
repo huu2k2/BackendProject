@@ -105,7 +105,8 @@ export class OrderService {
         payment: true,
         tableDetail: true,
         orderMerge: true
-      }
+      },
+      orderBy: { createdAt: 'desc' }
     })
     if (!orders) {
       throw new ApiError(HttpStatus.BAD_REQUEST.code, 'Failed to get orders')
@@ -161,7 +162,8 @@ export class OrderService {
       include: {
         order: true,
         product: true
-      }
+      },
+      orderBy: { createdAt: 'desc' }
     })
 
     if (!orderDetails) {
@@ -230,7 +232,8 @@ export class OrderService {
       include: {
         order: true,
         product: true
-      }
+      },
+      orderBy: { createdAt: 'desc' }
     })
     if (!orderDetails) {
       throw new ApiError(HttpStatus.BAD_REQUEST.code, 'Failed to get order details')

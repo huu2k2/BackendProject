@@ -45,7 +45,8 @@ export class NotificationService {
     const result = await prisma.notification.findMany({
       where: {
         receiverId
-      }
+      },
+      orderBy: { createdAt: 'desc' }
     })
 
     if (!result) {

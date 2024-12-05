@@ -40,7 +40,7 @@ export const isManager = (req: Request, res: Response, next: NextFunction) => {
   if (req.user.role.name !== ERole.ADMIN) {
     throw new ApiError(401, 'You are not authorized to access this resource')
   }
-  next(new ApiError(401, 'Unauthorized!'))
+  next()
 }
 
 export const isManagerOrStaff = (req: Request, res: Response, next: NextFunction) => {

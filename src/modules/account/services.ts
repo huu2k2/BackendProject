@@ -60,7 +60,8 @@ export class AccountService {
       include: {
         role: true,
         profile: true
-      }
+      },
+      orderBy: { profile: { lastName: 'asc' } }
     })
 
     if (!result) {

@@ -51,7 +51,9 @@ export class TableService {
         include: {
           area: true,
           tableDetails: true
-        }
+        },
+
+        orderBy: { name: 'asc' }
       })
       if (!tables) {
         throw new ApiError(HttpStatus.BAD_REQUEST.code, 'Failed to get tables')

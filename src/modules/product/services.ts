@@ -29,7 +29,8 @@ export class ProductService {
       where,
       include: {
         category: true
-      }
+      },
+      orderBy: { name: 'asc' }
     })
 
     if (products.length === 0 || !products) {
@@ -93,10 +94,13 @@ export class ProductService {
     try {
       let products: Product[]
       if (categoryId == 'all') {
-        products = await prisma.product.findMany()
+        products = await prisma.product.findMany({
+          orderBy: { name: 'asc' }
+        })
       } else {
         products = await prisma.product.findMany({
-          where: { categoryId: categoryId }
+          where: { categoryId: categoryId },
+          orderBy: { name: 'asc' }
         })
       }
       return products
