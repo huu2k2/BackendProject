@@ -44,7 +44,9 @@ export class NotificationController {
       const token = authHeader!.split(' ')[1]
       const decoded = jwt.verify(token, process.env.JWT_SECRET!)
       req.user = decoded
-      const result = await notificationService.getAllNotification(req.user.staffId)
+      console.log(req.user)
+
+      const result = await notificationService.getAllNotification(req.user.accountId)
       return res.status(HttpStatus.OK.code).json({
         message: 'get notification successfully',
         data: result
