@@ -40,11 +40,8 @@ export class CheffHandler {
 
   async receiveDishUp(socket: any) {
     socket.on('dishUp', async ({ orderId, quantity }: { orderId: string; quantity: number }) => {
-      console.log(orderId, quantity)
-
       const content = `${quantity} món đã hoàn thành`,
         title = 'Thông báo món hoàn thành'
-
       const notification = await notificationService.notifyToStaff(content, title)
       this.server.of(STAFF).emit('sendToDishUp', notification)
     })
@@ -54,9 +51,9 @@ export class CheffHandler {
     socket.on('cancelOrders', async ({ orderId, reason }: { orderId: string; reason: string }) => {
       const content = `Món ăn của bạn đã bị huỷ do: ${reason}`,
         title = 'Thông báo huỷ món'
-      console.log(title)
       const notification = await notificationService.notifyToCustomer(orderId, content, title)
       const socketCustomer = customerList.get(orderId)
+     
       this.server.to(socketCustomer.id).emit('receiveNotification', notification)
     })
   }
