@@ -5,6 +5,7 @@ import { ApiError } from '../../middleware/error.middleware'
 import { OrderService } from '../order/services'
 import { IOrder } from '../order/interface'
 import { table } from 'console'
+import { HttpStatus } from '../../utils/HttpStatus'
 
 const prisma = new PrismaClient()
 const orderService = new OrderService()
@@ -16,7 +17,7 @@ export class TableService {
     })
 
     if (existingTable) {
-      throw new ApiError(400, 'Table already exist')
+      throw new ApiError(HttpStatus.CONFLICT.code, 'Table already exist')
     }
 
     const result = await prisma.$transaction([
@@ -38,7 +39,7 @@ export class TableService {
     ])
 
     if (!result) {
-      throw new ApiError(400, 'Failed to create table')
+      throw new ApiError(HttpStatus.BAD_REQUEST.code, 'Failed to create table')
     }
 
     return result[0]
@@ -53,7 +54,7 @@ export class TableService {
         }
       })
       if (!tables) {
-        throw new ApiError(400, 'Failed to get tables')
+        throw new ApiError(HttpStatus.BAD_REQUEST.code, 'Failed to get tables')
       }
       return tables
     } catch (error) {
@@ -71,7 +72,7 @@ export class TableService {
         }
       })
       if (!table) {
-        throw new ApiError(400, 'Failed to get table')
+        throw new ApiError(HttpStatus.BAD_REQUEST.code, 'Failed to get table')
       }
       return table
     } catch (error) {
@@ -91,7 +92,7 @@ export class TableService {
 
       // Nếu đã tồn tại bảng với tên này, ném lỗi
       if (existingTable) {
-        throw new ApiError(400, 'Table name already exists')
+        throw new ApiError(HttpStatus.CONFLICT.code, 'Table name already exists')
       }
 
       const table = await prisma.table.update({
@@ -99,7 +100,7 @@ export class TableService {
         data: dto
       })
       if (!table) {
-        throw new ApiError(400, 'Failed to update table')
+        throw new ApiError(HttpStatus.BAD_REQUEST.code, 'Failed to update table')
       }
       return true
     } catch (error) {
@@ -113,7 +114,7 @@ export class TableService {
         where: { tableId }
       })
       if (!table) {
-        throw new ApiError(400, 'Failed to delete table')
+        throw new ApiError(HttpStatus.BAD_REQUEST.code, 'Failed to delete table')
       }
       return true
     } catch (error) {
@@ -170,9 +171,9 @@ export class TableService {
       }
     }
 
-    const order = await orderService.createOrder(customerId, next)
+    const order = await orderService.createOrder(customerId)
     if (!order) {
-      throw new ApiError(400, 'Failed to create order for table')
+      throw new ApiError(HttpStatus.BAD_REQUEST.code, 'Failed to create order for table')
     }
 
     const tableDetail = await prisma.tableDetail.create({

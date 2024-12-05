@@ -2,11 +2,12 @@ import { IProfile } from './interface'
 import { prisma, Prisma } from '../../prismaClient'
 import { NextFunction } from 'express'
 import { ApiError } from '../../middleware/error.middleware'
+import { HttpStatus } from '../../utils/HttpStatus'
 export class ProfileService {
   async createProfile(data: IProfile, next: NextFunction): Promise<IProfile | undefined> {
     try {
       if (data.accountId === null) {
-        throw new ApiError(400, 'accountId cannot be null')
+        throw new ApiError(HttpStatus.NO_CONTENT.code, 'accountId cannot be null')
       }
 
       const newProfile = await prisma.profile.create({
@@ -21,7 +22,7 @@ export class ProfileService {
       })
 
       if (!newProfile) {
-        throw new ApiError(400, 'Failed to create customer account')
+        throw new ApiError(HttpStatus.BAD_REQUEST.code, 'Failed to create customer account')
       }
 
       return newProfile
@@ -36,7 +37,7 @@ export class ProfileService {
         where: { profileId }
       })
       if (!result) {
-        throw new ApiError(400, 'No profile found')
+        throw new ApiError(HttpStatus.NOT_FOUND.code, 'No profile found')
       }
       return result
     } catch (error) {
@@ -54,7 +55,7 @@ export class ProfileService {
       })
 
       if (existingProfile) {
-        throw new ApiError(400, 'CCCD or phoneNumber already exists')
+        throw new ApiError(HttpStatus.CONFLICT.code, 'CCCD or phoneNumber already exists')
       }
 
       const updateProfile = await prisma.profile.update({
@@ -62,7 +63,7 @@ export class ProfileService {
         data: data
       })
       if (!updateProfile) {
-        throw new ApiError(400, 'Failed to update profile')
+        throw new ApiError(HttpStatus.BAD_REQUEST.code, 'Failed to update profile')
       }
       return updateProfile
     } catch (error) {
