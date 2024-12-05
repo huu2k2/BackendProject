@@ -1,12 +1,13 @@
 import { NextFunction, Request, Response } from 'express'
 import { AccountService } from './services'
+import { HttpStatus } from '../../utils/HttpStatus'
 
 const accountService = new AccountService()
 export class AccountController {
   createAccount = async (req: Request, res: Response, next: NextFunction): Promise<any> => {
     try {
       const result = await accountService.createAccount(req.body)
-      return res.status(201).json({
+      return res.status(HttpStatus.CREATED.code).json({
         message: 'Account created successfully',
         data: result
       })
@@ -18,7 +19,7 @@ export class AccountController {
   getAccounts = async (req: Request, res: Response, next: NextFunction): Promise<any> => {
     try {
       const result = await accountService.getAccounts()
-      return res.status(200).json({
+      return res.status(HttpStatus.OK.code).json({
         message: 'Get all account successfully',
         data: result
       })
@@ -31,7 +32,7 @@ export class AccountController {
     try {
       const { accountId } = req.params
       const result = await accountService.getAccountById(accountId)
-      return res.status(200).json({
+      return res.status(HttpStatus.OK.code).json({
         message: 'Get account successfully',
         data: result
       })
@@ -44,7 +45,7 @@ export class AccountController {
     try {
       const { accountId } = req.params
       const result = await accountService.updateAccount(accountId, req.body)
-      return res.status(200).json({
+      return res.status(HttpStatus.OK.code).json({
         message: 'Update account successfully',
         data: result
       })

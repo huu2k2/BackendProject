@@ -1,13 +1,14 @@
 import { Request, Response, NextFunction } from 'express'
 import { ProductService } from './services'
 import { ProductQuery } from './dto'
+import { HttpStatus } from '../../utils/HttpStatus'
 
 const productService: ProductService = new ProductService()
 export class ProductController {
   async createProduct(req: Request, res: Response, next: NextFunction): Promise<any> {
     try {
       const product = await productService.createProduct(req.body)
-      return res.status(201).json(product)
+      return res.status(HttpStatus.CREATED.code).json(product)
     } catch (error) {
       next(error)
     }
@@ -17,7 +18,7 @@ export class ProductController {
     try {
       const query: ProductQuery = req.query
       const products = await productService.getProducts(query)
-      return res.json(products)
+      return res.status(HttpStatus.OK.code).json(products)
     } catch (error) {
       next(error)
     }
@@ -26,7 +27,7 @@ export class ProductController {
   async getProductById(req: Request, res: Response, next: NextFunction): Promise<any> {
     try {
       const product = await productService.getProductById(req.params.productId, next)
-      return res.json({
+      return res.status(HttpStatus.OK.code).json({
         message: 'get data',
         data: product
       })
@@ -38,7 +39,7 @@ export class ProductController {
   async updateProduct(req: Request, res: Response, next: NextFunction): Promise<any> {
     try {
       const product = await productService.updateProduct(req.params.productId, req.body)
-      return res.json(product)
+      return res.status(HttpStatus.OK.code).json(product)
     } catch (error) {
       next(error)
     }
@@ -47,7 +48,7 @@ export class ProductController {
   async deleteProduct(req: Request, res: Response, next: NextFunction): Promise<any> {
     try {
       await productService.deleteProduct(req.params.productId)
-      return res.json(true)
+      return res.status(HttpStatus.OK.code).json(true)
     } catch (error) {
       next(error)
     }
@@ -57,7 +58,7 @@ export class ProductController {
     try {
       const { categoryId } = req.params
       const products = await productService.getProductByCategoryById(categoryId, next)
-      return res.status(200).json({
+      return res.status(HttpStatus.OK.code).json({
         message: 'Get products success',
         data: products
       })
@@ -69,7 +70,7 @@ export class ProductController {
   async getRandProducts(req: Request, res: Response, next: NextFunction): Promise<any> {
     try {
       const products = await productService.getRandProducts(next)
-      return res.status(200).json({
+      return res.status(HttpStatus.OK.code).json({
         message: 'Get products success',
         data: products
       })

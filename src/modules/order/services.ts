@@ -1,6 +1,7 @@
 import { IGetOrderDetail, IOrder, IOrderDetail, IOrderMerge } from './interface'
 import { OrderDetail, OrderStatus, PrismaClient } from '@prisma/client'
 import { ApiError } from '../../middleware/error.middleware'
+import { HttpStatus } from '../../utils/HttpStatus'
 
 const prisma = new PrismaClient()
 
@@ -27,7 +28,7 @@ export class OrderService {
     })
 
     if (!orders) {
-      throw new ApiError(400, 'Failed to create order merge')
+      throw new ApiError(HttpStatus.BAD_REQUEST.code, 'Failed to create order merge')
     }
     return orders
   }
@@ -37,7 +38,7 @@ export class OrderService {
       data: {}
     })
     if (!orderMerge) {
-      throw new ApiError(400, 'Failed to create order merge')
+      throw new ApiError(HttpStatus.BAD_REQUEST.code, 'Failed to create order merge')
     }
     return orderMerge
   }
@@ -50,7 +51,7 @@ export class OrderService {
       }
     })
     if (!orderMerge) {
-      throw new ApiError(400, 'Failed to get order merge')
+      throw new ApiError(HttpStatus.BAD_REQUEST.code, 'Failed to get order merge')
     }
     return orderMerge
   }
@@ -62,7 +63,7 @@ export class OrderService {
       }
     })
     if (!orderMerges) {
-      throw new ApiError(400, 'Failed to get order merges')
+      throw new ApiError(HttpStatus.BAD_REQUEST.code, 'Failed to get order merges')
     }
     return orderMerges
   }
@@ -91,7 +92,7 @@ export class OrderService {
       }
     })
     if (!order) {
-      throw new ApiError(400, 'Failed to get order')
+      throw new ApiError(HttpStatus.BAD_REQUEST.code, 'Failed to get order')
     }
     return order
   }
@@ -104,10 +105,11 @@ export class OrderService {
         payment: true,
         tableDetail: true,
         orderMerge: true
-      }
+      },
+      orderBy: { createdAt: 'desc' }
     })
     if (!orders) {
-      throw new ApiError(400, 'Failed to get orders')
+      throw new ApiError(HttpStatus.BAD_REQUEST.code, 'Failed to get orders')
     }
     return orders
   }
@@ -118,7 +120,7 @@ export class OrderService {
       data: dto
     })
     if (!updateOrder) {
-      throw new ApiError(400, 'Failed to update table')
+      throw new ApiError(HttpStatus.BAD_REQUEST.code, 'Failed to update table')
     }
     return updateOrder
   }
@@ -149,7 +151,7 @@ export class OrderService {
       }
     })
     if (!orderDetail) {
-      throw new ApiError(400, 'Failed to get order detail')
+      throw new ApiError(HttpStatus.BAD_REQUEST.code, 'Failed to get order detail')
     }
     return orderDetail
   }
@@ -160,11 +162,12 @@ export class OrderService {
       include: {
         order: true,
         product: true
-      }
+      },
+      orderBy: { createdAt: 'desc' }
     })
 
     if (!orderDetails) {
-      throw new ApiError(400, 'Failed to get order details')
+      throw new ApiError(HttpStatus.BAD_REQUEST.code, 'Failed to get order details')
     }
 
     return orderDetails
@@ -186,7 +189,7 @@ export class OrderService {
     })
 
     if (!order) {
-      throw new ApiError(400, 'order not found')
+      throw new ApiError(HttpStatus.NOT_FOUND.code, 'order not found')
     }
 
     order.orderDetails.forEach((item) => {
@@ -229,10 +232,11 @@ export class OrderService {
       include: {
         order: true,
         product: true
-      }
+      },
+      orderBy: { createdAt: 'desc' }
     })
     if (!orderDetails) {
-      throw new ApiError(400, 'Failed to get order details')
+      throw new ApiError(HttpStatus.BAD_REQUEST.code, 'Failed to get order details')
     }
     return orderDetails
   }
@@ -243,7 +247,7 @@ export class OrderService {
       data: dto
     })
     if (!updateOrderDetail) {
-      throw new ApiError(400, 'Failed to update order detail')
+      throw new ApiError(HttpStatus.BAD_REQUEST.code, 'Failed to update order detail')
     }
     return updateOrderDetail
   }
@@ -253,7 +257,7 @@ export class OrderService {
       where: { orderDetailId: orderDetailId }
     })
     if (!orderDetail) {
-      throw new ApiError(400, 'Failed to delete table')
+      throw new ApiError(HttpStatus.BAD_REQUEST.code, 'Failed to delete table')
     }
     return true
   }
@@ -267,7 +271,7 @@ export class OrderService {
     })
 
     if (!orderDetail) {
-      throw new ApiError(400, 'Failed to delete table')
+      throw new ApiError(HttpStatus.BAD_REQUEST.code, 'Failed to delete table')
     }
     return orderDetail
   }
@@ -413,7 +417,7 @@ export class OrderService {
       }
     })
     if (!order) {
-      throw new ApiError(400, 'Failed to get order')
+      throw new ApiError(HttpStatus.BAD_REQUEST.code, 'Failed to get order')
     }
     return order
   }

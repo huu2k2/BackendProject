@@ -1,11 +1,12 @@
 import { Request, Response, NextFunction } from 'express'
 import { roleService } from './services'
+import { HttpStatus } from '../../utils/HttpStatus'
 
 export class RoleController {
   async createRole(req: Request, res: Response, next: NextFunction): Promise<any> {
     try {
       const role = await roleService.createRole(req.body, next)
-      return res.status(201).json({
+      return res.status(HttpStatus.CREATED.code).json({
         message: 'Role created successfully',
         data: role
       })
@@ -17,7 +18,7 @@ export class RoleController {
   async getRoles(req: Request, res: Response, next: NextFunction): Promise<any> {
     try {
       const roles = await roleService.getRoles(next)
-      return res.status(200).json(roles)
+      return res.status(HttpStatus.OK.code).json(roles)
     } catch (error) {
       next(error)
     }
@@ -27,7 +28,7 @@ export class RoleController {
     try {
       const { roleId } = req.params
       const role = await roleService.getRoleById(roleId, next)
-      return res.status(200).json({
+      return res.status(HttpStatus.OK.code).json({
         data: role
       })
     } catch (error) {
@@ -39,7 +40,7 @@ export class RoleController {
     try {
       const { roleId } = req.params
       const role = await roleService.updateRole(roleId, req.body, next)
-      return res.status(200).json({
+      return res.status(HttpStatus.OK.code).json({
         message: 'Role updated successfully',
         data: role
       })
@@ -52,7 +53,7 @@ export class RoleController {
     try {
       const { roleId } = req.params
       await roleService.deleteRole(roleId, next)
-      return res.status(200).json({
+      return res.status(HttpStatus.OK.code).json({
         message: 'Role deleted successfully'
       })
     } catch (error) {

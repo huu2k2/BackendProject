@@ -1,6 +1,7 @@
 import { Notification, Prisma, PrismaClient } from '@prisma/client'
 import { INotification } from './dto'
 import { ApiError } from '../../middleware/error.middleware'
+import { HttpStatus } from '../../utils/HttpStatus'
 
 const prisma = new PrismaClient()
 
@@ -15,7 +16,7 @@ export class NotificationService {
     })
 
     if (!newNotification) {
-      throw new ApiError(400, 'You dont create new notification!')
+      throw new ApiError(HttpStatus.BAD_REQUEST.code, "You don't create new notification!")
     }
 
     return {
@@ -44,7 +45,8 @@ export class NotificationService {
     const result = await prisma.notification.findMany({
       where: {
         receiverId
-      }
+      },
+      orderBy: { createdAt: 'desc' }
     })
 
     if (!result) {
@@ -103,7 +105,7 @@ export class NotificationService {
 
       return { title, content }
     } catch (error) {
-      throw new ApiError(400, 'error create notification')
+      throw new ApiError(HttpStatus.BAD_REQUEST.code, 'error create notification')
     }
   }
 }

@@ -1,11 +1,12 @@
 import { NextFunction, Request, Response } from 'express'
 import { loginService } from './services'
+import { HttpStatus } from '../../utils/HttpStatus'
 
 export class LoginController {
   async loginCustomer(req: Request, res: Response, next: NextFunction): Promise<any> {
     try {
       const customerLoginResponse = await loginService.loginCustomer(req.body)
-      return res.status(200).json({
+      return res.status(HttpStatus.OK.code).json({
         message: 'Customer logged in successfully',
         data: customerLoginResponse
       })
@@ -17,7 +18,7 @@ export class LoginController {
   async loginStaff(req: Request, res: Response, next: NextFunction): Promise<any> {
     try {
       const staffLoginResponse = await loginService.loginStaff(req.body)
-      return res.status(200).json({
+      return res.status(HttpStatus.OK.code).json({
         message: 'Staff logged in successfully',
         data: staffLoginResponse
       })
@@ -29,7 +30,7 @@ export class LoginController {
   async registerCustomer(req: Request, res: Response, next: NextFunction): Promise<any> {
     try {
       const customerRegisterResponse = await loginService.registerCustomer(req.body)
-      return res.status(200).json({
+      return res.status(HttpStatus.OK.code).json({
         message: 'Customer registered successfully',
         data: customerRegisterResponse
       })

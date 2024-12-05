@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express'
 import { ProfileService } from './services'
+import { HttpStatus } from '../../utils/HttpStatus'
 
 const profileService = new ProfileService()
 
@@ -7,7 +8,7 @@ export class ProfileController {
   async createProfile(req: Request, res: Response, next: NextFunction): Promise<any> {
     try {
       const profile = await profileService.createProfile(req.body, next)
-      res.status(201).json({ message: 'Profile created successfully', data: profile })
+      res.status(HttpStatus.CREATED.code).json({ message: 'Profile created successfully', data: profile })
     } catch (error) {
       next(error)
     }
@@ -17,7 +18,7 @@ export class ProfileController {
     try {
       const { profileId } = req.params
       const profile = await profileService.getProfileById(profileId, next)
-      res.status(200).json({ message: 'Profile created successfully', data: profile })
+      res.status(HttpStatus.OK.code).json({ message: 'Profile created successfully', data: profile })
     } catch (error) {
       next(error)
     }
@@ -27,12 +28,12 @@ export class ProfileController {
     try {
       const { profileId } = req.params
       const profile = await profileService.updateProfile(profileId, req.body, next)
-      res.status(200).json({ message: 'Profile updated successfully', data: profile })
+      res.status(HttpStatus.OK.code).json({ message: 'Profile updated successfully', data: profile })
     } catch (error) {
       next(error)
     }
   }
- 
+
   async getAllProfiles(req: Request, res: Response, next: NextFunction): Promise<any> {
     try {
       const { skip, take, ...where } = req.query
@@ -44,7 +45,7 @@ export class ProfileController {
         },
         next
       )
-      res.status(200).json({ message: 'Get all successfully', data: profiles })
+      res.status(HttpStatus.OK.code).json({ message: 'Get all successfully', data: profiles })
     } catch (error) {
       next(error)
     }

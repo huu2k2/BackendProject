@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from 'express'
 import { notificationService } from './service'
 import { INotification } from './dto'
 import jwt from 'jsonwebtoken'
+import { HttpStatus } from '../../utils/HttpStatus'
 
 export class NotificationController {
   async createNotification(req: Request, res: Response, next: NextFunction): Promise<any> {
@@ -28,7 +29,7 @@ export class NotificationController {
       const decoded = jwt.verify(token, process.env.JWT_SECRET!)
       req.user = decoded
       const result = await notificationService.getAllNotification(req.user.customerId)
-      return res.status(200).json({
+      return res.status(HttpStatus.OK.code).json({
         message: 'get notification successfully',
         data: result
       })
@@ -44,7 +45,7 @@ export class NotificationController {
       const decoded = jwt.verify(token, process.env.JWT_SECRET!)
       req.user = decoded
       const result = await notificationService.getAllNotification(req.user.staffId)
-      return res.status(200).json({
+      return res.status(HttpStatus.OK.code).json({
         message: 'get notification successfully',
         data: result
       })

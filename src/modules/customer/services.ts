@@ -4,6 +4,7 @@ import { ApiError } from '../../middleware/error.middleware'
 import { generateTokenAndRefreshToken } from '../../utils/jwt'
 import { CustomerLoginResponse } from '../login/dto'
 import { ERole } from '../../common/enum'
+import { HttpStatus } from '../../utils/HttpStatus'
 
 const prisma = new PrismaClient()
 
@@ -37,7 +38,7 @@ export class CustomerService {
     })
 
     if (!newCustomer) {
-      throw new ApiError(400, 'Failed to create customer account')
+      throw new ApiError(HttpStatus.BAD_REQUEST.code, 'Failed to create customer account')
     }
 
     const addRoleToCustomer = {
@@ -61,7 +62,7 @@ export class CustomerService {
     })
 
     if (!customers) {
-      throw new ApiError(400, 'Failed to get customers')
+      throw new ApiError(HttpStatus.BAD_REQUEST.code, 'Failed to get customers')
     }
 
     return customers
@@ -76,7 +77,7 @@ export class CustomerService {
     })
 
     if (!customer) {
-      throw new ApiError(400, 'Failed to get customer')
+      throw new ApiError(HttpStatus.BAD_REQUEST.code, 'Failed to get customer')
     }
 
     return customer
@@ -91,7 +92,7 @@ export class CustomerService {
     })
 
     if (existingCustomer) {
-      throw new ApiError(400, 'Name or phoneNumber already exists')
+      throw new ApiError(HttpStatus.CONFLICT.code, 'Name or phoneNumber already exists')
     }
 
     const updateCustomer = await prisma.customer.update({
@@ -100,7 +101,7 @@ export class CustomerService {
     })
 
     if (!updateCustomer) {
-      throw new ApiError(400, 'Failed to update customer')
+      throw new ApiError(HttpStatus.BAD_REQUEST.code, 'Failed to update customer')
     }
 
     return updateCustomer

@@ -2,6 +2,7 @@ import { PrismaClient } from '@prisma/client'
 
 import { ICategory, ICategoryDto } from './interface'
 import { ApiError } from '../../middleware/error.middleware'
+import { HttpStatus } from '../../utils/HttpStatus'
 
 const prisma = new PrismaClient()
 
@@ -14,7 +15,7 @@ export class Service {
     })
 
     if (check) {
-      throw new ApiError(400, 'Tên danh mục đã tồn tại!')
+      throw new ApiError(HttpStatus.CONFLICT.code, 'Tên danh mục đã tồn tại!')
     }
 
     const category = await prisma.category.create({
@@ -24,14 +25,14 @@ export class Service {
     })
 
     if (!category) {
-      throw new ApiError(400, 'Failed to create category')
+      throw new ApiError(HttpStatus.BAD_REQUEST.code, 'Failed to create category')
     }
 
     return category
   }
 
   async getAll(): Promise<any> {
-    const category = await prisma.category.findMany()
+    const category = await prisma.category.findMany({ orderBy: { name: 'asc' } })
     if (!category) return []
     return category
   }
@@ -41,7 +42,7 @@ export class Service {
       where: { categoryId: id }
     })
     if (!category) {
-      throw new ApiError(404, 'Not found category')
+      throw new ApiError(HttpStatus.NOT_FOUND.code, 'Not found category')
     }
     return category
   }
@@ -52,7 +53,7 @@ export class Service {
     })
 
     if (!check) {
-      throw new ApiError(404, 'Not found category')
+      throw new ApiError(HttpStatus.NOT_FOUND.code, 'Not found category')
     }
 
     const category = await prisma.category.update({
@@ -61,7 +62,7 @@ export class Service {
     })
 
     if (!category) {
-      throw new ApiError(400, 'Failed to update category')
+      throw new ApiError(HttpStatus.BAD_REQUEST.code, 'Failed to update category')
     }
 
     return category
@@ -73,7 +74,7 @@ export class Service {
     })
 
     if (!check) {
-      throw new ApiError(404, 'Not found category')
+      throw new ApiError(HttpStatus.NOT_FOUND.code, 'Not found category')
     }
 
     const category = await prisma.category.delete({
@@ -81,7 +82,7 @@ export class Service {
     })
 
     if (!category) {
-      throw new ApiError(400, 'Failed to delete category')
+      throw new ApiError(HttpStatus.BAD_REQUEST.code, 'Failed to delete category')
     }
 
     return true

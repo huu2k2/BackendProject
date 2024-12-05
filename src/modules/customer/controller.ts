@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express'
 import { CustomerService } from './services'
+import { HttpStatus } from '../../utils/HttpStatus'
 
 const customerService = new CustomerService()
 
@@ -8,12 +9,12 @@ export class CustomerController {
     try {
       const customer = await customerService.createCustomer(req.body)
       if ('message' in customer) {
-        return res.status(200).json({
+        return res.status(HttpStatus.OK.code).json({
           message: customer.message,
           data: customer
         })
       }
-      return res.status(201).json({ message: 'create successful', data: customer })
+      return res.status(HttpStatus.CREATED.code).json({ message: 'create successful', data: customer })
     } catch (error) {
       next(error)
     }
@@ -32,7 +33,7 @@ export class CustomerController {
     try {
       const customer = await customerService.getCustomersById(req.params.customerId)
       if (!customer) {
-        return res.status(404).json({ message: 'Customer not found' })
+        return res.status(HttpStatus.NOT_FOUND.code).json({ message: 'Customer not found' })
       }
       return res.json({ message: 'get successful', data: customer })
     } catch (error) {
