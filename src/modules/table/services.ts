@@ -129,28 +129,7 @@ export class TableService {
     customerId: string,
     next: NextFunction
   ): Promise<{ order: IOrder; tableDetail: TableDetail } | undefined> {
-    // let order = await orderService.createOrder(customerId, next)
 
-    // if (!order) {
-    //   throw new ApiError(400, 'Failed to create order table')
-    // }
-
-    // const tableDetail = await prisma.tableDetail.create({
-    //   data: {
-    //     tableId: tableId,
-    //     orderId: order!.orderId,
-    //     startTime: new Date()
-    //   }
-    // })
-
-    // await prisma.table.update({
-    //   where: { tableId: tableId },
-    //   data: {
-    //     status: 'OCCUPIED'
-    //   }
-    // })
-
-    // return { order, tableDetail }
     const isExistOrder = await prisma.order.findMany({
       where: {
         customerId: customerId
@@ -171,6 +150,16 @@ export class TableService {
       if (isExistTableDetail) {
         return { order: isExistOrder[0], tableDetail: isExistTableDetail }
       }
+    }
+
+    const isAvailabelTable = await prisma.table.findUnique({
+      where:{
+        tableId:tableId
+      }
+    })
+
+    if(isAvailabelTable?.status === TableStatus.OCCUPIED) {
+      return undefined
     }
 
     const order = await orderService.createOrder(customerId)

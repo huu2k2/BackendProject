@@ -92,7 +92,7 @@ export class TableController {
       req.user = decoded
       const result = await tableService.createTableDetail(req.params.tableId, req.user.customerId, next)
       return res.status(HttpStatus.OK.code).json({
-        message: 'create detail success',
+        message: !result ? "Bàn đã được đặt sẵn!":'create detail success',
         data: result
       })
     } catch (error) {

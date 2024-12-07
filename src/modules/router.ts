@@ -13,7 +13,7 @@ import paymentRouter from './payment/router'
 import customerRouter from './customer/router'
 import login from './login/router'
 import health from './health/router'
-
+import logout from './logout/router'
 import { isAuthenticated } from '../middleware/auth.middleware'
 
 const router = express.Router()
@@ -31,6 +31,7 @@ router.use('/tables', isAuthenticated, tableRouter)
 router.use('/products', isAuthenticated, productRouter)
 router.use('/categories', isAuthenticated, categoryRouter)
 router.use('/', login)
+router.use('/logout',logout)
 
 router.use('/health', health);
 export default router
