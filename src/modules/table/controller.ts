@@ -20,7 +20,7 @@ export class TableController {
 
   async getTables(req: Request, res: Response, next: NextFunction): Promise<any> {
     try {
-      const tables = await tableService.getTables(next)
+      const tables = await tableService.getTables()
       return res.status(HttpStatus.OK.code).json({
         message: 'get all tables',
         data: tables

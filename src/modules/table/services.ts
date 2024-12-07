@@ -45,7 +45,7 @@ export class TableService {
     return result[0]
   }
 
-  async getTables(next: NextFunction): Promise<Partial<Table>[] | undefined> {
+  async getTables(): Promise<Partial<Table>[] | undefined> {
     try {
       const tables = await prisma.table.findMany({
         include: {
@@ -53,7 +53,7 @@ export class TableService {
           tableDetails: true
         },
 
-        orderBy: { name: 'asc' }
+        orderBy: { name: 'desc' }
       })
       if (!tables) {
         throw new ApiError(HttpStatus.BAD_REQUEST.code, 'Failed to get tables')

@@ -32,7 +32,7 @@ export class Service {
   }
 
   async getAll(): Promise<any> {
-    const category = await prisma.category.findMany({ orderBy: { name: 'asc' } })
+    const category = await prisma.category.findMany({ orderBy: { createdAt: 'desc' } })
     if (!category) return []
     return category
   }

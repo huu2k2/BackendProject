@@ -146,7 +146,7 @@ model Category {
   categoryId    String     @id @default(dbgenerated("(UUID())")) @map("category_id")
   name          String
   products      Product[]
-
+  createdAt     DateTime   @default(now()) @map("created_at")     
   @@map("categories")
 }
 
