@@ -26,25 +26,28 @@ export class NotificationService {
     }
   }
 
-  async getAllNotificationById(body: INotification): Promise<Notification[]> {
-    const notificationData = await prisma.notification.findMany({
-      where: {
-        receiverId: body.receiverId
-      },
-      orderBy: { createdAt: 'desc' }
-    })
+  // async getAllNotificationById(body: INotification): Promise<Notification[]> {
+  //   const notificationData = await prisma.notification
+  //     .findMany
+  //   {
+  //   where: {
+  //     receiverId: body.receiverId
+  //   },
+  //   orderBy: { createdAt: 'desc' }
+  // }
+  //     ()
 
-    if (!notificationData) {
-      return []
-    }
+  //   if (!notificationData) {
+  //     return []
+  //   }
 
-    return notificationData || []
-  }
+  //   return notificationData || []
+  // }
 
-  async getAllNotification(receiverId: string): Promise<Notification[]> {
+  async getAllNotification(customerId: string, staffId: string): Promise<Notification[]> {
     const result = await prisma.notification.findMany({
       where: {
-        receiverId
+        OR: [{ customerId: customerId }, { accountId: staffId }]
       },
       orderBy: { createdAt: 'desc' }
     })
@@ -70,7 +73,7 @@ export class NotificationService {
       data: {
         title: title,
         content: content,
-        receiverId: order?.customerId
+        customerId: order?.customerId
       }
     })
 
@@ -98,7 +101,7 @@ export class NotificationService {
           data: {
             title: title,
             content: content,
-            receiverId: staff?.accountId
+            accountId: staff?.accountId
           }
         })
       })

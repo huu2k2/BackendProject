@@ -59,13 +59,14 @@ export class PaymentService {
   }
 
   async confirmPayment(
-    dataPayment: { paymentId: string; tableId: string },
+    dataPayment: { paymentId: string; tableId: string; accountId: string },
     next: NextFunction
   ): Promise<Payment | undefined> {
     const payment = await prisma.payment.update({
       where: { paymentId: dataPayment.paymentId },
       data: {
-        status: 'FINISH'
+        status: 'FINISH',
+        accountId: dataPayment.accountId
       }
     })
 
@@ -87,7 +88,7 @@ export class PaymentService {
         for (const mergedOrder of mergedOrders) {
           await prisma.payment.updateMany({
             where: { orderId: mergedOrder.orderId },
-            data: { status: 'FINISH' }
+            data: { status: 'FINISH', accountId: dataPayment.accountId }
           })
           const tableDetail = await prisma.tableDetail.findFirst({
             where: { orderId: mergedOrder.orderId }

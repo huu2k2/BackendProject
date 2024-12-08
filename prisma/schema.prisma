@@ -50,7 +50,7 @@ model Profile {
   accountId    String?   @unique @map("account_id")
   createdAt    DateTime  @default(now()) @map("created_at")
 
-  @@map("profiles")
+  @@map("profile")
 }
 
 model Account {
@@ -62,8 +62,10 @@ model Account {
   isActive      Boolean     @default(true) @map("is_active")
   profile       Profile?
   createdAt     DateTime    @default(now()) @map("created_at")
+  notifications Notification[]
+  payments      Payment[]
 
-  @@map("accounts")
+  @@map("account")
 }
 
 model Role {
@@ -72,7 +74,7 @@ model Role {
   accounts    Account[]
   createdAt   DateTime    @default(now()) @map("created_at")
 
-  @@map("roles")
+  @@map("role")
 }
 
 model Customer {
@@ -80,9 +82,10 @@ model Customer {
   name         String
   phoneNumber  String    @map("phone_number") @db.VarChar(20)
   orders       Order[]
+  notifications Notification[]
   createdAt    DateTime  @default(now()) @map("created_at")
 
-  @@map("customers")
+  @@map("customer")
 }
 
 model Notification {
@@ -90,9 +93,11 @@ model Notification {
   title           String        
   content         String
   createdAt       DateTime            @default(now()) @map("created_at")
-  receiverId      String?
-
-  @@map("notifications")
+  customer        Customer?           @relation(fields: [customerId], references: [customerId])
+  customerId      String?             @map("customer_id")
+  account         Account?            @relation(fields: [accountId], references: [accountId])
+  accountId       String?             @map("account_id")
+  @@map("notification")
 }
 
 model Order {
@@ -109,7 +114,7 @@ model Order {
   createdAt     DateTime      @default(now()) @map("created_at")
   updatedAt     DateTime      @updatedAt @map("updated_at")
 
-  @@map("orders")
+  @@map("order")
 }
 
 model OrderDetail {
@@ -124,7 +129,7 @@ model OrderDetail {
   createdAt      DateTime  @default(now()) @map("created_at")
   updatedAt      DateTime? @updatedAt @map("updated_at")
 
-  @@map("order_details")
+  @@map("order_detail")
 }
 
 model Product {
@@ -139,7 +144,7 @@ model Product {
   isActive      Boolean       @default(true) @map("is_active")
   orderDetails  OrderDetail[]
 
-  @@map("products")
+  @@map("product")
 }
 
 model Category {
@@ -147,7 +152,7 @@ model Category {
   name          String
   products      Product[]
   createdAt     DateTime   @default(now()) @map("created_at")     
-  @@map("categories")
+  @@map("category")
 }
 
 model Table {
@@ -158,7 +163,7 @@ model Table {
   status        TableStatus
   tableDetails  TableDetail[]
 
-  @@map("tables")
+  @@map("table")
 }
 
 model Area {
@@ -167,7 +172,7 @@ model Area {
   total         Int
   tables        Table[]
 
-  @@map("areas")
+  @@map("area")
 }
 
 model TableDetail {
@@ -182,7 +187,7 @@ model TableDetail {
   createdAt      DateTime          @default(now()) @map("created_at")
   updatedAt      DateTime?         @updatedAt @map("updated_at")
 
-  @@map("table_details")
+  @@map("table_detail")
 }
 
 model OrderMerge {
@@ -190,7 +195,7 @@ model OrderMerge {
   createdAt     DateTime  @default(now()) @map("created_at")
   order         Order[]
 
-  @@map("order_merges")
+  @@map("order_merge")
 }
 
 model Payment {
@@ -201,6 +206,8 @@ model Payment {
   method        String
   status        PaymentStatus
   createdAt     DateTime  @default(now()) @map("created_at")
+  account         Account?            @relation(fields: [accountId], references: [accountId])
+  accountId       String?             @map("account_id")
 
-  @@map("payments")
+  @@map("payment")
 }

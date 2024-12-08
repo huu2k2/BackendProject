@@ -1,6 +1,7 @@
 import e, { Request, Response, NextFunction } from 'express'
 import { PaymentService } from './services'
 import { HttpStatus } from '../../utils/HttpStatus'
+import jwt from 'jsonwebtoken'
 
 const paymentService = new PaymentService()
 
@@ -33,8 +34,15 @@ export class PaymentController {
 
   async confirmPayment(req: Request, res: Response, next: NextFunction): Promise<any> {
     try {
+      const authHeader = req!.headers!.authorization
+      const token = authHeader!.split(' ')[1]
+      const decoded = jwt.verify(token, process.env.JWT_SECRET!)
+      req.user = decoded
       const { paymentId, tableId } = req.params
-      const payment = await paymentService.confirmPayment({ paymentId: paymentId, tableId: tableId }, next)
+      const payment = await paymentService.confirmPayment(
+        { paymentId: paymentId, tableId: tableId, accountId: req.user.accountId },
+        next
+      )
       return res.status(HttpStatus.OK.code).json({
         data: payment,
         message: 'Confirm payment success'

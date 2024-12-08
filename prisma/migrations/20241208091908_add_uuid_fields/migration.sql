@@ -1,5 +1,5 @@
 -- CreateTable
-CREATE TABLE `profiles` (
+CREATE TABLE `profile` (
     `profile_id` VARCHAR(191) NOT NULL DEFAULT (UUID()),
     `first_name` VARCHAR(191) NOT NULL,
     `last_name` VARCHAR(191) NOT NULL,
@@ -9,12 +9,12 @@ CREATE TABLE `profiles` (
     `account_id` VARCHAR(191) NULL,
     `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
 
-    UNIQUE INDEX `profiles_account_id_key`(`account_id`),
+    UNIQUE INDEX `profile_account_id_key`(`account_id`),
     PRIMARY KEY (`profile_id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
-CREATE TABLE `accounts` (
+CREATE TABLE `account` (
     `account_id` VARCHAR(191) NOT NULL DEFAULT (UUID()),
     `username` VARCHAR(191) NOT NULL,
     `password` VARCHAR(191) NOT NULL,
@@ -22,12 +22,12 @@ CREATE TABLE `accounts` (
     `is_active` BOOLEAN NOT NULL DEFAULT true,
     `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
 
-    UNIQUE INDEX `accounts_username_key`(`username`),
+    UNIQUE INDEX `account_username_key`(`username`),
     PRIMARY KEY (`account_id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
-CREATE TABLE `roles` (
+CREATE TABLE `role` (
     `role_id` VARCHAR(191) NOT NULL DEFAULT (UUID()),
     `name` VARCHAR(191) NOT NULL,
     `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
@@ -36,7 +36,7 @@ CREATE TABLE `roles` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
-CREATE TABLE `customers` (
+CREATE TABLE `customer` (
     `customer_id` VARCHAR(191) NOT NULL DEFAULT (UUID()),
     `name` VARCHAR(191) NOT NULL,
     `phone_number` VARCHAR(20) NOT NULL,
@@ -46,18 +46,19 @@ CREATE TABLE `customers` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
-CREATE TABLE `notifications` (
+CREATE TABLE `notification` (
     `notification_id` VARCHAR(191) NOT NULL DEFAULT (UUID()),
     `title` VARCHAR(191) NOT NULL,
     `content` VARCHAR(191) NOT NULL,
     `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
-    `receiverId` VARCHAR(191) NULL,
+    `customer_id` VARCHAR(191) NULL,
+    `account_id` VARCHAR(191) NULL,
 
     PRIMARY KEY (`notification_id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
-CREATE TABLE `orders` (
+CREATE TABLE `order` (
     `order_id` VARCHAR(191) NOT NULL DEFAULT (UUID()),
     `customer_id` VARCHAR(191) NOT NULL,
     `total_amount` DOUBLE NOT NULL,
@@ -70,7 +71,7 @@ CREATE TABLE `orders` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
-CREATE TABLE `order_details` (
+CREATE TABLE `order_detail` (
     `order_detail_id` VARCHAR(191) NOT NULL DEFAULT (UUID()),
     `order_id` VARCHAR(191) NOT NULL,
     `product_id` VARCHAR(191) NOT NULL,
@@ -84,7 +85,7 @@ CREATE TABLE `order_details` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
-CREATE TABLE `products` (
+CREATE TABLE `product` (
     `product_id` VARCHAR(191) NOT NULL DEFAULT (UUID()),
     `name` VARCHAR(191) NOT NULL,
     `description` VARCHAR(191) NOT NULL,
@@ -98,15 +99,16 @@ CREATE TABLE `products` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
-CREATE TABLE `categories` (
+CREATE TABLE `category` (
     `category_id` VARCHAR(191) NOT NULL DEFAULT (UUID()),
     `name` VARCHAR(191) NOT NULL,
+    `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
 
     PRIMARY KEY (`category_id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
-CREATE TABLE `tables` (
+CREATE TABLE `table` (
     `table_id` VARCHAR(191) NOT NULL DEFAULT (UUID()),
     `name` VARCHAR(191) NOT NULL,
     `area_id` VARCHAR(191) NOT NULL,
@@ -116,7 +118,7 @@ CREATE TABLE `tables` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
-CREATE TABLE `areas` (
+CREATE TABLE `area` (
     `area_id` VARCHAR(191) NOT NULL DEFAULT (UUID()),
     `name` VARCHAR(191) NOT NULL,
     `total` INTEGER NOT NULL,
@@ -125,7 +127,7 @@ CREATE TABLE `areas` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
-CREATE TABLE `table_details` (
+CREATE TABLE `table_detail` (
     `table_detail_id` VARCHAR(191) NOT NULL DEFAULT (UUID()),
     `note` VARCHAR(191) NULL,
     `start_time` DATETIME(3) NOT NULL,
@@ -135,12 +137,12 @@ CREATE TABLE `table_details` (
     `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updated_at` DATETIME(3) NULL,
 
-    UNIQUE INDEX `table_details_order_id_key`(`order_id`),
+    UNIQUE INDEX `table_detail_order_id_key`(`order_id`),
     PRIMARY KEY (`table_detail_id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
-CREATE TABLE `order_merges` (
+CREATE TABLE `order_merge` (
     `order_merge_id` VARCHAR(191) NOT NULL DEFAULT (UUID()),
     `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
 
@@ -148,47 +150,57 @@ CREATE TABLE `order_merges` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
-CREATE TABLE `payments` (
+CREATE TABLE `payment` (
     `payment_id` VARCHAR(191) NOT NULL DEFAULT (UUID()),
     `order_id` VARCHAR(191) NOT NULL,
     `amount` DOUBLE NOT NULL,
     `method` VARCHAR(191) NOT NULL,
     `status` ENUM('WAIT', 'FINISH') NOT NULL,
     `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `account_id` VARCHAR(191) NULL,
 
-    UNIQUE INDEX `payments_order_id_key`(`order_id`),
+    UNIQUE INDEX `payment_order_id_key`(`order_id`),
     PRIMARY KEY (`payment_id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- AddForeignKey
-ALTER TABLE `profiles` ADD CONSTRAINT `profiles_account_id_fkey` FOREIGN KEY (`account_id`) REFERENCES `accounts`(`account_id`) ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE `profile` ADD CONSTRAINT `profile_account_id_fkey` FOREIGN KEY (`account_id`) REFERENCES `account`(`account_id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `accounts` ADD CONSTRAINT `accounts_role_id_fkey` FOREIGN KEY (`role_id`) REFERENCES `roles`(`role_id`) ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE `account` ADD CONSTRAINT `account_role_id_fkey` FOREIGN KEY (`role_id`) REFERENCES `role`(`role_id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `orders` ADD CONSTRAINT `orders_customer_id_fkey` FOREIGN KEY (`customer_id`) REFERENCES `customers`(`customer_id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `notification` ADD CONSTRAINT `notification_customer_id_fkey` FOREIGN KEY (`customer_id`) REFERENCES `customer`(`customer_id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `orders` ADD CONSTRAINT `orders_order_merge_id_fkey` FOREIGN KEY (`order_merge_id`) REFERENCES `order_merges`(`order_merge_id`) ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE `notification` ADD CONSTRAINT `notification_account_id_fkey` FOREIGN KEY (`account_id`) REFERENCES `account`(`account_id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `order_details` ADD CONSTRAINT `order_details_order_id_fkey` FOREIGN KEY (`order_id`) REFERENCES `orders`(`order_id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `order` ADD CONSTRAINT `order_customer_id_fkey` FOREIGN KEY (`customer_id`) REFERENCES `customer`(`customer_id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `order_details` ADD CONSTRAINT `order_details_product_id_fkey` FOREIGN KEY (`product_id`) REFERENCES `products`(`product_id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `order` ADD CONSTRAINT `order_order_merge_id_fkey` FOREIGN KEY (`order_merge_id`) REFERENCES `order_merge`(`order_merge_id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `products` ADD CONSTRAINT `products_category_id_fkey` FOREIGN KEY (`category_id`) REFERENCES `categories`(`category_id`) ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE `order_detail` ADD CONSTRAINT `order_detail_order_id_fkey` FOREIGN KEY (`order_id`) REFERENCES `order`(`order_id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `tables` ADD CONSTRAINT `tables_area_id_fkey` FOREIGN KEY (`area_id`) REFERENCES `areas`(`area_id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `order_detail` ADD CONSTRAINT `order_detail_product_id_fkey` FOREIGN KEY (`product_id`) REFERENCES `product`(`product_id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `table_details` ADD CONSTRAINT `table_details_table_id_fkey` FOREIGN KEY (`table_id`) REFERENCES `tables`(`table_id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `product` ADD CONSTRAINT `product_category_id_fkey` FOREIGN KEY (`category_id`) REFERENCES `category`(`category_id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `table_details` ADD CONSTRAINT `table_details_order_id_fkey` FOREIGN KEY (`order_id`) REFERENCES `orders`(`order_id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `table` ADD CONSTRAINT `table_area_id_fkey` FOREIGN KEY (`area_id`) REFERENCES `area`(`area_id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `payments` ADD CONSTRAINT `payments_order_id_fkey` FOREIGN KEY (`order_id`) REFERENCES `orders`(`order_id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `table_detail` ADD CONSTRAINT `table_detail_table_id_fkey` FOREIGN KEY (`table_id`) REFERENCES `table`(`table_id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `table_detail` ADD CONSTRAINT `table_detail_order_id_fkey` FOREIGN KEY (`order_id`) REFERENCES `order`(`order_id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `payment` ADD CONSTRAINT `payment_order_id_fkey` FOREIGN KEY (`order_id`) REFERENCES `order`(`order_id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `payment` ADD CONSTRAINT `payment_account_id_fkey` FOREIGN KEY (`account_id`) REFERENCES `account`(`account_id`) ON DELETE SET NULL ON UPDATE CASCADE;

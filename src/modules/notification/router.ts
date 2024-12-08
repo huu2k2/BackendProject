@@ -6,7 +6,7 @@ const router = Router()
 router
   .route('/')
   .post(notificationController.createNotification.bind(notificationController))
-  .get(notificationController.getAllNotification.bind(notificationController))
+  .get(notificationController.getAllNotificationForCustomer.bind(notificationController))
 
 router.route('/staff').get(notificationController.getAllNotificationForStaff.bind(notificationController))
 

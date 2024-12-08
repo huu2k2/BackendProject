@@ -13,22 +13,22 @@ export class NotificationController {
     }
   }
 
-  async getAllNotificationById(req: Request, res: Response, next: NextFunction): Promise<any> {
-    try {
-      const rs = await notificationService.getAllNotificationById(req.body)
-      return res.json(rs)
-    } catch (error) {
-      next(error)
-    }
-  }
+  // async getAllNotificationById(req: Request, res: Response, next: NextFunction): Promise<any> {
+  //   try {
+  //     const rs = await notificationService.getAllNotificationById(req.body)
+  //     return res.json(rs)
+  //   } catch (error) {
+  //     next(error)
+  //   }
+  // }
 
-  async getAllNotification(req: Request, res: Response, next: NextFunction): Promise<any> {
+  async getAllNotificationForCustomer(req: Request, res: Response, next: NextFunction): Promise<any> {
     try {
       const authHeader = req!.headers!.authorization
       const token = authHeader!.split(' ')[1]
       const decoded = jwt.verify(token, process.env.JWT_SECRET!)
       req.user = decoded
-      const result = await notificationService.getAllNotification(req.user.customerId)
+      const result = await notificationService.getAllNotification(req.user.customerId, '')
       return res.status(HttpStatus.OK.code).json({
         message: 'get notification successfully',
         data: result
@@ -46,7 +46,7 @@ export class NotificationController {
       req.user = decoded
       console.log(req.user)
 
-      const result = await notificationService.getAllNotification(req.user.accountId)
+      const result = await notificationService.getAllNotification('', req.user.accountId)
       return res.status(HttpStatus.OK.code).json({
         message: 'get notification successfully',
         data: result
