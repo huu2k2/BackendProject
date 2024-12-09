@@ -39,8 +39,9 @@ export class PaymentController {
       const decoded = jwt.verify(token, process.env.JWT_SECRET!)
       req.user = decoded
       const { paymentId, tableId } = req.params
+      const data = req.body;
       const payment = await paymentService.confirmPayment(
-        { paymentId: paymentId, tableId: tableId, accountId: req.user.accountId },
+        { paymentId: paymentId, tableId: tableId, accountId: req.user.accountId, status: data.status }
         next
       )
       return res.status(HttpStatus.OK.code).json({
