@@ -22,6 +22,8 @@ enum OrderDetailStatus {
 enum OrderStatus {
   SUCCESS
   FAILED
+  WAIT_FOR_PAYMENT
+  NOT_PAYMENT
 }
 
 enum NotificationStatus {

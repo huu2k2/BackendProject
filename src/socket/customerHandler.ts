@@ -4,7 +4,6 @@ import { customerList } from '.'
 import { OrderService } from '../modules/order/services'
 import { OrderDetail } from '@prisma/client'
 import { notificationService } from '../modules/notification/service'
-import { table } from 'console'
 import { PaymentService } from '../modules/payment/services'
 
 const orderService = new OrderService()

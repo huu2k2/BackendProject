@@ -34,7 +34,7 @@ export class OrderController {
 
   async createOrder(req: Request, res: Response, next: NextFunction): Promise<any> {
     try {
-      const order = await orderService.createOrder(req.body.customerId)
+      const order = await orderService.createOrder(req.body.customerId);
       return res.status(HttpStatus.CREATED.code).json({ message: 'creat successful', data: order })
     } catch (error) {
       next(error)

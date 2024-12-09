@@ -1,5 +1,5 @@
 import { IGetOrderDetail, IOrder, IOrderDetail, IOrderMerge } from './interface'
-import { OrderDetail, OrderStatus, PrismaClient } from '@prisma/client'
+import { OrderDetail, OrderDetailStatus, OrderStatus, PrismaClient } from '@prisma/client'
 import { ApiError } from '../../middleware/error.middleware'
 import { HttpStatus } from '../../utils/HttpStatus'
 
@@ -68,15 +68,18 @@ export class OrderService {
     return orderMerges
   }
 
-  // Order
-  async createOrder(customerId: string): Promise<IOrder | undefined> {
+  async createOrder(customerId: string): Promise< any> {
     const newOrder = await prisma.order.create({
       data: {
         customerId: customerId,
         totalAmount: 0,
-        status: 'FAILED'
+        status: OrderStatus.WAIT_FOR_PAYMENT
       }
     })
+
+    if (!newOrder) {
+      return []
+    }
     return newOrder
   }
 
@@ -253,9 +256,13 @@ export class OrderService {
   }
 
   async deleteOrderDetail(orderDetailId: string): Promise<Boolean | undefined> {
-    const orderDetail = await prisma.orderDetail.delete({
-      where: { orderDetailId: orderDetailId }
+    const orderDetail = await prisma.orderDetail.update({
+      where: { orderDetailId },
+      data: {
+        status: OrderDetailStatus.CANCELED
+      }
     })
+
     if (!orderDetail) {
       throw new ApiError(HttpStatus.BAD_REQUEST.code, 'Failed to delete table')
     }
@@ -265,8 +272,10 @@ export class OrderService {
   async getAllOrderOfCustomer(customerId: string): Promise<any> {
     const orderDetail = await prisma.order.findMany({
       where: {
-        customerId,
-        status: 'SUCCESS'
+        customerId
+      },
+      orderBy: {
+        createdAt: 'desc'
       }
     })
 

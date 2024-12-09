@@ -20,6 +20,7 @@ export class Controller {
   async getAll(req: Request, res: Response, next: NextFunction): Promise<any> {
     try {
       const category = await service.getAll()
+      console.log("==========", category)
       return res.status(HttpStatus.OK.code).json({
         message: 'Get all category success',
         data: category

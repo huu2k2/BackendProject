@@ -1,7 +1,6 @@
 import { Router } from 'express'
 import { OrderController } from './controller'
 import {
-  isManager,
   isStaff,
   isCustomer,
   isChef,

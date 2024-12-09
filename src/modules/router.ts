@@ -29,7 +29,7 @@ router.use('/profiles', isAuthenticated, profileRouter)
 router.use('/roles', isAuthenticated, roleRouter)
 router.use('/tables', isAuthenticated, tableRouter)
 router.use('/products', isAuthenticated, productRouter)
-router.use('/categories', isAuthenticated, categoryRouter)
+router.use('/categories', categoryRouter)
 router.use('/', login)
 router.use('/logout',logout)
 

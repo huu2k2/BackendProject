@@ -1,13 +1,13 @@
 import { Router } from 'express'
 import { Controller } from './controller'
-import { isManager, isManagerOrCustomer } from '../../middleware/auth.middleware'
+import { isAuthenticated, isManager, isManagerOrCustomer } from '../../middleware/auth.middleware'
 
 const router = Router()
 const controller = new Controller()
 
 router.route('/')
-.post(isManager, controller.create)
-.get(isManagerOrCustomer, controller.getAll.bind(controller))
+.post(isAuthenticated ,isManager, controller.create)
+.get( controller.getAll)
 
 router
   .route('/:categoryId')
