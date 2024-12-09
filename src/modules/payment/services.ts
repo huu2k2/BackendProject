@@ -59,13 +59,14 @@ export class PaymentService {
   }
 
   async confirmPayment(
-    dataPayment: { paymentId: string; tableId: string; accountId: string },
+    dataPayment: { paymentId: string; tableId: string; accountId: string; status: String },
+
     next: NextFunction
   ): Promise<Payment | undefined> {
     const payment = await prisma.payment.update({
       where: { paymentId: dataPayment.paymentId },
       data: {
-        status: 'FINISH',
+        status: dataPayment.status,
         accountId: dataPayment.accountId
       }
     })
