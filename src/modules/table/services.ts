@@ -141,7 +141,8 @@ export class TableService {
     })
 
     // lấy order đã có
-    if (isExistOrder.length > 0 && isExistOrder[0].status != 'FAILED') {
+    if (isExistOrder.length > 0 && isExistOrder[0].status == 'FAILED') {
+      console.log(1)
       const isExistTableDetail = await prisma.tableDetail.findUnique({
         where: {
           tableId: tableId,
@@ -160,7 +161,7 @@ export class TableService {
       }
     })
 
-    if(isAvailabelTable?.status === TableStatus.OCCUPIED) {
+    if (isAvailabelTable?.status === TableStatus.OCCUPIED) {
       return undefined
     }
 
