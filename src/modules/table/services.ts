@@ -129,7 +129,7 @@ export class TableService {
     customerId: string,
     next: NextFunction
   ): Promise<{ order: IOrder; tableDetail: TableDetail } | undefined> {
-
+    // check order
     const isExistOrder = await prisma.order.findMany({
       where: {
         customerId: customerId
@@ -140,7 +140,8 @@ export class TableService {
       take: 1
     })
 
-    if (isExistOrder.length > 0) {
+    // lấy order đã có
+    if (isExistOrder.length > 0 && isExistOrder[0].status != 'FAILED') {
       const isExistTableDetail = await prisma.tableDetail.findUnique({
         where: {
           tableId: tableId,
@@ -152,9 +153,10 @@ export class TableService {
       }
     }
 
+    // tạo mới
     const isAvailabelTable = await prisma.table.findUnique({
-      where:{
-        tableId:tableId
+      where: {
+        tableId: tableId
       }
     })
 
