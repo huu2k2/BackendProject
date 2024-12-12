@@ -8,6 +8,7 @@ COPY . .
 RUN yarn 
 
 # RUN yarn migration
+RUN apk add --no-cache bash openssl
 
 RUN yarn generation
 
