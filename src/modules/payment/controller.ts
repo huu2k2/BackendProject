@@ -12,7 +12,7 @@ export class PaymentController {
       const payment = await paymentService.createPayment(orderId, req.body, next)
       return res.status(HttpStatus.CREATED.code).json({
         data: payment,
-        message: 'Create payment success'
+        message: 'Yêu cầu thanh toán thành công'
       })
     } catch (error) {
       next(error)
