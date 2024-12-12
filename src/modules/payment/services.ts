@@ -8,6 +8,16 @@ const prisma = new PrismaClient()
 
 export class PaymentService {
   async createPayment(orderId: string, dto: IPayment, next: NextFunction): Promise<Payment | undefined> {
+    const checkPayment = await prisma.payment.findFirst({
+      where: {
+        orderId: orderId
+      }
+    })
+
+    if (checkPayment) {
+      return checkPayment
+    }
+
     const payment = await prisma.payment.create({
       data: {
         method: dto.method,
