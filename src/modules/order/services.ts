@@ -60,7 +60,8 @@ export class OrderService {
     const data = await prisma.order.findMany({
       where: { status: status as OrderStatus },
       include: {
-        orderDetails: true
+        orderDetails: true,
+        tableDetail: { include: { table: true } }
       }
     })
     if (!data) {
