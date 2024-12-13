@@ -1,10 +1,25 @@
 import e, { Request, Response, NextFunction } from 'express'
 import { OrderService } from './services'
 import { HttpStatus } from '../../utils/HttpStatus'
+import jwt from 'jsonwebtoken'
 
 const orderService = new OrderService()
 
 export class OrderController {
+  async getOrderListByStatus(req: Request, res: Response, next: NextFunction): Promise<any> {
+    try {
+      const authHeader = req!.headers!.authorization
+            const token = authHeader!.split(' ')[1]
+            const decoded = jwt.verify(token, process.env.JWT_SECRET!)
+            req.user = decoded
+      const { status } = req.params
+      const data = await orderService.getOrderListByStatus(status)
+      return res.status(HttpStatus.CREATED.code).json({ message: 'lấy danh sách thành công', data: data })
+    } catch (error) {
+      next(error)
+    }
+  }
+
   async createOrderMerge(req: Request, res: Response, next: NextFunction): Promise<any> {
     try {
       const orderMerge = await orderService.createOrderMerge(req.body)
