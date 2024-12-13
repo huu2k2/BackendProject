@@ -79,7 +79,8 @@ export class CheffHandler {
           mess = error
         }
         socket.emit('getUpdateOrdersDetailFromCheff', { mess, result, updateType })
-        socket.emit('getUpdateOrdersQuantityFromCheff', { orderId, quantity: orderDetailIds.length, updateType })
+        const quantity = await orderService.getOrderQuantitySocket(orderDetailIds[0])
+        socket.emit('getUpdateOrdersQuantityFromCheff', { orderId, quantity: quantity, updateType })
 
         const socketCustomer = customerList.get(orderId)
         this.server

@@ -58,7 +58,8 @@ export class CustomerHandler {
           status: true
         })
         this.io.of(CHEFF).emit('cancelOrderDetails', orderDetails)
-        this.io.of(CHEFF).emit('updateCancelOrderDetailsQuantity', { orderId: orderId, quantity: orderDetails.length })
+        const quantity = await orderService.getOrderQuantitySocket(orderDetails[0])
+        this.io.of(CHEFF).emit('updateCancelOrderDetailsQuantity', { orderId: orderId, quantity: quantity })
       }
     )
   }
@@ -68,6 +69,8 @@ export class CustomerHandler {
       let result = await orderService.updateOrderDetailSocketCustomer(val)
       socket.emit('sendNotification', { mess: 'update successful', val, status: true })
       this.io.of(CHEFF).emit('updateOrderDetails', val)
+      const quantity = await orderService.getOrderQuantitySocket(val[0].orderDetailId)
+      this.io.of(CHEFF).emit('sendUpdateOrderQuantityForCheff', { orderId: val[0].orderId, quantity: quantity })
     })
   }
 
@@ -95,7 +98,8 @@ export class CustomerHandler {
   async receiveNewOrderDetailFromCustomer(socket: any) {
     socket.on('sendOrderDetail', async ({ data, orderId }: { data: OrderDetail[]; orderId: string }) => {
       this.io.of(CHEFF).emit('sendOrderDetailForCheff', data)
-      this.io.of(CHEFF).emit('sendUpdateOrderQuantityForCheff', { orderId: orderId, quantity: data.length })
+      const quantity = await orderService.getOrderQuantitySocket(data[0].orderDetailId)
+      this.io.of(CHEFF).emit('sendUpdateOrderQuantityForCheff', { orderId: orderId, quantity: quantity })
     })
   }
 

@@ -2,6 +2,7 @@ import { IGetOrderDetail, IOrder, IOrderDetail, IOrderMerge } from './interface'
 import { OrderDetail, OrderStatus, PrismaClient } from '@prisma/client'
 import { ApiError } from '../../middleware/error.middleware'
 import { HttpStatus } from '../../utils/HttpStatus'
+import { stat } from 'fs'
 
 const prisma = new PrismaClient()
 
@@ -151,6 +152,24 @@ export class OrderService {
       include: {
         product: true
       }
+    })
+
+    const order = await prisma.order.findFirst({
+      where: {
+        orderId: orderDetails[0].orderId
+      }
+    })
+
+    let amount = 0
+
+    orderDetails.forEach((item) => {
+      amount += item.quantity * item.price
+    })
+
+    order!.totalAmount += amount
+    await prisma.order.update({
+      where: { orderId: order!.orderId },
+      data: { totalAmount: order!.totalAmount }
     })
 
     return orderDetails
@@ -337,10 +356,34 @@ export class OrderService {
   async deleteOrderDetailSocket(data: string[]): Promise<any> {
     return new Promise(async (resolve, reject) => {
       try {
-        const count = prisma.orderDetail.deleteMany({
+        const detail = await prisma.orderDetail.findFirst({
+          where: {
+            orderDetailId: data[0]
+          }
+        })
+        const count = await prisma.orderDetail.deleteMany({
           where: {
             orderDetailId: { in: data }
           }
+        })
+
+        const order = await prisma.order.findFirst({
+          where: {
+            orderId: detail?.orderId
+          },
+          include: { orderDetails: true }
+        })
+
+        let total = 0
+        order!.orderDetails.forEach((item) => {
+          total += item.price * item.quantity
+        })
+
+        order!.totalAmount = total
+
+        await prisma.order.update({
+          where: { orderId: order!.orderId },
+          data: { totalAmount: order!.totalAmount }
         })
         resolve(count)
       } catch (error) {
@@ -375,7 +418,7 @@ export class OrderService {
           }
           if (updates.length > 0) {
             for (const update of updates) {
-              await prisma.orderDetail.update({
+              const orderDetail = await prisma.orderDetail.update({
                 where: {
                   orderDetailId: update.id
                 },
@@ -385,6 +428,25 @@ export class OrderService {
               })
             }
           }
+        })
+
+        const order = await prisma.order.findFirst({
+          where: {
+            orderId: val[0].orderId
+          },
+          include: { orderDetails: true }
+        })
+
+        let total = 0
+        order!.orderDetails.forEach((item) => {
+          total += item.price * item.quantity
+        })
+
+        order!.totalAmount = total
+
+        await prisma.order.update({
+          where: { orderId: order!.orderId },
+          data: { totalAmount: order!.totalAmount }
         })
 
         resolve('success')
@@ -409,7 +471,56 @@ export class OrderService {
         where: { orderDetailId: { in: orderDetailIds } }
       })
 
+      if (updateType === 0) {
+        const order = await prisma.order.findFirst({
+          where: {
+            orderId: updatedOrderDetails[0].orderId
+          },
+          include: { orderDetails: true }
+        })
+
+        let total = 0
+        updatedOrderDetails.forEach((item) => {
+          total -= item.price * item.quantity
+        })
+
+        order!.totalAmount += total
+
+        await prisma.order.update({
+          where: { orderId: order!.orderId },
+          data: { totalAmount: order!.totalAmount }
+        })
+      }
+
       return updatedOrderDetails
+    } catch (error) {
+      throw 'error update'
+    }
+  }
+
+  async getOrderQuantitySocket(orderDetailId: string): Promise<number> {
+    try {
+      const detail = await prisma.orderDetail.findFirst({
+        where: { orderDetailId: orderDetailId }
+      })
+
+      const details = await prisma.orderDetail.findMany({
+        where: {
+          AND: [
+            { orderId: detail?.orderId },
+            {
+              OR: [{ status: 'CONFIRMED' }, { status: 'PENDING' }]
+            }
+          ]
+        }
+      })
+
+      let total = 0
+      details.forEach((item) => {
+        total += item.quantity
+      })
+
+      return total
     } catch (error) {
       throw 'error update'
     }
