@@ -68,23 +68,22 @@ export class PaymentService {
     return payment as IPaymentSocket
   }
 
-  async confirmPayment(
-    dataPayment: { paymentId: string; tableId: string; accountId: string; status: String },
-
-    next: NextFunction
-  ): Promise<Payment | undefined> {
+  async confirmPayment(dataPayment: {
+    paymentId: string
+    tableId: string
+    accountId: string
+    status: String
+  }): Promise<Payment | undefined> {
     const payment = await prisma.payment.update({
       where: { paymentId: dataPayment.paymentId },
       data: {
-        status: dataPayment.status,
+        status: dataPayment.status as PaymentStatus,
         accountId: dataPayment.accountId
       }
     })
-
     const order = await prisma.order.findUnique({
       where: { orderId: payment.orderId }
     })
-
     if (order) {
       if (order.orderMergeId) {
         const mergedOrders = await prisma.order.findMany({
@@ -136,5 +135,68 @@ export class PaymentService {
     }
 
     return payment
+  }
+
+  // thanh toán của admin
+  async paymentByAdmin(orderId: string, accountId: string, next: NextFunction): Promise<any> {
+    const order = await prisma.order.findFirst({
+      where: {
+        orderId: orderId
+      },
+      include: {
+        orderDetails: true
+      }
+    })
+
+    let amount = 0
+    const amountOrder = order!.orderDetails.reduce((amountOrder, currentValue) => {
+      if (currentValue.status == 'COMPLETED') {
+        return (amountOrder += currentValue.price * currentValue.quantity)
+      }
+      return amountOrder
+    }, 0)
+
+    amount += amountOrder
+
+    if (order?.orderMergeId) {
+      const mergedOrders = await prisma.order.findMany({
+        where: {
+          orderMergeId: order.orderMergeId,
+          orderId: {
+            not: order.orderId
+          }
+        },
+        include: {
+          orderDetails: true
+        }
+      })
+
+      mergedOrders.forEach((mergedOrder) => {
+        const mergedAmount = mergedOrder.orderDetails.reduce((amountOrder, currentValue) => {
+          if (currentValue.status === 'COMPLETED') {
+            return amountOrder + currentValue.price * currentValue.quantity
+          }
+          return amountOrder
+        }, 0)
+        amount += mergedAmount
+      })
+    }
+
+    const payment = await prisma.payment.create({
+      data: {
+        method: 'Tiền mặt',
+        createdAt: new Date(),
+        amount: amount,
+        orderId: orderId,
+        status: 'WAIT'
+      }
+    })
+    if (!payment) {
+      throw new ApiError(HttpStatus.BAD_REQUEST.code, 'err create payment')
+    }
+
+    let result = await this.confirmPayment({ paymentId: payment.paymentId, tableId: '', accountId, status: 'FINISH' })
+
+    return result
   }
 }

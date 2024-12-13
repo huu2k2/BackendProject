@@ -40,18 +40,32 @@ export class PaymentController {
       req.user = decoded
       const { paymentId, tableId } = req.params
       const data = req.body
-      const payment = await paymentService.confirmPayment(
-        {
-          paymentId: paymentId,
-          tableId: tableId,
-          accountId: req.user.accountId,
-          status: data.status
-        },
-        next
-      )
+      const payment = await paymentService.confirmPayment({
+        paymentId: paymentId,
+        tableId: tableId,
+        accountId: req.user.accountId,
+        status: data.status
+      })
       return res.status(HttpStatus.OK.code).json({
         data: payment,
         message: 'Confirm payment success'
+      })
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  async paymentByAdmin(req: Request, res: Response, next: NextFunction): Promise<any> {
+    try {
+      const authHeader = req!.headers!.authorization
+      const token = authHeader!.split(' ')[1]
+      const decoded = jwt.verify(token, process.env.JWT_SECRET!)
+      req.user = decoded
+      const { orderId } = req.params
+      const payment = await paymentService.paymentByAdmin(orderId, req.user.accountId, next)
+      return res.status(HttpStatus.CREATED.code).json({
+        data: payment,
+        message: 'Xử lí thành công'
       })
     } catch (error) {
       next(error)

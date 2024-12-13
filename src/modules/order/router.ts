@@ -30,6 +30,8 @@ router.route('/:orderId/detail/kitchen').get(isChef, controller.getOrderDetailBy
 
 router.route('/:orderId/detail/payment').get(isStaffOrCustomer, controller.getOrderDetailByOrderIdOfMergeOrder)
 
+router.route('/list/status/:status').get(isManager, controller.getOrderListByStatus)
+
 router
   .route('/detail/:orderDetailId')
   .post(isStaff || isCustomer || isChef, controller.getOrderDetailById)

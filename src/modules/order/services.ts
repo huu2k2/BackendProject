@@ -56,6 +56,19 @@ export class OrderService {
     return orderMerge
   }
 
+  async getOrderListByStatus(status: string): Promise<any> {
+    const data = await prisma.order.findMany({
+      where: { status: status as OrderStatus },
+      include: {
+        orderDetails: true
+      }
+    })
+    if (!data) {
+      throw new ApiError(HttpStatus.BAD_REQUEST.code, 'Failed to get orders')
+    }
+    return data
+  }
+
   async getOrderMerges(): Promise<Partial<IOrderMerge>[] | undefined> {
     const orderMerges = await prisma.orderMerge.findMany({
       include: {
